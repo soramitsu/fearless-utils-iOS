@@ -19,6 +19,21 @@ class TypeRegistryCatalogTests: XCTestCase {
         XCTAssertEqual(node?.typeName, "CompactAssignmentsFrom258")
     }
 
+    func testTypeExtractedFromWithoutVersioning() throws {
+        // give
+
+        let catalog = try RuntimeHelper.createTypeRegistryCatalog(from: "default",
+                                                                  runtimeMetadataName: "kusama-metadata")
+
+        // when
+
+        let node = catalog.node(for: "CompactAssignments", version: 2027)
+
+        // then
+
+        XCTAssertEqual(node?.typeName, "CompactAssignmentsFrom258")
+    }
+
     func testTypeExtractedFromProperVersion() throws {
         // given
 

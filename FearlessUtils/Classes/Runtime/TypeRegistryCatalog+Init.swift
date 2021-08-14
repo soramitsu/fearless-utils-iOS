@@ -1,16 +1,42 @@
 import Foundation
 
 public extension TypeRegistryCatalog {
-    static func createFromBaseTypeDefinition(_ baseDefinitionData: Data,
-                                             networkDefinitionData: Data,
-                                             runtimeMetadata: RuntimeMetadata,
-                                             customNodes: [Node] = [])
+    static func createFromTypeDefinition(_ definitionData: Data,
+                                         versioningData: Data,
+                                         runtimeMetadata: RuntimeMetadata,
+                                         customNodes: [Node] = [])
     throws -> TypeRegistryCatalog {
-        let versionedJsons = try prepareVersionedJsons(from: networkDefinitionData)
+        let versionedJsons = try prepareVersionedJsons(from: versioningData)
 
+        return try createFromTypeDefinition(
+            definitionData,
+            versionedJsons: versionedJsons,
+            runtimeMetadata: runtimeMetadata,
+            customNodes: customNodes
+        )
+    }
+
+    static func createFromTypeDefinition(
+        _ definitionData: Data,
+        runtimeMetadata: RuntimeMetadata,
+        customNodes: [Node] = []
+    ) throws -> TypeRegistryCatalog {
+        try createFromTypeDefinition(
+            definitionData,
+            versionedJsons: [:],
+            runtimeMetadata: runtimeMetadata,
+            customNodes: customNodes
+        )
+    }
+
+    static func createFromTypeDefinition(_ definitionData: Data,
+                                         versionedJsons: [UInt64: JSON],
+                                         runtimeMetadata: RuntimeMetadata,
+                                         customNodes: [Node])
+    throws -> TypeRegistryCatalog {
         let additonalNodes = BasisNodes.allNodes(for: runtimeMetadata) + customNodes
         let baseRegistry = try TypeRegistry
-            .createFromTypesDefinition(data: baseDefinitionData,
+            .createFromTypesDefinition(data: definitionData,
                                        additionalNodes: additonalNodes)
 
         let versionedRegistries = try versionedJsons.mapValues {
