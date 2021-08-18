@@ -99,6 +99,7 @@
 		84FACC0825F79C5200F32ED4 /* BaseCodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACC0725F79C5200F32ED4 /* BaseCodingTests.swift */; };
 		84FACC0C25F79D8600F32ED4 /* GenericHashTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACC0B25F79D8600F32ED4 /* GenericHashTests.swift */; };
 		A0FDCFB5B61F738FEE34A5E6 /* Pods_FearlessUtils_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16D2E77D7010BEBF43DFE08E /* Pods_FearlessUtils_Tests.framework */; };
+		AE4B521426CBA71B00A66D2C /* BIP32.json in Resources */ = {isa = PBXBuildFile; fileRef = AE4B521326CBA71B00A66D2C /* BIP32.json */; };
 		B2BF1BE136637C8404B79450 /* Pods_FearlessUtils_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9A63E44DBCDCE738F798358 /* Pods_FearlessUtils_Example.framework */; };
 /* End PBXBuildFile section */
 
@@ -212,6 +213,7 @@
 		84FACC0725F79C5200F32ED4 /* BaseCodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCodingTests.swift; sourceTree = "<group>"; };
 		84FACC0B25F79D8600F32ED4 /* GenericHashTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericHashTests.swift; sourceTree = "<group>"; };
 		93F24F5EEC204E4B0F918C39 /* Pods-FearlessUtils_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FearlessUtils_Example.debug.xcconfig"; path = "Target Support Files/Pods-FearlessUtils_Example/Pods-FearlessUtils_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		AE4B521326CBA71B00A66D2C /* BIP32.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = BIP32.json; sourceTree = "<group>"; };
 		B82F3EE26AAEE44C6E7F9962 /* Pods-FearlessUtils_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FearlessUtils_Tests.release.xcconfig"; path = "Target Support Files/Pods-FearlessUtils_Tests/Pods-FearlessUtils_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		B9A63E44DBCDCE738F798358 /* Pods_FearlessUtils_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FearlessUtils_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0EC4D272FE196149F4492DE /* Pods-FearlessUtils_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FearlessUtils_Example.release.xcconfig"; path = "Target Support Files/Pods-FearlessUtils_Example/Pods-FearlessUtils_Example.release.xcconfig"; sourceTree = "<group>"; };
@@ -375,6 +377,7 @@
 				8467FD1024E675D0005D486C /* ecdsaHDKD.json */,
 				84CB471F24DBE7BD00837E11 /* Keystore */,
 				842D1E7524D0069000C30A7A /* sr25519HDKD.json */,
+				AE4B521326CBA71B00A66D2C /* BIP32.json */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -660,6 +663,7 @@
 			files = (
 				8467FD1424E677C2005D486C /* ed25519HDKD.json in Resources */,
 				842D1E7624D0069000C30A7A /* sr25519HDKD.json in Resources */,
+				AE4B521426CBA71B00A66D2C /* BIP32.json in Resources */,
 				84452B6125D2ADC300F47EC5 /* westend-metadata in Resources */,
 				84452C0B25D2D54300F47EC5 /* kusama-metadata in Resources */,
 				8429C81825C434E40086D7F6 /* default.json in Resources */,
