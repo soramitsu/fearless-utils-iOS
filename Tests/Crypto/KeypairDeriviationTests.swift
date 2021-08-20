@@ -90,7 +90,7 @@ class KeypairDeriviationTests: XCTestCase {
                     result = JunctionResult(chaincodes: [], password: nil)
                 }
 
-                let keypair = try keypairFactory.createKeypairFromSeed(Data(item.seed.utf8),
+                let keypair = try keypairFactory.createKeypairFromSeed(Data(hexString: item.seed),
                                                                        chaincodeList: result.chaincodes)
 
                 let publicKey = keypair.publicKey().rawData()

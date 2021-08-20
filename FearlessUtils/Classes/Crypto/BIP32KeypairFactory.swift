@@ -65,11 +65,13 @@ public struct BIP32KeypairFactory: DerivableKeypairFactoryProtocol, DerivableCha
         )
     }
 
-    public func deriveChildKeypairFromParent(_ keypair: IRCryptoKeypairProtocol,
-                                      chaincodeList: [Chaincode],
-                                      parChaincode: Data) throws -> IRCryptoKeypairProtocol {
+    public func deriveChildKeypairFromParent(
+        _ keypair: IRCryptoKeypairProtocol,
+        chaincodeList: [Chaincode],
+        parChaincode: Data
+    ) throws -> IRCryptoKeypairProtocol {
 
-        let initKeyparAndChain: KeypairAndChain = KeypairAndChain(keypair, parChaincode)
+        let initKeyparAndChain = KeypairAndChain(keypair, parChaincode)
         let childKeypairAndChain = try chaincodeList.reduce(initKeyparAndChain) { (keyparAndChain, chaincode) in
 
             let (parKeypair, parChaincode) = keyparAndChain
