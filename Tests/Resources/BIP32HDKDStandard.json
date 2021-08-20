@@ -9,6 +9,14 @@
     },
     {
         "seed": "0x000102030405060708090a0b0c0d0e0f",
+        "path": "/0",
+        "extpub": "",
+        "extprv": "",
+        "pk": "0x027c4b09ffb985c298afe7e5813266cbfcb7780b480ac294b0b43dc21f2be3d13c",
+        "mnemonic": "",
+    },
+    {
+        "seed": "0x000102030405060708090a0b0c0d0e0f",
         "path": "//0",
         "extpub": "xpub68Gmy5EdvgibQVfPdqkBBCHxA5htiqg55crXYuXoQRKfDBFA1WEjWgP6LHhwBZeNK1VTsfTFUHCdrfp1bgwQ9xv5ski8PX9rL2dZXvgGDnw",
         "extprv": "xprv9uHRZZhk6KAJC1avXpDAp4MDc3sQKNxDiPvvkX8Br5ngLNv1TxvUxt4cV1rGL5hj6KCesnDYUhd7oWgT11eZG7XnxHrnYeSvkzY7d2bhkJ7",

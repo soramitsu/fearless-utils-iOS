@@ -60,42 +60,72 @@ public struct BIP32KeypairFactory: DerivableKeypairFactoryProtocol, DerivableCha
 
         return try deriveChildKeypairFromParent(
             masterKeypair,
-            chaincodeList: chaincodeList,
+            chainIndexList: chaincodeList,
             parChaincode: masterChainCode
         )
     }
 
+    /*
+     The function CKDpriv((kpar, cpar), i) → (ki, ci) computes a child extended private key from the parent extended private key:
+
+     Check whether i ≥ 231 (whether the child is a hardened key).
+     If so (hardened child): let I = HMAC-SHA512(Key = cpar, Data = 0x00 || ser256(kpar) || ser32(i)). (Note: The 0x00 pads the private key to make it 33 bytes long.)
+     If not (normal child): let I = HMAC-SHA512(Key = cpar, Data = serP(point(kpar)) || ser32(i)).
+     Split I into two 32-byte sequences, IL and IR.
+     The returned child key ki is parse256(IL) + kpar (mod n).
+     The returned chain code ci is IR.
+     In case parse256(IL) ≥ n or ki = 0, the resulting key is invalid, and one should proceed with the next value for i. (Note: this has probability lower than 1 in 2127.)
+     */
+
     public func deriveChildKeypairFromParent(
         _ keypair: IRCryptoKeypairProtocol,
-        chaincodeList: [Chaincode],
+        chainIndexList: [Chaincode],
         parChaincode: Data
     ) throws -> IRCryptoKeypairProtocol {
 
-        let initKeyparAndChain = KeypairAndChain(keypair, parChaincode)
-        let childKeypairAndChain = try chaincodeList.reduce(initKeyparAndChain) { (keyparAndChain, chaincode) in
+        let initKeypairAndChain = KeypairAndChain(keypair, parChaincode)
+        let childKeypairAndChain = try chainIndexList.reduce(initKeypairAndChain) { (keypairAndChain, chainIndex) in
 
-            let (parKeypair, parChaincode) = keyparAndChain
-            let hmacOriginalData: Data = {
-                switch chaincode.type {
-                case .soft:
-                    return parKeypair.publicKey().rawData().dropFirst() + chaincode.data
+            let (parentKeypair, parentChaincode) = keypairAndChain
+
+            let hmacOriginalData: Data = try {
+                // Check whether i ≥ 231 (whether the child is a hardened key).
+                switch chainIndex.type {
+                // If so (hardened child): let I = HMAC-SHA512(Key = cpar, Data = 0x00 || ser256(kpar) || ser32(i)). (Note: The 0x00 pads the private key to make it 33 bytes long.)
                 case .hard:
-                    return parKeypair.privateKey().rawData() + chaincode.data
+                    let data = try Data(hexString: "0x00")
+                    return data + parentKeypair.privateKey().rawData() + chainIndex.data
+                // If not (normal child): let I = HMAC-SHA512(Key = cpar, Data = serP(point(kpar)) || ser32(i)).
+                case .soft:
+                    return parentKeypair.publicKey().rawData().dropFirst() + chainIndex.data
                 }
             }()
 
-            let hmacResult = try hmac512(hmacOriginalData, secretKeyData: parChaincode)
+            let hmacResult = try hmac512(hmacOriginalData, secretKeyData: parentChaincode)
 
+            // Split I into two 32-byte sequences, IL and IR.
             let childPrivateKeyData = try SECPrivateKey(rawData: hmacResult[...31])
-            let childChainCode = hmacResult[32...63]
 
-            var childKeyNum = BigUInt(childPrivateKeyData.rawData())
-            childKeyNum += BigUInt(parKeypair.privateKey().rawData())
-            childKeyNum %= .CurveOrder
+            // The returned child key ki is parse256(IL) + kpar (mod n).
+            let childKeyInt = BigUInt(childPrivateKeyData.rawData()) +
+                BigUInt(parentKeypair.privateKey().rawData()) %
+                .CurveOrder
 
-            let numData  = childKeyNum.serialize()
+            let numData  = childKeyInt.serialize()
             let childKey = try SECPrivateKey(rawData: numData)
 
+            // The returned chain code ci is IR.
+            let childChainCode = hmacResult[32...63]
+
+            // TODO:
+            // In case parse256(IL) ≥ n or ki = 0, the resulting key is invalid,
+            // and one should proceed with the next value for i. (Note: this has probability lower than 1 in 2127.)
+
+            // The function N((k, c)) → (K, c) computes the extended public key corresponding to an extended private key
+            // (the "neutered" version, as it removes the ability to sign transactions).
+
+            // The returned key K is point(k).
+            // The returned chain code c is just the passed chain code.
             let childKeypair = try internalFactory.derive(fromPrivateKey: childKey)
 
             return (childKeypair, childChainCode)
