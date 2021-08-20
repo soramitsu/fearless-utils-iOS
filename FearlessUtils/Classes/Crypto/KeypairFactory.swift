@@ -18,3 +18,9 @@ public protocol DerivableSeedFactoryProtocol: KeypairFactoryProtocol {
     func deriveChildSeedFromParent(_ seed: Data,
                                    chaincodeList: [Chaincode]) throws -> Data
 }
+
+public protocol DerivableChaincodeFactoryProtocol: KeypairFactoryProtocol {
+    func deriveChildKeypairFromParent(_ keypair: IRCryptoKeypairProtocol,
+                                      chaincodeList: [Chaincode],
+                                      parChaincode: Data) throws -> IRCryptoKeypairProtocol
+}
