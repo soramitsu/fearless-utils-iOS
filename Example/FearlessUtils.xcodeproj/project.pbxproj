@@ -100,6 +100,7 @@
 		84FACC0C25F79D8600F32ED4 /* GenericHashTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACC0B25F79D8600F32ED4 /* GenericHashTests.swift */; };
 		A0FDCFB5B61F738FEE34A5E6 /* Pods_FearlessUtils_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16D2E77D7010BEBF43DFE08E /* Pods_FearlessUtils_Tests.framework */; };
 		AE425FB626D363F500547303 /* BIP32JunctionFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE425FB526D363F500547303 /* BIP32JunctionFactoryTests.swift */; };
+		AE425FBA26D3726900547303 /* BIP32KeypairDerivationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE425FB926D3726900547303 /* BIP32KeypairDerivationTests.swift */; };
 		AE4B521426CBA71B00A66D2C /* BIP32HDKDStandard.json in Resources */ = {isa = PBXBuildFile; fileRef = AE4B521326CBA71B00A66D2C /* BIP32HDKDStandard.json */; };
 		AE4B521826CE127200A66D2C /* BIP32HDKD.json in Resources */ = {isa = PBXBuildFile; fileRef = AE4B521726CE127200A66D2C /* BIP32HDKD.json */; };
 		B2BF1BE136637C8404B79450 /* Pods_FearlessUtils_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9A63E44DBCDCE738F798358 /* Pods_FearlessUtils_Example.framework */; };
@@ -216,6 +217,7 @@
 		84FACC0B25F79D8600F32ED4 /* GenericHashTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericHashTests.swift; sourceTree = "<group>"; };
 		93F24F5EEC204E4B0F918C39 /* Pods-FearlessUtils_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FearlessUtils_Example.debug.xcconfig"; path = "Target Support Files/Pods-FearlessUtils_Example/Pods-FearlessUtils_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		AE425FB526D363F500547303 /* BIP32JunctionFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BIP32JunctionFactoryTests.swift; sourceTree = "<group>"; };
+		AE425FB926D3726900547303 /* BIP32KeypairDerivationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BIP32KeypairDerivationTests.swift; sourceTree = "<group>"; };
 		AE4B521326CBA71B00A66D2C /* BIP32HDKDStandard.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = BIP32HDKDStandard.json; sourceTree = "<group>"; };
 		AE4B521726CE127200A66D2C /* BIP32HDKD.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = BIP32HDKD.json; sourceTree = "<group>"; };
 		B82F3EE26AAEE44C6E7F9962 /* Pods-FearlessUtils_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FearlessUtils_Tests.release.xcconfig"; path = "Target Support Files/Pods-FearlessUtils_Tests/Pods-FearlessUtils_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -355,10 +357,10 @@
 		842D1E6824CF7FC500C30A7A /* Crypto */ = {
 			isa = PBXGroup;
 			children = (
+				AE425FB726D3724100547303 /* BIP32 */,
 				845D80EC24C8D91A00EC2540 /* SeedFactoryTests.swift */,
 				842D1E6924CF800400C30A7A /* JunctionFactoryTests.swift */,
 				842D1E7224CFF4EC00C30A7A /* KeypairDeriviationTests.swift */,
-				AE425FB526D363F500547303 /* BIP32JunctionFactoryTests.swift */,
 			);
 			path = Crypto;
 			sourceTree = "<group>";
@@ -557,6 +559,15 @@
 				B82F3EE26AAEE44C6E7F9962 /* Pods-FearlessUtils_Tests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		AE425FB726D3724100547303 /* BIP32 */ = {
+			isa = PBXGroup;
+			children = (
+				AE425FB526D363F500547303 /* BIP32JunctionFactoryTests.swift */,
+				AE425FB926D3726900547303 /* BIP32KeypairDerivationTests.swift */,
+			);
+			path = BIP32;
 			sourceTree = "<group>";
 		};
 		B71F45E77B6AE967E2E06378 /* Frameworks */ = {
@@ -838,6 +849,7 @@
 				849E0A7E25C95C7F00B33506 /* EnumValuesFactoryTests.swift in Sources */,
 				842D1E2324C98CEA00C30A7A /* StorageKeyFactoryTests.swift in Sources */,
 				8459EA122657963C006BBF9E /* MultiSigner.swift in Sources */,
+				AE425FBA26D3726900547303 /* BIP32KeypairDerivationTests.swift in Sources */,
 				8467FD2824E72CCD005D486C /* HSLColorTests.swift in Sources */,
 				84FACC0C25F79D8600F32ED4 /* GenericHashTests.swift in Sources */,
 				842D1E2724C9B63300C30A7A /* ScaleOptionTests.swift in Sources */,

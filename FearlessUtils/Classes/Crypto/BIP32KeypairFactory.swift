@@ -88,28 +88,17 @@ public struct BIP32KeypairFactory: DerivableKeypairFactoryProtocol, DerivableCha
 
             let (parentKeypair, parentChaincode) = keypairAndChain
 
-            let softExample: UInt32 = 0
-            let hardExample: UInt32 = 0x80000000
-
-            let softByteArray = withUnsafeBytes(of: softExample.bigEndian) {
-                Data($0)
-            }
-
-            let hardByteArray = withUnsafeBytes(of: hardExample.bigEndian) {
-                Data($0)
-            }
-
             let hmacOriginalData: Data = try {
                 // Check whether i ≥ 231 (whether the child is a hardened key).
                 switch chainIndex.type {
                 // If so (hardened child): let I = HMAC-SHA512(Key = cpar, Data = 0x00 || ser256(kpar) || ser32(i)). (Note: The 0x00 pads the private key to make it 33 bytes long.)
                 case .hard:
-                    let data = try Data(hexString: "0x00")
+                    let padding = try Data(hexString: "0x00")
                     let privKeyData = BigUInt(parentKeypair.privateKey().rawData()).serialize()
-                    return data + privKeyData + hardByteArray // chainIndex.data
+                    return padding + privKeyData + chainIndex.data // chainIndex.data
                 // If not (normal child): let I = HMAC-SHA512(Key = cpar, Data = serP(point(kpar)) || ser32(i)).
                 case .soft:
-                    return parentKeypair.publicKey().rawData() + softByteArray // chainIndex.data
+                    return parentKeypair.publicKey().rawData() + chainIndex.data // chainIndex.data
                 }
             }()
 
