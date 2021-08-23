@@ -4,10 +4,32 @@ import IrohaCrypto
 import BigInt
 
 // swiftlint:disable line_length
-typealias ExtendedKeypair = (keypair: IRCryptoKeypairProtocol, chaincode: Data)
+public class ExtendedBIP32Keypair {
+    let keypair: IRCryptoKeypairProtocol
+    let chaincode: Data
 
-public struct BIP32KeypairFactory: DerivableKeypairFactoryProtocol, DerivableChaincodeFactoryProtocol {
+    init(
+        keypair: IRCryptoKeypairProtocol,
+        chaincode: Data
+    ){
+        self.keypair = keypair
+        self.chaincode = chaincode
+    }
+}
+
+extension ExtendedBIP32Keypair: IRCryptoKeypairProtocol {
+    public func publicKey() -> IRPublicKeyProtocol {
+        keypair.publicKey()
+    }
+
+    public func privateKey() -> IRPrivateKeyProtocol {
+        keypair.privateKey()
+    }
+}
+
+public struct BIP32KeypairFactory: KeypairFactoryProtocol {
     let internalFactory = SECKeyFactory()
+    let internalBIP32Factory = BIP32KeyFactory()
 
     public init() {}
 
@@ -47,17 +69,11 @@ public struct BIP32KeypairFactory: DerivableKeypairFactoryProtocol, DerivableCha
     ///        Use parse256(IL) as master secret key, and IR as master chain code.
     public func createKeypairFromSeed(_ seed: Data,
                                       chaincodeList: [Chaincode]) throws -> IRCryptoKeypairProtocol {
-        let hmacResult = try hmac512(seed, secretKeyData: Data("Bitcoin seed".utf8))
-
-        let masterPrivateKey = try SECPrivateKey(rawData: hmacResult[...31])
-        let masterChainCode = hmacResult[32...]
-
-        let masterKeypair = try internalFactory.derive(fromPrivateKey: masterPrivateKey)
+        let masterKeypair = try internalBIP32Factory.deriveFromSeed(seed)
 
         return try deriveChildKeypairFromParent(
             masterKeypair,
-            chainIndexList: chaincodeList,
-            parentChainCode: masterChainCode
+            chainIndexList: chaincodeList
         )
     }
 
@@ -73,16 +89,13 @@ public struct BIP32KeypairFactory: DerivableKeypairFactoryProtocol, DerivableCha
      In case parse256(IL) ≥ n or ki = 0, the resulting key is invalid, and one should proceed with the next value for i. (Note: this has probability lower than 1 in 2127.)
      */
 
-    public func deriveChildKeypairFromParent(
-        _ keypair: IRCryptoKeypairProtocol,
-        chainIndexList: [Chaincode],
-        parentChainCode: Data
+    private func deriveChildKeypairFromParent(
+        _ keypair: ExtendedBIP32Keypair,
+        chainIndexList: [Chaincode]
     ) throws -> IRCryptoKeypairProtocol {
 
-        let initExtendedKeypair = ExtendedKeypair(keypair, parentChainCode)
-        let childExtendedKeypair = try chainIndexList.reduce(initExtendedKeypair) { (keypairAndChain, chainIndex) in
-
-            let (parentKeypair, parentChaincode) = keypairAndChain
+        let initExtendedKeypair = keypair
+        let childExtendedKeypair = try chainIndexList.reduce(initExtendedKeypair) { (parentKeypair, chainIndex) in
 
             let hmacOriginalData: Data = try {
                 // Check whether i ≥ 231 (whether the child is a hardened key).
@@ -98,7 +111,7 @@ public struct BIP32KeypairFactory: DerivableKeypairFactoryProtocol, DerivableCha
                 }
             }()
 
-            let hmacResult = try hmac512(hmacOriginalData, secretKeyData: parentChaincode)
+            let hmacResult = try hmac512(hmacOriginalData, secretKeyData: parentKeypair.chaincode)
 
             // Split I into two 32-byte sequences, IL and IR.
             let childPrivateKeyData = try SECPrivateKey(rawData: hmacResult[...31])
@@ -125,13 +138,10 @@ public struct BIP32KeypairFactory: DerivableKeypairFactoryProtocol, DerivableCha
             // The returned chain code c is just the passed chain code.
             let childKeypair = try internalFactory.derive(fromPrivateKey: childKey)
 
-            return (childKeypair, childChainCode)
+            return ExtendedBIP32Keypair(keypair: childKeypair, chaincode: childChainCode)
         }
 
-        let (childKeypair, _) = childExtendedKeypair
-
-        return IRCryptoKeypair(publicKey: childKeypair.publicKey(),
-                               privateKey: childKeypair.privateKey())
+        return childExtendedKeypair.keypair
     }
 
     public func deriveChildKeypairFromParent(_ keypair: IRCryptoKeypairProtocol,
@@ -141,3 +151,57 @@ public struct BIP32KeypairFactory: DerivableKeypairFactoryProtocol, DerivableCha
     }
 }
 // swiftlint:enable line_length
+
+protocol BIP32KeyFactoryProtocol {
+    func deriveFromSeed(_ seed: Data) throws -> ExtendedBIP32Keypair
+}
+
+public struct BIP32KeyFactory {
+    private let initialSeed = "Bitcoin seed"
+    let internalFactory = SECKeyFactory()
+
+    private func generateHMAC512(
+        from originalData: Data,
+        secretKeyData: Data
+    ) throws -> Data {
+        let digestLength = Int(CC_SHA512_DIGEST_LENGTH)
+        let algorithm = CCHmacAlgorithm(kCCHmacAlgSHA512)
+
+        var buffer = [UInt8](repeating: 0, count: digestLength)
+
+        originalData.withUnsafeBytes {
+            let rawOriginalDataPtr = $0.baseAddress!
+
+            secretKeyData.withUnsafeBytes {
+                let rawSecretKeyPtr = $0.baseAddress!
+
+                CCHmac(
+                    algorithm,
+                    rawSecretKeyPtr,
+                    secretKeyData.count,
+                    rawOriginalDataPtr,
+                    originalData.count,
+                    &buffer
+                )
+            }
+        }
+
+        return Data(bytes: buffer, count: digestLength)
+    }
+}
+
+extension BIP32KeyFactory: BIP32KeyFactoryProtocol {
+    func deriveFromSeed(_ seed: Data) throws -> ExtendedBIP32Keypair {
+        let hmacResult = try generateHMAC512(
+            from: seed,
+            secretKeyData: Data(initialSeed.utf8)
+        )
+
+        let privateKey = try SECPrivateKey(rawData: hmacResult[...31])
+        let chainCode = hmacResult[32...]
+
+        let keypair = try internalFactory.derive(fromPrivateKey: privateKey)
+
+        return ExtendedBIP32Keypair(keypair: keypair, chaincode: chainCode)
+    }
+}
