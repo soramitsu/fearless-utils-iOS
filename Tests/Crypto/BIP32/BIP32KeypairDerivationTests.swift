@@ -86,7 +86,7 @@ class BIP32KeypairDeriviationTests: XCTestCase {
                 let expectedPublicKey = try Data(hexString: item.publicKey)
 
                 if publicKey != expectedPublicKey {
-                    XCTFail("Failed for path: \(item.path)")
+                    XCTFail("Failed for path: \(item.path) seed: \(item.seed)")
                 }
             }
         } catch {

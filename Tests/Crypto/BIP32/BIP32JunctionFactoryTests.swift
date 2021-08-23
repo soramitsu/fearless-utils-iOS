@@ -65,6 +65,29 @@ class BIP32JunctionFactoryTests: XCTestCase {
         XCTAssertEqual(result.chaincodes, expectedChaincodes)
     }
 
+    func testExtractBiggestHard() throws {
+        // given
+
+        let path = "/0//2147483647"
+        let expectedChaincodes: [Chaincode] = [
+            Chaincode(data: Data([0, 0, 0, 0]),
+                      type: .soft),
+            Chaincode(data: Data([0xFF, 0xFF, 0xFF, 0xFF]),
+                      type: .hard),
+        ]
+
+        let junctionFactory = BIP32JunctionFactory()
+
+        // when
+
+        let result = try junctionFactory.parse(path: path)
+
+        // then
+
+        XCTAssertNil(result.password)
+        XCTAssertEqual(result.chaincodes, expectedChaincodes)
+    }
+
     func testMissingPrefix() throws {
         try performErrorTest(path: "1/2", expectedError: .invalidStart)
         try performErrorTest(path: "hello", expectedError: .invalidStart)
