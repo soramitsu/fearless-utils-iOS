@@ -76,7 +76,7 @@ public struct BIP32JunctionFactory: JunctionFactoryProtocol {
             var numericJunction = UInt32(junction),
             numericJunction < 0x80000000
         else {
-            throw JunctionFactoryError.wrongBIP32Junction
+            throw JunctionFactoryError.invalidBIP32Junction
         }
 
         if type == .hard {
