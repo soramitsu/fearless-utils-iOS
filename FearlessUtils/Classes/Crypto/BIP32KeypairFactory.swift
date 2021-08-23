@@ -4,11 +4,7 @@ import IrohaCrypto
 import BigInt
 
 // swiftlint:disable line_length
-typealias KeypairAndChain = (keypair: IRCryptoKeypairProtocol, chaincode: Data)
-
-extension BigUInt {
-    static let CurveOrder: BigUInt = BigUInt("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", radix: 16)!
-}
+typealias ExtendedKeypair = (keypair: IRCryptoKeypairProtocol, chaincode: Data)
 
 public struct BIP32KeypairFactory: DerivableKeypairFactoryProtocol, DerivableChaincodeFactoryProtocol {
     let internalFactory = SECKeyFactory()
@@ -54,14 +50,14 @@ public struct BIP32KeypairFactory: DerivableKeypairFactoryProtocol, DerivableCha
         let hmacResult = try hmac512(seed, secretKeyData: Data("Bitcoin seed".utf8))
 
         let masterPrivateKey = try SECPrivateKey(rawData: hmacResult[...31])
-        let masterChainCode = hmacResult[32...63]
+        let masterChainCode = hmacResult[32...]
 
         let masterKeypair = try internalFactory.derive(fromPrivateKey: masterPrivateKey)
 
         return try deriveChildKeypairFromParent(
             masterKeypair,
             chainIndexList: chaincodeList,
-            parChaincode: masterChainCode
+            parentChainCode: masterChainCode
         )
     }
 
@@ -80,11 +76,11 @@ public struct BIP32KeypairFactory: DerivableKeypairFactoryProtocol, DerivableCha
     public func deriveChildKeypairFromParent(
         _ keypair: IRCryptoKeypairProtocol,
         chainIndexList: [Chaincode],
-        parChaincode: Data
+        parentChainCode: Data
     ) throws -> IRCryptoKeypairProtocol {
 
-        let initKeypairAndChain = KeypairAndChain(keypair, parChaincode)
-        let childKeypairAndChain = try chainIndexList.reduce(initKeypairAndChain) { (keypairAndChain, chainIndex) in
+        let initExtendedKeypair = ExtendedKeypair(keypair, parentChainCode)
+        let childExtendedKeypair = try chainIndexList.reduce(initExtendedKeypair) { (keypairAndChain, chainIndex) in
 
             let (parentKeypair, parentChaincode) = keypairAndChain
 
@@ -110,13 +106,13 @@ public struct BIP32KeypairFactory: DerivableKeypairFactoryProtocol, DerivableCha
             // The returned child key ki is parse256(IL) + kpar (mod n).
             let childKeyInt = (BigUInt(childPrivateKeyData.rawData()) +
                 BigUInt(parentKeypair.privateKey().rawData())) %
-                .CurveOrder
+                .secp256k1CurveOrder
 
             let numData  = childKeyInt.serialize()
             let childKey = try SECPrivateKey(rawData: numData)
 
             // The returned chain code ci is IR.
-            let childChainCode = hmacResult[32...63]
+            let childChainCode = hmacResult[32...]
 
             // TODO:
             // In case parse256(IL) ≥ n or ki = 0, the resulting key is invalid,
@@ -132,7 +128,7 @@ public struct BIP32KeypairFactory: DerivableKeypairFactoryProtocol, DerivableCha
             return (childKeypair, childChainCode)
         }
 
-        let (childKeypair, _) = childKeypairAndChain
+        let (childKeypair, _) = childExtendedKeypair
 
         return IRCryptoKeypair(publicKey: childKeypair.publicKey(),
                                privateKey: childKeypair.privateKey())
