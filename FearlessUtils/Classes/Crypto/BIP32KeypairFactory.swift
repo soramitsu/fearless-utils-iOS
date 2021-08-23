@@ -92,11 +92,11 @@ public struct BIP32KeypairFactory: DerivableKeypairFactoryProtocol, DerivableCha
             let hardExample: UInt32 = 0x80000000
 
             let softByteArray = withUnsafeBytes(of: softExample.bigEndian) {
-                Array($0)
+                Data($0)
             }
 
             let hardByteArray = withUnsafeBytes(of: hardExample.bigEndian) {
-                Array($0)
+                Data($0)
             }
 
             let hmacOriginalData: Data = try {

@@ -22,6 +22,7 @@ public enum JunctionFactoryError: Error {
     case multiplePassphrase
     case emptyJunction
     case invalidStart
+    case wrongBIP32Junction
 }
 
 public struct JunctionFactory: JunctionFactoryProtocol {
