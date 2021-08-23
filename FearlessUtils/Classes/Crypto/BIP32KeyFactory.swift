@@ -82,7 +82,6 @@ extension BIP32KeyFactory: BIP32KeyFactoryProtocol {
             secretKeyData: parentKeypair.chaincode
         )
 
-        // Here it does not work
         let privateKeySourceData = try SECPrivateKey(rawData: hmacResult[...31])
 
         var privateKeyInt = BigUInt(privateKeySourceData.rawData())
@@ -94,7 +93,14 @@ extension BIP32KeyFactory: BIP32KeyFactoryProtocol {
         privateKeyInt += BigUInt(parentKeypair.privateKey().rawData())
         privateKeyInt %= .secp256k1CurveOrder
 
-        let privateKeyData  = privateKeyInt.serialize()
+        var privateKeyData  = privateKeyInt.serialize()
+
+        if privateKeyData.count < 32 {
+            var paddedPrivateKeyData = Data(repeating: 0, count: 32)
+            paddedPrivateKeyData[(32 - privateKeyData.count)...] = privateKeyData
+            privateKeyData = paddedPrivateKeyData
+        }
+
         let privateKey = try SECPrivateKey(rawData: privateKeyData)
 
         let childChaincode = hmacResult[32...]
