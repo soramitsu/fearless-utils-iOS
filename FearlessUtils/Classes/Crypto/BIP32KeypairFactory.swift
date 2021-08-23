@@ -88,16 +88,28 @@ public struct BIP32KeypairFactory: DerivableKeypairFactoryProtocol, DerivableCha
 
             let (parentKeypair, parentChaincode) = keypairAndChain
 
+            let softExample: UInt32 = 0
+            let hardExample: UInt32 = 0x80000000
+
+            let softByteArray = withUnsafeBytes(of: softExample.bigEndian) {
+                Array($0)
+            }
+
+            let hardByteArray = withUnsafeBytes(of: hardExample.bigEndian) {
+                Array($0)
+            }
+
             let hmacOriginalData: Data = try {
                 // Check whether i ≥ 231 (whether the child is a hardened key).
                 switch chainIndex.type {
                 // If so (hardened child): let I = HMAC-SHA512(Key = cpar, Data = 0x00 || ser256(kpar) || ser32(i)). (Note: The 0x00 pads the private key to make it 33 bytes long.)
                 case .hard:
                     let data = try Data(hexString: "0x00")
-                    return data + parentKeypair.privateKey().rawData() + chainIndex.data
+                    let privKeyData = BigUInt(parentKeypair.privateKey().rawData()).serialize()
+                    return data + privKeyData + hardByteArray // chainIndex.data
                 // If not (normal child): let I = HMAC-SHA512(Key = cpar, Data = serP(point(kpar)) || ser32(i)).
                 case .soft:
-                    return parentKeypair.publicKey().rawData().dropFirst() + chainIndex.data
+                    return parentKeypair.publicKey().rawData() + softByteArray // chainIndex.data
                 }
             }()
 
@@ -107,8 +119,8 @@ public struct BIP32KeypairFactory: DerivableKeypairFactoryProtocol, DerivableCha
             let childPrivateKeyData = try SECPrivateKey(rawData: hmacResult[...31])
 
             // The returned child key ki is parse256(IL) + kpar (mod n).
-            let childKeyInt = BigUInt(childPrivateKeyData.rawData()) +
-                BigUInt(parentKeypair.privateKey().rawData()) %
+            let childKeyInt = (BigUInt(childPrivateKeyData.rawData()) +
+                BigUInt(parentKeypair.privateKey().rawData())) %
                 .CurveOrder
 
             let numData  = childKeyInt.serialize()

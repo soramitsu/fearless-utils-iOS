@@ -6,6 +6,7 @@ public typealias SeedFactoryResult = (seed: Data, mnemonic: IRMnemonicProtocol)
 public protocol SeedFactoryProtocol {
     func createSeed(from password: String, strength: IRMnemonicStrength) throws -> SeedFactoryResult
     func deriveSeed(from mnemonicWords: String, password: String) throws -> SeedFactoryResult
+    func deriveNativeSeed(from mnemonicWords: String, password: String) throws -> SeedFactoryResult
 }
 
 public struct SeedFactory: SeedFactoryProtocol {
@@ -28,6 +29,20 @@ public struct SeedFactory: SeedFactoryProtocol {
                            password: String) throws -> SeedFactoryResult {
         let mnemonic = try mnemonicCreator.mnemonic(fromList: mnemonicWords)
         let seed = try seedFactory.deriveSeed(from: mnemonic.entropy(), passphrase: password)
+
+        return SeedFactoryResult(seed: seed, mnemonic: mnemonic)
+    }
+
+    public func deriveNativeSeed(from mnemonicWords: String,
+                           password: String) throws -> SeedFactoryResult {
+        let mnemonic = try mnemonicCreator.mnemonic(fromList: mnemonicWords)
+        let normalizedPassphrase = Data(
+            mnemonic
+                .toString()
+                .decomposedStringWithCompatibilityMapping
+                .utf8
+        )
+        let seed = try seedFactory.deriveSeed(from: normalizedPassphrase, passphrase: password)
 
         return SeedFactoryResult(seed: seed, mnemonic: mnemonic)
     }

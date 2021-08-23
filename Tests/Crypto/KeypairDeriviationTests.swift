@@ -47,7 +47,7 @@ class KeypairDeriviationTests: XCTestCase {
                     result = JunctionResult(chaincodes: [], password: nil)
                 }
 
-                let seedResult = try seedFactory.deriveSeed(from: item.mnemonic,
+                let seedResult = try seedFactory.deriveNativeSeed(from: item.mnemonic,
                                                             password: result.password ?? "")
 
                 let seed = useMiniSeed ? seedResult.seed.miniSeed: seedResult.seed
