@@ -95,10 +95,14 @@ extension BIP32KeyFactory: BIP32KeyFactoryProtocol {
 
         var privateKeyData  = privateKeyInt.serialize()
 
-        if privateKeyData.count < 32 {
-            var paddedPrivateKeyData = Data(repeating: 0, count: 32)
-            paddedPrivateKeyData[(32 - privateKeyData.count)...] = privateKeyData
-            privateKeyData = paddedPrivateKeyData
+        let keyLength = SECPrivateKey.length()
+
+        if privateKeyData.count < keyLength {
+            let padding = Data(
+                repeating: 0,
+                count: Int(keyLength) - privateKeyData.count
+            )
+            privateKeyData = padding + privateKeyData
         }
 
         let privateKey = try SECPrivateKey(rawData: privateKeyData)
