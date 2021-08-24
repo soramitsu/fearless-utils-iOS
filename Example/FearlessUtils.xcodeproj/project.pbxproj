@@ -101,7 +101,7 @@
 		A0FDCFB5B61F738FEE34A5E6 /* Pods_FearlessUtils_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16D2E77D7010BEBF43DFE08E /* Pods_FearlessUtils_Tests.framework */; };
 		AE425FB626D363F500547303 /* BIP32JunctionFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE425FB526D363F500547303 /* BIP32JunctionFactoryTests.swift */; };
 		AE425FBA26D3726900547303 /* BIP32KeypairDerivationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE425FB926D3726900547303 /* BIP32KeypairDerivationTests.swift */; };
-		AE4B521426CBA71B00A66D2C /* BIP32HDKDStandard.json in Resources */ = {isa = PBXBuildFile; fileRef = AE4B521326CBA71B00A66D2C /* BIP32HDKDStandard.json */; };
+		AE4B521426CBA71B00A66D2C /* BIP32HDKDEtalon.json in Resources */ = {isa = PBXBuildFile; fileRef = AE4B521326CBA71B00A66D2C /* BIP32HDKDEtalon.json */; };
 		AE4B521826CE127200A66D2C /* BIP32HDKD.json in Resources */ = {isa = PBXBuildFile; fileRef = AE4B521726CE127200A66D2C /* BIP32HDKD.json */; };
 		B2BF1BE136637C8404B79450 /* Pods_FearlessUtils_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9A63E44DBCDCE738F798358 /* Pods_FearlessUtils_Example.framework */; };
 /* End PBXBuildFile section */
@@ -218,7 +218,7 @@
 		93F24F5EEC204E4B0F918C39 /* Pods-FearlessUtils_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FearlessUtils_Example.debug.xcconfig"; path = "Target Support Files/Pods-FearlessUtils_Example/Pods-FearlessUtils_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		AE425FB526D363F500547303 /* BIP32JunctionFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BIP32JunctionFactoryTests.swift; sourceTree = "<group>"; };
 		AE425FB926D3726900547303 /* BIP32KeypairDerivationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BIP32KeypairDerivationTests.swift; sourceTree = "<group>"; };
-		AE4B521326CBA71B00A66D2C /* BIP32HDKDStandard.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = BIP32HDKDStandard.json; sourceTree = "<group>"; };
+		AE4B521326CBA71B00A66D2C /* BIP32HDKDEtalon.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = BIP32HDKDEtalon.json; sourceTree = "<group>"; };
 		AE4B521726CE127200A66D2C /* BIP32HDKD.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = BIP32HDKD.json; sourceTree = "<group>"; };
 		B82F3EE26AAEE44C6E7F9962 /* Pods-FearlessUtils_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FearlessUtils_Tests.release.xcconfig"; path = "Target Support Files/Pods-FearlessUtils_Tests/Pods-FearlessUtils_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		B9A63E44DBCDCE738F798358 /* Pods_FearlessUtils_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FearlessUtils_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -384,7 +384,7 @@
 				8467FD1024E675D0005D486C /* ecdsaHDKD.json */,
 				84CB471F24DBE7BD00837E11 /* Keystore */,
 				842D1E7524D0069000C30A7A /* sr25519HDKD.json */,
-				AE4B521326CBA71B00A66D2C /* BIP32HDKDStandard.json */,
+				AE4B521326CBA71B00A66D2C /* BIP32HDKDEtalon.json */,
 				AE4B521726CE127200A66D2C /* BIP32HDKD.json */,
 			);
 			path = Resources;
@@ -680,7 +680,7 @@
 			files = (
 				8467FD1424E677C2005D486C /* ed25519HDKD.json in Resources */,
 				842D1E7624D0069000C30A7A /* sr25519HDKD.json in Resources */,
-				AE4B521426CBA71B00A66D2C /* BIP32HDKDStandard.json in Resources */,
+				AE4B521426CBA71B00A66D2C /* BIP32HDKDEtalon.json in Resources */,
 				84452B6125D2ADC300F47EC5 /* westend-metadata in Resources */,
 				84452C0B25D2D54300F47EC5 /* kusama-metadata in Resources */,
 				8429C81825C434E40086D7F6 /* default.json in Resources */,

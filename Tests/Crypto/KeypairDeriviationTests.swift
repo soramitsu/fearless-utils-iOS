@@ -16,7 +16,7 @@ class KeypairDeriviationTests: XCTestCase {
         try performTest(filename: "ecdsaHDKD", keypairFactory: EcdsaKeypairFactory())
     }
 
-    private func performTest(filename: String, keypairFactory: KeypairFactoryProtocol, useMiniSeed: Bool = true) throws {
+    private func performTest(filename: String, keypairFactory: KeypairFactoryProtocol) throws {
         guard let url = Bundle(for: KeypairDeriviationTests.self)
                 .url(forResource: filename, withExtension: "json") else {
             XCTFail("Can't find resource")
@@ -42,10 +42,8 @@ class KeypairDeriviationTests: XCTestCase {
                 let seedResult = try seedFactory.deriveSeed(from: item.mnemonic,
                                                             password: result.password ?? "")
 
-                let seed = useMiniSeed ? seedResult.seed.miniSeed: seedResult.seed
-
                 let keypair = try keypairFactory.createKeypairFromSeed(
-                    seed,
+                    seedResult.seed.miniSeed,
                     chaincodeList: result.chaincodes
                 )
 

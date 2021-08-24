@@ -5,14 +5,14 @@ import IrohaCrypto
 class BIP32KeypairDeriviationTests: XCTestCase {
 
     func testBIP32DerivationPath() throws {
-        try performTest(filename: "BIP32HDKD", keypairFactory: BIP32KeypairFactory(), useMiniSeed: false)
+        try performTest(filename: "BIP32HDKD", keypairFactory: BIP32KeypairFactory())
     }
 
-    func testBIP32DerivationPathStandardData() throws {
-        try performSeedReadyTest(filename: "BIP32HDKDStandard", keypairFactory: BIP32KeypairFactory())
+    func testBIP32DerivationPathForEtalonTestVectors() throws {
+        try performSeedTestForVectorsFrom(filename: "BIP32HDKDEtalon", keypairFactory: BIP32KeypairFactory())
     }
 
-    private func performTest(filename: String, keypairFactory: KeypairFactoryProtocol, useMiniSeed: Bool = true) throws {
+    private func performTest(filename: String, keypairFactory: KeypairFactoryProtocol) throws {
         guard let url = Bundle(for: KeypairDeriviationTests.self)
             .url(forResource: filename, withExtension: "json") else {
             XCTFail("Can't find resource")
@@ -38,9 +38,7 @@ class BIP32KeypairDeriviationTests: XCTestCase {
                 let seedResult = try seedFactory.deriveNativeSeed(from: item.mnemonic,
                                                             password: result.password ?? "")
 
-                let seed = useMiniSeed ? seedResult.seed.miniSeed: seedResult.seed
-
-                let keypair = try keypairFactory.createKeypairFromSeed(seed,
+                let keypair = try keypairFactory.createKeypairFromSeed(seedResult.seed,
                                                                        chaincodeList: result.chaincodes)
 
                 let publicKey = keypair.publicKey().rawData()
@@ -56,7 +54,7 @@ class BIP32KeypairDeriviationTests: XCTestCase {
         }
     }
 
-    private func performSeedReadyTest(filename: String, keypairFactory: KeypairFactoryProtocol) throws {
+    private func performSeedTestForVectorsFrom(filename: String, keypairFactory: KeypairFactoryProtocol) throws {
         guard let url = Bundle(for: KeypairDeriviationTests.self)
             .url(forResource: filename, withExtension: "json") else {
             XCTFail("Can't find resource")
