@@ -50,6 +50,15 @@ final class RuntimeHelper {
                                              runtimeMetadata: runtimeMetadata)
     }
 
+    static func createTypeRegistryCatalog(
+        from baseName: String,
+        runtimeMetadataName: String
+    ) throws -> TypeRegistryCatalog {
+        let runtimeMetadata = try Self.createRuntimeMetadata(runtimeMetadataName)
+
+        return try createTypeRegistryCatalog(from: baseName, runtimeMetadata: runtimeMetadata)
+    }
+
     static func createTypeRegistryCatalog(from baseName: String,
                                           networkName: String,
                                           runtimeMetadata: RuntimeMetadata)
@@ -66,10 +75,29 @@ final class RuntimeHelper {
         let baseData = try Data(contentsOf: baseUrl)
         let networdData = try Data(contentsOf: networkUrl)
 
-        let registry = try TypeRegistryCatalog
-            .createFromBaseTypeDefinition(baseData,
-                                          networkDefinitionData: networdData,
-                                          runtimeMetadata: runtimeMetadata)
+        let registry = try TypeRegistryCatalog.createFromTypeDefinition(
+            baseData,
+            versioningData: networdData,
+            runtimeMetadata: runtimeMetadata
+        )
+
+        return registry
+    }
+
+    static func createTypeRegistryCatalog(
+        from baseName: String,
+        runtimeMetadata: RuntimeMetadata
+    ) throws -> TypeRegistryCatalog {
+        guard let baseUrl = Bundle(for: self).url(forResource: baseName, withExtension: "json") else {
+            throw RuntimeHelperError.invalidCatalogBaseName
+        }
+
+        let typesData = try Data(contentsOf: baseUrl)
+
+        let registry = try TypeRegistryCatalog.createFromTypeDefinition(
+            typesData,
+            runtimeMetadata: runtimeMetadata
+        )
 
         return registry
     }
