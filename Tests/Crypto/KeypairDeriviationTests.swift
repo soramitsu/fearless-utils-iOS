@@ -27,7 +27,7 @@ class KeypairDeriviationTests: XCTestCase {
             let testData = try Data(contentsOf: url)
             let items = try JSONDecoder().decode([KeypairDeriviation].self, from: testData)
 
-            let junctionFactory = JunctionFactory()
+            let junctionFactory = SubstrateJunctionFactory()
             let seedFactory = SeedFactory()
 
             for item in items {

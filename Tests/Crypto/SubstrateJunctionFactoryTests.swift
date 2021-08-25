@@ -1,7 +1,7 @@
 import XCTest
 import FearlessUtils
 
-class JunctionFactoryTests: XCTestCase {
+class SubstrateJunctionFactoryTests: XCTestCase {
     func testExtractSoft() throws {
         // given
 
@@ -10,7 +10,7 @@ class JunctionFactoryTests: XCTestCase {
         let expectedChaincode = Chaincode(data: data,
                                           type: .soft)
 
-        let junctionFactory = JunctionFactory()
+        let junctionFactory = SubstrateJunctionFactory()
 
         // when
 
@@ -30,7 +30,7 @@ class JunctionFactoryTests: XCTestCase {
         let expectedChaincode = Chaincode(data: data,
                                           type: .hard)
 
-        let junctionFactory = JunctionFactory()
+        let junctionFactory = SubstrateJunctionFactory()
 
         // when
 
@@ -53,7 +53,7 @@ class JunctionFactoryTests: XCTestCase {
                       type: .soft),
         ]
 
-        let junctionFactory = JunctionFactory()
+        let junctionFactory = SubstrateJunctionFactory()
 
         // when
 
@@ -74,7 +74,7 @@ class JunctionFactoryTests: XCTestCase {
 
     func performErrorTest(path: String, expectedError: JunctionFactoryError) throws {
         do {
-            let junctionFactory = JunctionFactory()
+            let junctionFactory = SubstrateJunctionFactory()
             _ = try junctionFactory.parse(path: path)
 
             XCTFail("Error expected")

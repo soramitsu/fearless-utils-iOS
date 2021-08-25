@@ -27,7 +27,7 @@
 		842D1E2324C98CEA00C30A7A /* StorageKeyFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E2224C98CEA00C30A7A /* StorageKeyFactoryTests.swift */; };
 		842D1E2524C9AC5D00C30A7A /* ScaleBoolOptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E2424C9AC5D00C30A7A /* ScaleBoolOptionTests.swift */; };
 		842D1E2724C9B63300C30A7A /* ScaleOptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E2624C9B63300C30A7A /* ScaleOptionTests.swift */; };
-		842D1E6A24CF800400C30A7A /* JunctionFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E6924CF800400C30A7A /* JunctionFactoryTests.swift */; };
+		842D1E6A24CF800400C30A7A /* SubstrateJunctionFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E6924CF800400C30A7A /* SubstrateJunctionFactoryTests.swift */; };
 		842D1E7124CFF31800C30A7A /* KeypairDeriviation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E6F24CFF2FB00C30A7A /* KeypairDeriviation.swift */; };
 		842D1E7324CFF4EC00C30A7A /* KeypairDeriviationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E7224CFF4EC00C30A7A /* KeypairDeriviationTests.swift */; };
 		842D1E7624D0069000C30A7A /* sr25519HDKD.json in Resources */ = {isa = PBXBuildFile; fileRef = 842D1E7524D0069000C30A7A /* sr25519HDKD.json */; };
@@ -143,7 +143,7 @@
 		842D1E2224C98CEA00C30A7A /* StorageKeyFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageKeyFactoryTests.swift; sourceTree = "<group>"; };
 		842D1E2424C9AC5D00C30A7A /* ScaleBoolOptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScaleBoolOptionTests.swift; sourceTree = "<group>"; };
 		842D1E2624C9B63300C30A7A /* ScaleOptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScaleOptionTests.swift; sourceTree = "<group>"; };
-		842D1E6924CF800400C30A7A /* JunctionFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JunctionFactoryTests.swift; sourceTree = "<group>"; };
+		842D1E6924CF800400C30A7A /* SubstrateJunctionFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateJunctionFactoryTests.swift; sourceTree = "<group>"; };
 		842D1E6F24CFF2FB00C30A7A /* KeypairDeriviation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeypairDeriviation.swift; sourceTree = "<group>"; };
 		842D1E7224CFF4EC00C30A7A /* KeypairDeriviationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeypairDeriviationTests.swift; sourceTree = "<group>"; };
 		842D1E7524D0069000C30A7A /* sr25519HDKD.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = sr25519HDKD.json; sourceTree = "<group>"; };
@@ -359,7 +359,7 @@
 			children = (
 				AE425FB726D3724100547303 /* BIP32 */,
 				845D80EC24C8D91A00EC2540 /* SeedFactoryTests.swift */,
-				842D1E6924CF800400C30A7A /* JunctionFactoryTests.swift */,
+				842D1E6924CF800400C30A7A /* SubstrateJunctionFactoryTests.swift */,
 				842D1E7224CFF4EC00C30A7A /* KeypairDeriviationTests.swift */,
 			);
 			path = Crypto;
@@ -836,7 +836,7 @@
 				84FACC0425F799A900F32ED4 /* ChainDataCodingTests.swift in Sources */,
 				84F43A3425DC44A000AEDA56 /* BindingTests.swift in Sources */,
 				84F43A2425DC124600AEDA56 /* TypeRegistryCatalogTests.swift in Sources */,
-				842D1E6A24CF800400C30A7A /* JunctionFactoryTests.swift in Sources */,
+				842D1E6A24CF800400C30A7A /* SubstrateJunctionFactoryTests.swift in Sources */,
 				8429C7FD25C432FF0086D7F6 /* TypeRegistryTests.swift in Sources */,
 				841D52EA25C6DDF800DFA15B /* JSONHelpers.swift in Sources */,
 				849E0AAC25C96C7800B33506 /* TupleNodeFactoryTests.swift in Sources */,
