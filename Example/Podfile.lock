@@ -1,12 +1,13 @@
 PODS:
   - BigInt (5.0.0)
-  - FearlessUtils (0.11.1):
+  - FearlessUtils (0.12.0):
     - BigInt (~> 5.0)
     - IrohaCrypto/ed25519 (~> 0.8.0)
     - IrohaCrypto/Scrypt (~> 0.8.0)
     - IrohaCrypto/secp256k1 (~> 0.8.0)
     - IrohaCrypto/sr25519 (~> 0.8.0)
     - IrohaCrypto/ss58 (~> 0.8.0)
+    - RobinHood (~> 2.6.0)
     - TweetNacl (~> 1.0.0)
     - xxHash-Swift (~> 1.0.0)
   - IrohaCrypto/BIP39 (0.8.0):
@@ -28,6 +29,7 @@ PODS:
   - IrohaCrypto/ss58 (0.8.0):
     - IrohaCrypto/blake2
     - IrohaCrypto/Common
+  - RobinHood (2.6.0)
   - scrypt.c (0.1.1)
   - secp256k1.c (0.1.2)
   - SwiftLint (0.42.0)
@@ -42,6 +44,7 @@ SPEC REPOS:
   trunk:
     - BigInt
     - IrohaCrypto
+    - RobinHood
     - scrypt.c
     - secp256k1.c
     - SwiftLint
@@ -54,8 +57,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BigInt: 74b4d88367b0e819d9f77393549226d36faeb0d8
-  FearlessUtils: 760f5884fb83e132d9e6751e216d0bb6cee2b27a
+  FearlessUtils: 59e875a636e8c91551c30953f3d8ba88de30614c
   IrohaCrypto: bef5e0fdbbfe587657d5de9a8961d7cb1f995a7e
+  RobinHood: f8628c9841dc1a082f4565247f6b598e82157b28
   scrypt.c: b42ae06183251329d2b2c620c226fb541a4a3592
   secp256k1.c: db47b726585d80f027423682eb369729e61b3b20
   SwiftLint: 4fa9579c63416865179bc416f0a92d55f009600d
@@ -64,4 +68,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: e0f8300a361c92040b119bb5c8ff1d72bd40557f
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.10.2

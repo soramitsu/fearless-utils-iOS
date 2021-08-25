@@ -7,7 +7,6 @@ target 'FearlessUtils_Example' do
   target 'FearlessUtils_Tests' do
     inherit! :search_paths
 
-    
   end
 end
 
