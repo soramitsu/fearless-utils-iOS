@@ -83,6 +83,7 @@ extension BIP32KeyFactory: BIP32KeyFactoryProtocol {
         )
 
         let privateKeySourceData = try SECPrivateKey(rawData: hmacResult[...31])
+        let childChaincode = hmacResult[32...]
 
         var privateKeyInt = BigUInt(privateKeySourceData.rawData())
 
@@ -92,6 +93,10 @@ extension BIP32KeyFactory: BIP32KeyFactoryProtocol {
 
         privateKeyInt += BigUInt(parentKeypair.privateKey().rawData())
         privateKeyInt %= .secp256k1CurveOrder
+
+        guard privateKeyInt > 0 else {
+            throw BIP32KeyFactoryError.invalidChildKey
+        }
 
         var privateKeyData  = privateKeyInt.serialize()
 
@@ -106,8 +111,6 @@ extension BIP32KeyFactory: BIP32KeyFactoryProtocol {
         }
 
         let privateKey = try SECPrivateKey(rawData: privateKeyData)
-
-        let childChaincode = hmacResult[32...]
         let keypair = try internalFactory.derive(fromPrivateKey: privateKey)
 
         return BIP32ExtendedKeypair(keypair: keypair, chaincode: childChaincode)
