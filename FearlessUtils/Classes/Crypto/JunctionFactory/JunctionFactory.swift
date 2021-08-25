@@ -22,8 +22,6 @@ public enum JunctionFactoryError: Error {
     case multiplePassphrase
     case emptyJunction
     case invalidStart
-    case invalidBIP32Junction
-    case invalidBIP32HardJunction
 }
 
 public class JunctionFactory {
