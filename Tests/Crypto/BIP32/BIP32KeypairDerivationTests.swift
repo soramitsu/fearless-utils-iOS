@@ -24,7 +24,7 @@ class BIP32KeypairDeriviationTests: XCTestCase {
             let items = try JSONDecoder().decode([KeypairDeriviation].self, from: testData)
 
             let junctionFactory = BIP32JunctionFactory()
-            let seedFactory = SeedFactory()
+            let seedFactory = BIP32SeedFactory()
 
             for item in items {
                 let result: JunctionResult
@@ -35,7 +35,7 @@ class BIP32KeypairDeriviationTests: XCTestCase {
                     result = JunctionResult(chaincodes: [], password: nil)
                 }
 
-                let seedResult = try seedFactory.deriveNativeSeed(from: item.mnemonic,
+                let seedResult = try seedFactory.deriveSeed(from: item.mnemonic,
                                                             password: result.password ?? "")
 
                 let keypair = try keypairFactory.createKeypairFromSeed(seedResult.seed,
