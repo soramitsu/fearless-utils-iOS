@@ -64,10 +64,10 @@ extension BIP32KeyFactory: BIP32KeyFactoryProtocol {
         _ parentKeypair: BIP32ExtendedKeypair,
         chaincode: Chaincode
     ) throws -> BIP32ExtendedKeypair {
-        let sourceData: Data = try {
+        let sourceData: Data = {
             switch chaincode.type {
             case .hard:
-                let padding = try Data(hexString: "0x00")
+                let padding = Data(repeating: 0, count: 1)
                 let privateKeyData = parentKeypair.privateKey().rawData()
 
                 return padding + privateKeyData + chaincode.data
