@@ -33,32 +33,32 @@ public class JunctionFactory {
 
     private func parseChaincodesFromJunctionPath(_ junctionsPath: String) throws -> [Chaincode] {
         return try junctionsPath
-                .components(separatedBy: Self.hardSeparator)
-                .map { component in
+            .components(separatedBy: Self.hardSeparator)
+            .map { component in
 
-                    var chaincodes: [Chaincode] = []
+                var chaincodes: [Chaincode] = []
 
-                    let subcomponents = component.components(separatedBy: Self.softSeparator)
+                let subcomponents = component.components(separatedBy: Self.softSeparator)
 
-                    guard let hardJunction = subcomponents.first else {
-                        throw JunctionFactoryError.emptyJunction
-                    }
-
-                    if !hardJunction.isEmpty {
-                        let hardChaincode = try createChaincodeFromJunction(hardJunction, type: .hard)
-                        chaincodes.append(hardChaincode)
-                    }
-
-                    let softJunctions: [Chaincode] = try subcomponents[1...].map { junction in
-                        try createChaincodeFromJunction(junction, type: .soft)
-                    }
-
-                    chaincodes.append(contentsOf: softJunctions)
-
-                    return chaincodes
-                }.reduce([Chaincode]()) { (result, chaincodes) in
-                    return result + chaincodes
+                guard let hardJunction = subcomponents.first else {
+                    throw JunctionFactoryError.emptyJunction
                 }
+
+                if !hardJunction.isEmpty {
+                    let hardChaincode = try createChaincodeFromJunction(hardJunction, type: .hard)
+                    chaincodes.append(hardChaincode)
+                }
+
+                let softJunctions: [Chaincode] = try subcomponents[1...].map { junction in
+                    try createChaincodeFromJunction(junction, type: .soft)
+                }
+
+                chaincodes.append(contentsOf: softJunctions)
+
+                return chaincodes
+            }.reduce([Chaincode]()) { (result, chaincodes) in
+                return result + chaincodes
+            }
     }
 
     internal func createChaincodeFromJunction(_ junction: String, type: ChaincodeType) throws -> Chaincode {
