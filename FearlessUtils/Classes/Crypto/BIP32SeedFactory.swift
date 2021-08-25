@@ -1,14 +1,7 @@
 import Foundation
 import IrohaCrypto
 
-public typealias SeedFactoryResult = (seed: Data, mnemonic: IRMnemonicProtocol)
-
-public protocol SeedFactoryProtocol {
-    func createSeed(from password: String, strength: IRMnemonicStrength) throws -> SeedFactoryResult
-    func deriveSeed(from mnemonicWords: String, password: String) throws -> SeedFactoryResult
-}
-
-public struct SeedFactory: SeedFactoryProtocol {
+public struct BIP32SeedFactory: SeedFactoryProtocol {
     private let seedFactory: SNBIP39SeedCreatorProtocol = SNBIP39SeedCreator()
     private let mnemonicCreator: IRMnemonicCreatorProtocol
 
@@ -19,7 +12,8 @@ public struct SeedFactory: SeedFactoryProtocol {
     public func createSeed(from password: String,
                            strength: IRMnemonicStrength) throws -> SeedFactoryResult {
         let mnemonic = try mnemonicCreator.randomMnemonic(strength)
-        let seed = try seedFactory.deriveSeed(from: mnemonic.entropy(), passphrase: password)
+        let normalizedPassphrase = createNormalizedPassphraseFrom(mnemonic)
+        let seed = try seedFactory.deriveSeed(from: normalizedPassphrase, passphrase: password)
 
         return SeedFactoryResult(seed: seed, mnemonic: mnemonic)
     }
@@ -27,8 +21,18 @@ public struct SeedFactory: SeedFactoryProtocol {
     public func deriveSeed(from mnemonicWords: String,
                            password: String) throws -> SeedFactoryResult {
         let mnemonic = try mnemonicCreator.mnemonic(fromList: mnemonicWords)
-        let seed = try seedFactory.deriveSeed(from: mnemonic.entropy(), passphrase: password)
+        let normalizedPassphrase = createNormalizedPassphraseFrom(mnemonic)
+        let seed = try seedFactory.deriveSeed(from: normalizedPassphrase, passphrase: password)
 
         return SeedFactoryResult(seed: seed, mnemonic: mnemonic)
+    }
+
+    private func createNormalizedPassphraseFrom(_ mnemonic: IRMnemonicProtocol) -> Data {
+        Data(
+            mnemonic
+                .toString()
+                .decomposedStringWithCompatibilityMapping
+                .utf8
+        )
     }
 }

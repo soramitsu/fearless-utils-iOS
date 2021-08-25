@@ -91,8 +91,8 @@ class BIP32JunctionFactoryTests: XCTestCase {
     func testMissingPrefix() throws {
         try performErrorTest(path: "1/2", expectedError: .invalidStart)
         try performErrorTest(path: "hello", expectedError: .invalidStart)
-        try performErrorTest(path: "/1/5000000000", expectedError: .invalidBIP32Junction)
-        try performErrorTest(path: "/hello", expectedError: .invalidBIP32Junction)
+        try performBIP32ErrorTest(path: "/1/5000000000", expectedError: .invalidBIP32Junction)
+        try performBIP32ErrorTest(path: "/hello", expectedError: .invalidBIP32Junction)
     }
 
     // MARK: Private
@@ -105,6 +105,21 @@ class BIP32JunctionFactoryTests: XCTestCase {
             XCTFail("Error expected")
         } catch {
             if let junctionError = error as? JunctionFactoryError {
+                XCTAssertEqual(junctionError, expectedError)
+            } else {
+                XCTFail("Unexpected error: \(error)")
+            }
+        }
+    }
+
+    func performBIP32ErrorTest(path: String, expectedError: BIP32JunctionFactoryError) throws {
+        do {
+            let junctionFactory = BIP32JunctionFactory()
+            _ = try junctionFactory.parse(path: path)
+
+            XCTFail("Error expected")
+        } catch {
+            if let junctionError = error as? BIP32JunctionFactoryError {
                 XCTAssertEqual(junctionError, expectedError)
             } else {
                 XCTFail("Unexpected error: \(error)")
