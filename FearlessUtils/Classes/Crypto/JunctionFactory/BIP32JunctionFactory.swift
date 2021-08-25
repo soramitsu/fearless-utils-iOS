@@ -3,20 +3,25 @@ import BigInt
 import IrohaCrypto
 
 final public class BIP32JunctionFactory: JunctionFactory {
+    static let hardKeyFlag: UInt32 = 0x80000000
+
     public override init() {
         super.init()
     }
 
     internal override func createChaincodeFromJunction(_ junction: String, type: ChaincodeType) throws -> Chaincode {
         guard
-            var numericJunction = UInt32(junction),
-            numericJunction < 0x80000000
+            var numericJunction = UInt32(junction)
         else {
             throw JunctionFactoryError.invalidBIP32Junction
         }
 
+        guard numericJunction < Self.hardKeyFlag else {
+            throw JunctionFactoryError.invalidBIP32HardJunction
+        }
+
         if type == .hard {
-            numericJunction |= 0x80000000
+            numericJunction |= Self.hardKeyFlag
         }
 
         let junctionBytes = withUnsafeBytes(of: numericJunction.bigEndian) {
