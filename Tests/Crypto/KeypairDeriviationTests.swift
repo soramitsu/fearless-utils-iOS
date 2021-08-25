@@ -18,7 +18,7 @@ class KeypairDeriviationTests: XCTestCase {
 
     private func performTest(filename: String, keypairFactory: KeypairFactoryProtocol) throws {
         guard let url = Bundle(for: KeypairDeriviationTests.self)
-            .url(forResource: filename, withExtension: "json") else {
+                .url(forResource: filename, withExtension: "json") else {
             XCTFail("Can't find resource")
             return
         }
@@ -27,7 +27,7 @@ class KeypairDeriviationTests: XCTestCase {
             let testData = try Data(contentsOf: url)
             let items = try JSONDecoder().decode([KeypairDeriviation].self, from: testData)
 
-            let junctionFactory = JunctionFactory()
+            let junctionFactory = SubstrateJunctionFactory()
             let seedFactory = SeedFactory()
 
             for item in items {
@@ -41,8 +41,11 @@ class KeypairDeriviationTests: XCTestCase {
 
                 let seedResult = try seedFactory.deriveSeed(from: item.mnemonic,
                                                             password: result.password ?? "")
-                let keypair = try keypairFactory.createKeypairFromSeed(seedResult.seed.miniSeed,
-                                                                       chaincodeList: result.chaincodes)
+
+                let keypair = try keypairFactory.createKeypairFromSeed(
+                    seedResult.seed.miniSeed,
+                    chaincodeList: result.chaincodes
+                )
 
                 let publicKey = keypair.publicKey().rawData()
 
