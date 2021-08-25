@@ -2,11 +2,13 @@ use_frameworks!
 
 target 'FearlessUtils_Example' do
   pod 'FearlessUtils', :path => '../'
+  pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :branch => 'feature/without-origin'
   pod 'SwiftLint'
 
   target 'FearlessUtils_Tests' do
     inherit! :search_paths
 
+    
   end
 end
 
