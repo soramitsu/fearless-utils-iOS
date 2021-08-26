@@ -5,11 +5,13 @@ struct KeypairDeriviation: Decodable {
         case publicKey = "pk"
         case path
         case mnemonic
+        case seed
     }
 
     let mnemonic: String
     let publicKey: String
     let path: String
+    let seed: String
 }
 
 enum KnownChainType: UInt16 {

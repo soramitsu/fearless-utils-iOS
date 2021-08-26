@@ -4,6 +4,16 @@ import IrohaCrypto
 
 class SeedFactoryTests: XCTestCase {
     func testGeneratedSeedMatchesDerived() throws {
+        let seedFactory = SeedFactory()
+        try performSeedFactoryTest(seedFactory)
+    }
+
+    func testGeneratedBIP32SeedMatchesDerived() throws {
+        let seedFactory = BIP32SeedFactory()
+        try performSeedFactoryTest(seedFactory)
+    }
+
+    func performSeedFactoryTest(_ seedFactory: SeedFactoryProtocol) throws {
         let passwords: [String] = ["", "password"]
         let strengths: [IRMnemonicStrength] = [
             .entropy128,
@@ -14,8 +24,6 @@ class SeedFactoryTests: XCTestCase {
             .entropy288,
             .entropy320
         ]
-
-        let seedFactory = SeedFactory()
 
         for password in passwords {
             for strength in strengths {
