@@ -19,15 +19,15 @@ struct JSONRPCData<T: Decodable>: Decodable {
     let identifier: UInt16
 }
 
-struct JSONRPCSubscriptionUpdate<T: Decodable>: Decodable {
-    struct Result: Decodable {
-        let result: T
-        let subscription: String
+public struct JSONRPCSubscriptionUpdate<T: Decodable>: Decodable {
+    public struct Result: Decodable {
+        public let result: T
+        public let subscription: String
     }
 
-    let jsonrpc: String
-    let method: String
-    let params: Result
+    public let jsonrpc: String
+    public let method: String
+    public let params: Result
 }
 
 struct JSONRPCSubscriptionBasicUpdate: Decodable {

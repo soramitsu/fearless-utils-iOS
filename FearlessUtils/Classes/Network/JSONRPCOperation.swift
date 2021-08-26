@@ -5,14 +5,14 @@ enum JSONRPCOperationError: Error {
     case timeout
 }
 
-class JSONRPCOperation<P: Encodable, T: Decodable>: BaseOperation<T> {
-    let engine: JSONRPCEngine
+public class JSONRPCOperation<P: Encodable, T: Decodable>: BaseOperation<T> {
+    public let engine: JSONRPCEngine
     private(set) var requestId: UInt16?
-    let method: String
-    var parameters: P?
-    let timeout: Int
+    public let method: String
+    public var parameters: P?
+    public let timeout: Int
 
-    init(engine: JSONRPCEngine, method: String, parameters: P? = nil, timeout: Int = 10) {
+    public init(engine: JSONRPCEngine, method: String, parameters: P? = nil, timeout: Int = 10) {
         self.engine = engine
         self.method = method
         self.parameters = parameters
@@ -21,7 +21,7 @@ class JSONRPCOperation<P: Encodable, T: Decodable>: BaseOperation<T> {
         super.init()
     }
 
-    override func main() {
+    public override func main() {
         super.main()
 
         if isCancelled {
@@ -73,7 +73,7 @@ class JSONRPCOperation<P: Encodable, T: Decodable>: BaseOperation<T> {
         }
     }
 
-    override func cancel() {
+    public override func cancel() {
         if let requestId = requestId {
             engine.cancelForIdentifier(requestId)
         }
@@ -82,4 +82,4 @@ class JSONRPCOperation<P: Encodable, T: Decodable>: BaseOperation<T> {
     }
 }
 
-final class JSONRPCListOperation<T: Decodable>: JSONRPCOperation<[String], T> {}
+public final class JSONRPCListOperation<T: Decodable>: JSONRPCOperation<[String], T> {}

@@ -1,7 +1,7 @@
 import Foundation
 
 extension WebSocketEngine: JSONRPCEngine {
-    func callMethod<P: Encodable, T: Decodable>(
+    public func callMethod<P: Encodable, T: Decodable>(
         _ method: String,
         params: P?,
         options: JSONRPCOptions,
@@ -25,7 +25,7 @@ extension WebSocketEngine: JSONRPCEngine {
         return request.requestId
     }
 
-    func subscribe<P: Encodable, T: Decodable>(
+    public func subscribe<P: Encodable, T: Decodable>(
         _ method: String,
         params: P?,
         updateClosure: @escaping (T) -> Void,
@@ -61,7 +61,7 @@ extension WebSocketEngine: JSONRPCEngine {
         return request.requestId
     }
 
-    func cancelForIdentifier(_ identifier: UInt16) {
+    public func cancelForIdentifier(_ identifier: UInt16) {
         mutex.lock()
 
         cancelRequestForLocalId(identifier)

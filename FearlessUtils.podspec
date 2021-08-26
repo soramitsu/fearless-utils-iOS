@@ -30,7 +30,6 @@ Pod::Spec.new do |s|
   s.dependency 'ReachabilitySwift', '~> 5.0'
   s.dependency 'RobinHood', '~> 2.6.0'
   s.dependency 'Starscream'
-  s.dependency 'SwiftyBeaver'
   s.dependency 'TweetNacl', '~> 1.0.0'
   s.dependency 'BigInt', '~> 5.0'
   s.dependency 'xxHash-Swift', '~> 1.0.0'

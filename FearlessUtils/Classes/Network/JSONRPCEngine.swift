@@ -41,7 +41,7 @@ struct JSONRPCResponseHandler<T: Decodable>: JSONRPCResponseHandling {
     }
 }
 
-struct JSONRPCOptions {
+public struct JSONRPCOptions {
     let resendOnReconnect: Bool
 
     init(resendOnReconnect: Bool = true) {
@@ -94,7 +94,7 @@ final class JSONRPCSubscription<T: Decodable>: JSONRPCSubscribing {
     }
 }
 
-protocol JSONRPCEngine: AnyObject {
+public protocol JSONRPCEngine: AnyObject {
     func callMethod<P: Encodable, T: Decodable>(
         _ method: String,
         params: P?,
@@ -113,7 +113,7 @@ protocol JSONRPCEngine: AnyObject {
     func cancelForIdentifier(_ identifier: UInt16)
 }
 
-extension JSONRPCEngine {
+public extension JSONRPCEngine {
     func callMethod<P: Encodable, T: Decodable>(
         _ method: String,
         params: P?,

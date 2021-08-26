@@ -1,11 +1,11 @@
 import Foundation
 import Reachability
 
-protocol ReachabilityListenerDelegate: AnyObject {
+public protocol ReachabilityListenerDelegate: AnyObject {
     func didChangeReachability(by manager: ReachabilityManagerProtocol)
 }
 
-protocol ReachabilityManagerProtocol {
+public protocol ReachabilityManagerProtocol {
     var isReachable: Bool { get }
 
     func add(listener: ReachabilityListenerDelegate) throws
@@ -20,8 +20,8 @@ private final class ReachabilityListenerWrapper {
     }
 }
 
-final class ReachabilityManager {
-    static let shared: ReachabilityManager? = ReachabilityManager()
+public final class ReachabilityManager {
+    public static let shared: ReachabilityManager? = ReachabilityManager()
 
     private var listeners: [ReachabilityListenerWrapper] = []
     private var reachability: Reachability
@@ -48,11 +48,11 @@ final class ReachabilityManager {
 }
 
 extension ReachabilityManager: ReachabilityManagerProtocol {
-    var isReachable: Bool {
+    public var isReachable: Bool {
         reachability.connection != .unavailable
     }
 
-    func add(listener: ReachabilityListenerDelegate) throws {
+    public func add(listener: ReachabilityListenerDelegate) throws {
         if listeners.isEmpty {
             try reachability.startNotifier()
         }
@@ -65,7 +65,7 @@ extension ReachabilityManager: ReachabilityManagerProtocol {
         }
     }
 
-    func remove(listener: ReachabilityListenerDelegate) {
+    public func remove(listener: ReachabilityListenerDelegate) {
         listeners = listeners.filter { $0.listener != nil && $0.listener !== listener }
 
         if listeners.isEmpty {
