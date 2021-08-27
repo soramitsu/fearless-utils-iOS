@@ -1,14 +1,13 @@
 import Foundation
-import FearlessUtils
 
-struct JSONScaleDecodable<T: ScaleDecodable>: Decodable {
-    let underlyingValue: T?
+public struct JSONScaleDecodable<T: ScaleDecodable>: Decodable {
+    public let underlyingValue: T?
 
-    init(value: T?) {
+    public init(value: T?) {
         underlyingValue = value
     }
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
         if container.decodeNil() {
