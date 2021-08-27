@@ -45,7 +45,8 @@ public final class WebSocketEngine {
         }
     }
 
-    let mutex = NSLock()
+    internal let mutex = NSLock()
+    
     private let jsonEncoder = JSONEncoder()
     private let jsonDecoder = JSONDecoder()
     private let reconnectionStrategy: ReconnectionStrategyProtocol?

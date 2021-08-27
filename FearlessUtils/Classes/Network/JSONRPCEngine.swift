@@ -1,24 +1,24 @@
 import Foundation
 
-enum JSONRPCEngineError: Error {
+public enum JSONRPCEngineError: Error {
     case emptyResult
     case remoteCancelled
     case clientCancelled
     case unknownError
 }
 
-protocol JSONRPCResponseHandling {
+public protocol JSONRPCResponseHandling {
     func handle(data: Data)
     func handle(error: Error)
 }
 
-struct JSONRPCRequest: Equatable {
-    let requestId: UInt16
-    let data: Data
-    let options: JSONRPCOptions
-    let responseHandler: JSONRPCResponseHandling?
+public struct JSONRPCRequest: Equatable {
+    public let requestId: UInt16
+    public let data: Data
+    public let options: JSONRPCOptions
+    public let responseHandler: JSONRPCResponseHandling?
 
-    static func == (lhs: Self, rhs: Self) -> Bool { lhs.requestId == rhs.requestId }
+    public static func == (lhs: Self, rhs: Self) -> Bool { lhs.requestId == rhs.requestId }
 }
 
 struct JSONRPCResponseHandler<T: Decodable>: JSONRPCResponseHandling {
