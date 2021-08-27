@@ -22,9 +22,9 @@ public struct JSONRPCRequest: Equatable {
 }
 
 struct JSONRPCResponseHandler<T: Decodable>: JSONRPCResponseHandling {
-    let completionClosure: (Result<T, Error>) -> Void
+    public let completionClosure: (Result<T, Error>) -> Void
 
-    func handle(data: Data) {
+    public func handle(data: Data) {
         do {
             let decoder = JSONDecoder()
             let response = try decoder.decode(JSONRPCData<T>.self, from: data)
@@ -36,20 +36,20 @@ struct JSONRPCResponseHandler<T: Decodable>: JSONRPCResponseHandling {
         }
     }
 
-    func handle(error: Error) {
+    public func handle(error: Error) {
         completionClosure(.failure(error))
     }
 }
 
 public struct JSONRPCOptions {
-    let resendOnReconnect: Bool
+    public let resendOnReconnect: Bool
 
-    init(resendOnReconnect: Bool = true) {
+    public init(resendOnReconnect: Bool = true) {
         self.resendOnReconnect = resendOnReconnect
     }
 }
 
-protocol JSONRPCSubscribing: AnyObject {
+public protocol JSONRPCSubscribing: AnyObject {
     var requestId: UInt16 { get }
     var requestData: Data { get }
     var requestOptions: JSONRPCOptions { get }
@@ -59,18 +59,18 @@ protocol JSONRPCSubscribing: AnyObject {
     func handle(error: Error, unsubscribed: Bool)
 }
 
-final class JSONRPCSubscription<T: Decodable>: JSONRPCSubscribing {
-    let requestId: UInt16
-    let requestData: Data
-    let requestOptions: JSONRPCOptions
-    var remoteId: String?
+public final class JSONRPCSubscription<T: Decodable>: JSONRPCSubscribing {
+    public let requestId: UInt16
+    public let requestData: Data
+    public let requestOptions: JSONRPCOptions
+    public var remoteId: String?
 
     private lazy var jsonDecoder = JSONDecoder()
 
-    let updateClosure: (T) -> Void
-    let failureClosure: (Error, Bool) -> Void
+    public let updateClosure: (T) -> Void
+    public let failureClosure: (Error, Bool) -> Void
 
-    init(
+    public init(
         requestId: UInt16,
         requestData: Data,
         requestOptions: JSONRPCOptions,
@@ -84,12 +84,12 @@ final class JSONRPCSubscription<T: Decodable>: JSONRPCSubscribing {
         self.failureClosure = failureClosure
     }
 
-    func handle(data: Data) throws {
+    public func handle(data: Data) throws {
         let entity = try jsonDecoder.decode(T.self, from: data)
         updateClosure(entity)
     }
 
-    func handle(error: Error, unsubscribed: Bool) {
+    public func handle(error: Error, unsubscribed: Bool) {
         failureClosure(error, unsubscribed)
     }
 }
