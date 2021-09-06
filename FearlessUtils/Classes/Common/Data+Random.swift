@@ -5,7 +5,7 @@ enum RandomDataError: Error {
 }
 
 extension Data {
-    static func gerateRandomBytes(of length: Int) throws -> Data {
+    static func generateRandomBytes(of length: Int) throws -> Data {
         var data = Data(count: length)
         let result = data.withUnsafeMutableBytes {
             SecRandomCopyBytes(kSecRandomDefault, length, $0.baseAddress!)

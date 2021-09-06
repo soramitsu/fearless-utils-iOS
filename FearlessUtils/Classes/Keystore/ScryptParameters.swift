@@ -30,7 +30,7 @@ struct ScryptParameters {
     }
 
     init(scryptN: UInt32 = 32768, scryptP: UInt32 = 1, scryptR: UInt32 = 8) throws {
-        let data = try Data.gerateRandomBytes(of: Self.saltLength)
+        let data = try Data.generateRandomBytes(of: Self.saltLength)
         try self.init(salt: data, scryptN: scryptN, scryptP: scryptP, scryptR: scryptR)
     }
 
