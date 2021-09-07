@@ -21,7 +21,9 @@ Maintenance & development is funded by Kusama Treasury.
 
 ## Requirements
 Platform: iOS 11.0+
+
 Swift version: 5.0+
+
 Installation: Cocoapods
 
 ## Installation
@@ -358,9 +360,13 @@ ios-substrate-sdk includes a set of unit tests within the Tests subdirectory. Th
 
 ## Communication
 If you need help, ...
+
 If you'd like to ask a general question, ...
+
 If you found a bug, open an issue in this repo and follow the guide. Be sure to provide necessary detail to reproduce it.
+
 If you have a feature request, open an issue.
+
 If you want to contribute, submit a pull request.
 
 ## Author
