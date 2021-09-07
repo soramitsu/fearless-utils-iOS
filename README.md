@@ -39,17 +39,117 @@ Then run
 ## Example
 We provide a simple example that demonstrates how to use one of the SDK capabilities — Polkadot icon generation. To run the example project, clone the repo, and run `pod install` from the Example directory.
 
-## Documentation (each item leads to a separate file in Wiki)
--   Runtime
--   Scale
--   Extrinsic
--   Network
--   Crypto    
--   Keystore
--   Icon
--   QR
--   Common
--   Full documentation
+## Documentation
+### Runtime
+### Scale
+### Extrinsic
+### Network
+WebSocketEngine description, sequence diagram demonstrating communication schema
+
+### Crypto    
+#### SeedFactory
+SeedFactory is responsible for creation of seed from a mnemonic and can either generate a random mnemonic-seed pair or derive seed from existing mnemonic words:
+```swift
+public protocol SeedFactoryProtocol {
+    func createSeed(from password: String, strength: IRMnemonicStrength) throws -> SeedFactoryResult
+    func deriveSeed(from mnemonicWords: String, password: String) throws -> SeedFactoryResult
+}
+```
+
+Usage:
+```swift
+let password = ""
+let strength: IRMnemonicStrength = .entropy256
+
+let expectedResult = try seedFactory.createSeed(from: password, strength: strength)
+
+let mnemonicWords = expectedResult.mnemonic.toString()
+
+let derivedResult = try seedFactory.deriveSeed
+(
+    from: mnemonicWords,
+    password: password
+)
+```
+
+Note: there are two types of seed factory that conform to SeedFactoryProtocol but differ in internal implementation:
+`SeedFactory` used for substrate-based networks key generation
+`BIP32SeedFactory` used for BIP32 keys derivation
+
+#### Junction factory
+A junction factory converts text representation of a derivation path into a list of components: hard and soft junctions and a password. Input format is /soft//hard///password for Substrate-based networks and /0//0///password for BIP32. It has only one function defined by `JunctionFactoryProtocol`:
+
+```swift
+public protocol JunctionFactoryProtocol {
+    func parse(path: String) throws -> JunctionResult
+}
+```
+
+It returns a following structure:
+```swift
+public struct JunctionResult {
+    public let chaincodes: [Chaincode]
+    public let password: String?
+}
+```
+
+Example:
+```swift
+let derivationPath = ...
+let junctionFactory = JunctionFactory()
+junctionResult = try junctionFactory.parse(path: derivationPath)
+```
+
+Note: there are two types of junction factory that conform to `JunctionFactoryProtocol` but differ in internal implementation:
+`SubstrateJunctionFactory` is used for parsing substrate-based networks derivation paths
+`BIP32JunctionFactory` is used for parsing BIP32 derivation paths
+
+#### Keypair factory
+Keypair generation:
+BIP32KeypairFactory // BIP32
+	Example
+EcdsaKeypairFactory // (BTC/ETH compatible)
+Example
+Ed25519KeypairFactory // Edwards (alternative)
+	Example
+SR25519KeypairFactory // Schnorrkel 
+Example
+
+All components usage example:
+```swift
+let junctionFactory = SubstrateJunctionFactory()
+let seedFactory = SeedFactory()
+let keypairFactory = SR25519KeypairFactory()
+
+let path = "//foo/bar"
+let mnemonic = "bottom drive obey lake curtain smoke basket hold race lonely fit walk"
+
+let junctionResult = try junctionFactory.parse(path: path)
+
+let seedResult = try seedFactory.deriveSeed(
+    from: mnemonic,
+    password: junctionResult.password ?? "")
+
+let keypair = try keypairFactory.createKeypairFromSeed(
+    seedResult.seed.miniSeed,
+    chaincodeList: junctionResult.chaincodes
+)
+
+let publicKey = keypair.publicKey().rawData()
+let privateKey = keypair.privateKey().rawData()
+```
+
+### Keystore
+
+
+### Icon
+
+
+### QR
+
+
+### Common
+
   
 ## Unit Tests
 ios-substrate-sdk includes a set of unit tests within the Tests subdirectory. These tests can be run from an example project.
