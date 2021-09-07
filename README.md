@@ -105,15 +105,31 @@ Note: there are two types of junction factory that conform to `JunctionFactoryPr
 `BIP32JunctionFactory` is used for parsing BIP32 derivation paths
 
 #### Keypair factory
-Keypair generation:
-BIP32KeypairFactory // BIP32
-	Example
-EcdsaKeypairFactory // (BTC/ETH compatible)
-Example
-Ed25519KeypairFactory // Edwards (alternative)
-	Example
-SR25519KeypairFactory // Schnorrkel 
-Example
+The library support keypair generation using the following algorithms:
+* Sr25519 (`SR25519KeypairFactory`)
+* Ed25519 (`Ed25519KeypairFactory`)
+* ECDSA (`EcdsaKeypairFactory`)
+* BIP32 (`BIP32KeypairFactory`)
+
+Each algorithm is implemented as a Factory conforming to one of the following protocols, meaning that in any case you can create a keypair from a seed and in some cases you can derive a child keypair from a parent one:
+```swift
+public protocol KeypairFactoryProtocol {
+    func createKeypairFromSeed(_ seed: Data, chaincodeList: [Chaincode]) throws -> IRCryptoKeypairProtocol
+}
+
+public protocol DerivableKeypairFactoryProtocol: KeypairFactoryProtocol {
+    func deriveChildKeypairFromParent(_ keypair: IRCryptoKeypairProtocol,
+                                      chaincodeList: [Chaincode]) throws -> IRCryptoKeypairProtocol
+}
+```
+
+`EcdsaKeypairFactory` and `Ed25519KeypairFactory` also conform to `DerivableSeedFactoryProtocol` so you can derive child seed from a parent seed
+```swift
+public protocol DerivableSeedFactoryProtocol: KeypairFactoryProtocol {
+    func deriveChildSeedFromParent(_ seed: Data,
+                                   chaincodeList: [Chaincode]) throws -> Data
+}
+```
 
 All components usage example:
 ```swift
