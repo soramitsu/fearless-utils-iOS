@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol LoggerProtocol {
+public protocol SDKLoggerProtocol {
     func verbose(message: String, file: String, function: String, line: Int)
     func debug(message: String, file: String, function: String, line: Int)
     func info(message: String, file: String, function: String, line: Int)
@@ -8,7 +8,7 @@ public protocol LoggerProtocol {
     func error(message: String, file: String, function: String, line: Int)
 }
 
-public extension LoggerProtocol {
+public extension SDKLoggerProtocol {
     func verbose(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
         verbose(message: message, file: file, function: function, line: line)
     }

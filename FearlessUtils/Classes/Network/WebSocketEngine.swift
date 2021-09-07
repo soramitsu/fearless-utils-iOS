@@ -27,7 +27,7 @@ public final class WebSocketEngine {
 
     public let connection: WebSocketConnectionProtocol
     public let version: String
-    public let logger: LoggerProtocol?
+    public let logger: SDKLoggerProtocol?
     public let reachabilityManager: ReachabilityManagerProtocol?
     public let completionQueue: DispatchQueue
     public let pingInterval: TimeInterval
@@ -76,7 +76,7 @@ public final class WebSocketEngine {
         autoconnect: Bool = true,
         connectionTimeout: TimeInterval = 10.0,
         pingInterval: TimeInterval = 30,
-        logger: LoggerProtocol? = nil
+        logger: SDKLoggerProtocol? = nil
     ) {
         self.version = version
         self.logger = logger
@@ -115,7 +115,7 @@ public final class WebSocketEngine {
         version: String = "2.0",
         autoconnect: Bool = true,
         pingInterval: TimeInterval = 30,
-        logger: LoggerProtocol? = nil
+        logger: SDKLoggerProtocol? = nil
     ) {
         self.connection = connection
         self.reachabilityManager = reachabilityManager

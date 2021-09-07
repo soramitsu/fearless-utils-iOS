@@ -41,13 +41,13 @@ struct ScryptParameters {
 
         self.salt = Data(data[Self.saltRange])
 
-        let valueN: UInt32 = data[Self.scryptNRange].withUnsafeBytes { $0.pointee }
+        let valueN: UInt32 = data[Self.scryptNRange].withUnsafeBytes { $0.load(as: UInt32.self) }
         self.scryptN = valueN.littleEndian
 
-        let valueP: UInt32 = data[Self.scryptPRange].withUnsafeBytes { $0.pointee }
+        let valueP: UInt32 = data[Self.scryptPRange].withUnsafeBytes { $0.load(as: UInt32.self) }
         self.scryptP = valueP.littleEndian
 
-        let valueR: UInt32 = data[Self.scryptRRange].withUnsafeBytes { $0.pointee }
+        let valueR: UInt32 = data[Self.scryptRRange].withUnsafeBytes { $0.load(as: UInt32.self) }
         self.scryptR = valueR.littleEndian
     }
 
