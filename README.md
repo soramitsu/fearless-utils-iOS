@@ -143,7 +143,18 @@ let privateKey = keypair.privateKey().rawData()
 
 
 ### Icon
+One of the features of Polkadot UI is a special icon, generated from public key data. Currently, there is TypeScript implementation and we just re-implemented it for iOS. Generally, it just packs smaller circles inside the hexagon inscribed into an outer circle with a radius of 32 points. Colors to fill small circles are chosen based on binary representation of the public key.
 
+Usage:
+```swift
+let iconGenerator = PolkadotIconGenerator()
+let address = "5Dqvi1p4C7EhPPFKCixpF3QiaJEaDwWrR9gfWR5eUsfC39TX"
+let icon = try? iconGenerator.generateFromAddress(account.address)
+```
+
+Icons example:
+
+<img src="https://user-images.githubusercontent.com/3176149/132311408-c8e02e33-eb51-4f35-bdde-76b72ba07333.png" height="50">
 
 ### QR
 
