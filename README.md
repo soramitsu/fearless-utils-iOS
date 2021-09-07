@@ -29,12 +29,12 @@ ios-substrate-sdk is available through [CocoaPods](https://cocoapods.org/). For 
 
 To add ios-substrate-sdk to your project simply add the following line to your Podfile:
 ```ruby
-    pod 'ios-substrate-sdk'
+pod 'ios-substrate-sdk'
 ```
 
 Then run
 ```
-    pod install
+pod install
 ```
 ## Example
 We provide a simple example that demonstrates how to use one of the SDK capabilities — Polkadot icon generation. To run the example project, clone the repo, and run `pod install` from the Example directory.
@@ -157,10 +157,185 @@ Icons example:
 <img src="https://user-images.githubusercontent.com/3176149/132311408-c8e02e33-eb51-4f35-bdde-76b72ba07333.png" height="50">
 
 ### QR
+QR is one of the most common ways to pass wallet addresses and public keys from person to person. To create or read QR-codes you will need to create an instance of SubstrateQREncoder or SubstrateQRDecoder and call corresponding functions.
+
+#### Encoding
+```swift
+let substrateEncoder = SubstrateQREncoder()
+
+let info = SubstrateQRInfo(
+            address: address,
+            rawPublicKey: publicKey,
+            username: username
+        )
+
+let result = try? substrateEncoder.encode(info: info)
+```
+
+#### Decoding
+```swift
+let substrateDecoder = SubstrateQRDecoder(chainType: 2) // Kusama network
+
+let info = try substrateDecoder.decode(data: data)
+let address = info.address
+```
+
+#### Additional info
+Following is the format of a QR that is used for transfers:
+
+`<prefix>:<address>:<public_key in hex>:<name>`, where **prefix** = "substrate"
+
+Example:
+
+`substrate:FiLhWLARS32oxm4s64gmEMSppAdugsvaAx1pCjweTLGn5Rf:0x8ad2a3fba73321961cd5d1b8272aa95a21e75dd5b098fb36ed996961ac7b2931:Russel`
 
 
 ### Common
+#### BigInt+CurveOrder 
+(it’s better to refactor it out, since it is used locally in one place and most probably not going to be needed by anyone)
 
+#### ChainType
+An alias for UInt16 data type
+
+#### CryptoType
+An enum representing options for supported cryptographic algorithms
+
+#### Data extensions
+**Data+AccountId**: helper functions to work with AccountId’s
+
+```swift
+// Checks if data supposed to be a public key matches data supposed to be a corresponding account ID
+func matchPublicKeyToAccountId(_ accountId: Data) -> Bool
+
+// Converts public key data to account ID data
+func publicKeyToAccountId() throws -> Data
+```
+
+**Data+FixedWidthInteger**: serializes data as a fixed length integer applying big-endian or little-endian byte order
+
+```swift
+func scanValue<T: FixedWidthInteger>(
+        at index: Data.Index,
+        endianness: Endianness
+    ) -> T
+```
+
+**Data+Hash**: a set of hashing functions (BLAKE, BLAKE2, xxHash)
+
+```swift
+// Concatenates result of blake2b16() with an original data
+func blake128Concat() throws -> Data
+
+// Generates BLAKE2b hash with digest size of 16 bytes
+func blake2b16() throws -> Data 
+
+// Generates BLAKE2b hash with digest size of 32 bytes
+func blake2b32() throws -> Data 
+
+// Generates 64-bit XXH64 hash and returns it concatenated it with an original data
+func twox64Concat() -> Data
+
+// Generates 128-bit XXH64 hash 
+func twox128() -> Data
+
+// Generates 256-bit XXH64 hash 
+func twox256() -> Data
+```
+
+**Data+Hex**: easy-to-use Hex - Data - Hex converter
+```swift
+// Hex string to Data
+init(hexString: String) throws
+
+// Data to Hex string
+func toHex(includePrefix: Bool = false) -> String
+```
+
+**Data+Random**: random data generator
+```swift
+static func generateRandomBytes(of length: Int) throws -> Data
+```
+
+**Decimal+Substrate**: provides a set of functions for Decimal - BigUInt - Decimal conversion
+```swift
+// Decimal from BigUInt with precision passed as a parameter
+static func fromSubstrateAmount(_ value: BigUInt, precision: Int16) -> Decimal?
+
+// Decimal from BigUInt with preset precision (read about Substrate precisions)
+static func fromSubstratePerbill(value: BigUInt) -> Decimal?
+
+// BigUInt from Decimal with precision passed as a parameter
+func toSubstrateAmount(precision: Int16) -> BigUInt?
+```
+
+**JSON**: provides support for decoding/encoding account information using JSON format, compatible with Substrate networks
+
+**SDKLogger**: presents protocol that has to be implemented in order to provide optional logger instance to WebSocketEngine
+```swift
+public protocol SDKLoggerProtocol {
+    func verbose(message: String, file: String, function: String, line: Int)
+    func debug(message: String, file: String, function: String, line: Int)
+    func info(message: String, file: String, function: String, line: Int)
+    func warning(message: String, file: String, function: String, line: Int)
+    func error(message: String, file: String, function: String, line: Int)
+}
+```
+
+**Scheduler**: notifies its delegate after a set period of time.
+```swift
+protocol SchedulerProtocol: AnyObject {
+    func notifyAfter(_ seconds: TimeInterval)
+    func cancel()
+}
+
+protocol SchedulerDelegate: AnyObject {
+    func didTrigger(scheduler: SchedulerProtocol)
+}
+```
+
+Usage: 
+```swift
+let delegate = ...
+let scheduler = Scheduler(with: delegate)
+
+scheduler.notifyAfter(delay)
+```
+
+**StorageKeyFactory**: creates simple, hashed or double-hashed storage key from a module name and a storage name.
+```swift
+public protocol StorageKeyFactoryProtocol: AnyObject {
+    func createStorageKey(moduleName: String, storageName: String) throws -> Data
+
+    func createStorageKey(moduleName: String,
+                          storageName: String,
+                          key: Data,
+                          hasher: StorageHasher) throws -> Data
+
+    func createStorageKey(moduleName: String,
+                          storageName: String,
+                          key1: Data,
+                          hasher1: StorageHasher,
+                          key2: Data,
+                          hasher2: StorageHasher) throws -> Data
+}
+```
+
+Usage:
+```swift
+let factory = StorageKeyFactory()
+
+let key = try Data(hexString: "8ad2a3fba73321961cd5d1b8272aa95a21e75dd5b098fb36ed996961ac7b2931")
+
+let storageKey = try factory.createStorageKey(moduleName: "System",
+                                               storageName: "Account",
+                                               key: key,
+                                               hasher: .blake128Concat)
+```
+
+**UIColor+HSL**: `colorWithHSL` function creates an UIColor object from provided hue/saturation/lightness values
+```swift
+func colorWithHSL(hue: CGFloat, saturation: CGFloat, lightness: CGFloat) -> UIColor
+```
   
 ## Unit Tests
 ios-substrate-sdk includes a set of unit tests within the Tests subdirectory. These tests can be run from an example project.
