@@ -49,7 +49,7 @@ extension KeystoreBuilder: KeystoreBuilding {
                        scryptR: UInt(scryptParameters.scryptR),
                        length: UInt(KeystoreConstants.encryptionKeyLength))
 
-        let nonce = try Data.gerateRandomBytes(of: KeystoreConstants.nonceLength)
+        let nonce = try Data.generateRandomBytes(of: KeystoreConstants.nonceLength)
 
         let secretKeyData: Data
         switch data.cryptoType {
