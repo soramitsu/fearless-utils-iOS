@@ -354,7 +354,9 @@ let storageKey = try factory.createStorageKey(moduleName: "System",
 ```swift
 func colorWithHSL(hue: CGFloat, saturation: CGFloat, lightness: CGFloat) -> UIColor
 ```
-  
+
+Full documentation[ios-substrate-sdk]
+
 ## Unit Tests
 ios-substrate-sdk includes a set of unit tests within the Tests subdirectory. These tests can be run from an example project.
 
