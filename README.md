@@ -41,6 +41,10 @@ pod install
 ## Example
 We provide a simple example that demonstrates how to use one of the SDK capabilities — Polkadot icon generation. To run the example project, clone the repo, and run `pod install` from the Example directory.
 
+## Architecture
+![image](https://user-images.githubusercontent.com/3176149/132485989-c40678a0-6bc5-446b-95a5-f37290f0b8bf.png)
+
+
 ## Documentation
 ### Runtime
 ### Scale
