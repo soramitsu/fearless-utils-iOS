@@ -563,56 +563,41 @@ Example:
 
 
 ### Common
-#### BigInt+CurveOrder 
-(it’s better to refactor it out, since it is used locally in one place and most probably not going to be needed by anyone)
-
-#### ChainType
-An alias for UInt16 data type
-
-#### CryptoType
-An enum representing options for supported cryptographic algorithms
-
 #### Data extensions
 **Data+AccountId**: helper functions to work with AccountId’s
 
 ```swift
-// Checks if data supposed to be a public key matches data supposed to be a corresponding account ID
-func matchPublicKeyToAccountId(_ accountId: Data) -> Bool
+public extension Data {
+    // Checks if data supposed to be a public key matches data supposed to be a corresponding account ID
+    func matchPublicKeyToAccountId(_ accountId: Data) -> Bool { ... }
 
-// Converts public key data to account ID data
-func publicKeyToAccountId() throws -> Data
-```
-
-**Data+FixedWidthInteger**: serializes data as a fixed length integer applying big-endian or little-endian byte order
-
-```swift
-func scanValue<T: FixedWidthInteger>
-(
-    at index: Data.Index,
-    endianness: Endianness
-) -> T
+    // Converts public key data to account ID data
+    func publicKeyToAccountId() throws -> Data { ... }
+}
 ```
 
 **Data+Hash**: a set of hashing functions (BLAKE, BLAKE2, xxHash)
 
 ```swift
-// Concatenates result of blake2b16() with an original data
-func blake128Concat() throws -> Data
+public extension Data {
+    // Concatenates result of blake2b16() with an original data
+    func blake128Concat() throws -> Data { ... }
 
-// Generates BLAKE2b hash with digest size of 16 bytes
-func blake2b16() throws -> Data 
+    // Generates BLAKE2b hash with digest size of 16 bytes
+    func blake2b16() throws -> Data { ... }
 
-// Generates BLAKE2b hash with digest size of 32 bytes
-func blake2b32() throws -> Data 
+    // Generates BLAKE2b hash with digest size of 32 bytes
+    func blake2b32() throws -> Data { ... }
 
-// Generates 64-bit XXH64 hash and returns it concatenated it with an original data
-func twox64Concat() -> Data
+    // Generates 64-bit XXH64 hash and returns it concatenated it with an original data
+    func twox64Concat() -> Data { ... }
 
-// Generates 128-bit XXH64 hash 
-func twox128() -> Data
+    // Generates 128-bit XXH64 hash 
+    func twox128() -> Data { ... }
 
-// Generates 256-bit XXH64 hash 
-func twox256() -> Data
+    // Generates 256-bit XXH64 hash 
+    func twox256() -> Data { ... }
+}
 ```
 
 **Data+Hex**: easy-to-use Hex - Data - Hex converter
@@ -654,26 +639,6 @@ public protocol SDKLoggerProtocol {
 }
 ```
 
-**Scheduler**: notifies its delegate after a set period of time.
-```swift
-protocol SchedulerProtocol: AnyObject {
-    func notifyAfter(_ seconds: TimeInterval)
-    func cancel()
-}
-
-protocol SchedulerDelegate: AnyObject {
-    func didTrigger(scheduler: SchedulerProtocol)
-}
-```
-
-Usage: 
-```swift
-let delegate = ...
-let scheduler = Scheduler(with: delegate)
-
-scheduler.notifyAfter(delay)
-```
-
 **StorageKeyFactory**: creates simple, hashed or double-hashed storage key from a module name and a storage name.
 ```swift
 public protocol StorageKeyFactoryProtocol: AnyObject {
@@ -705,20 +670,11 @@ let storageKey = try factory.createStorageKey(moduleName: "System",
                                                hasher: .blake128Concat)
 ```
 
-**UIColor+HSL**: `colorWithHSL` function creates an UIColor object from provided hue/saturation/lightness values
-```swift
-func colorWithHSL(hue: CGFloat, saturation: CGFloat, lightness: CGFloat) -> UIColor
-```
-
-Full documentation[ios-substrate-sdk]
-
 ## Unit Tests
 ios-substrate-sdk includes a set of unit tests within the Tests subdirectory. These tests can be run from an example project.
 
 ## Communication
-If you need help, ...
-
-If you'd like to ask a general question, ...
+If you need help or you'd like to ask a general question, join the [Fearless Wallet Telegram group](t.me/fearlesswallet).
 
 If you found a bug, open an issue in this repo and follow the guide. Be sure to provide necessary detail to reproduce it.
 
