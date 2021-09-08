@@ -42,7 +42,9 @@ pod install
 We provide a simple example that demonstrates how to use one of the SDK capabilities — Polkadot icon generation. To run the example project, clone the repo, and run `pod install` from the Example directory.
 
 ## Architecture
-![image](https://user-images.githubusercontent.com/3176149/132485989-c40678a0-6bc5-446b-95a5-f37290f0b8bf.png)
+Following firure represents very high-level view on library architecture. Basically, it displays components distribution by module and dependency from `IrohaCrypto` library.
+
+<img src="https://user-images.githubusercontent.com/3176149/132594685-62c01bf8-2bc3-4858-b8e9-0ba24f682128.png" width="800">
 
 
 ## Documentation
