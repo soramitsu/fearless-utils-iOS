@@ -52,11 +52,15 @@ WebSocketEngine description, sequence diagram demonstrating communication schema
 #### SeedFactory
 SeedFactory is responsible for creation of seed from a mnemonic and can either generate a random mnemonic-seed pair or derive seed from existing mnemonic words:
 ```swift
+public typealias SeedFactoryResult = (seed: Data, mnemonic: IRMnemonicProtocol)
+
 public protocol SeedFactoryProtocol {
     func createSeed(from password: String, strength: IRMnemonicStrength) throws -> SeedFactoryResult
     func deriveSeed(from mnemonicWords: String, password: String) throws -> SeedFactoryResult
 }
 ```
+
+Note: BIP39 support is implemented in `IrohaCrypto` library, so if you want to get it out of the box, you'll need to install it the same way as `ios-substrate-sdk` and then import necessary modules.
 
 Usage:
 ```swift
