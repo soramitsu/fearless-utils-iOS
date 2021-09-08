@@ -46,9 +46,10 @@ We provide a simple example that demonstrates how to use one of the SDK capabili
 ### Scale
 ### Extrinsic
 ### Network
-WebSocketEngine description, sequence diagram demonstrating communication schema
+Library provides an implementation of web socket engine, which simplifies communication with the node: it provides a subscription mechanism with error recovery.
 
-Initialization
+#### Initialization
+To start an engine, you need to define several parameters:
 ```swift
 // store reference to WebSocketEngine
 private(set) var engine: WebSocketEngine?
@@ -113,6 +114,7 @@ func webSocketDidChangeState(
 }
 ```
 
+#### Reachability
 An application should track network reachability status and react accordingly. There are two functions: `connectIfNeeded` and `disconnectIfNeeded` that check connection state and do all the necessary work:
 ```swift
 func didReceiveDidBecomeActive(notification _: Notification) {
@@ -161,6 +163,21 @@ func clearReachabilitySubscription() {
 func didChangeReachability(by manager: ReachabilityManagerProtocol) {
     // Process changes here
 }
+```
+
+#### Reconnection strategy
+Default reconnection strategy is `ExponentialReconnection`. However, you can implement any strategy you need by implementing `ReconnectionStrategyProtocol`:
+```swift
+public protocol ReconnectionStrategyProtocol {
+    func reconnectAfter(attempt: Int) -> TimeInterval?
+}
+
+struct LinearReconnection: ReconnectionStrategyProtocol {
+    public func reconnectAfter(attempt: Int) -> TimeInterval? {
+        Double(attempt)
+    }
+}
+
 ```
 
 ### Crypto    
