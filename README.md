@@ -456,7 +456,62 @@ let privateKey = keypair.privateKey().rawData()
 ```
 
 ### Keystore
+This module is intended to bring account import and export capabilities. Two main parts are `KeystoreBuilder` and `KeystoreExtractor`. 
 
+To create export JSON we use `KeystoreBuilder` as follows:
+```swift
+func export(account: AccountItem, password: String?) throws -> Data {
+    guard let secretKey = try keystore.fetchSecretKeyForAddress(account.address) else {
+        throw KeystoreExportWrapperError.missingSecretKey
+    }
+
+    let addressType = try ss58Factory.type(fromAddress: account.address)
+
+    var builder = KeystoreBuilder()
+        .with(name: account.username)
+
+    if let genesisHash = SNAddressType(rawValue: addressType.uint8Value)?.chain.genesisHash,
+       let genesisHashData = try? Data(hexString: genesisHash) {
+        builder = builder.with(genesisHash: genesisHashData.toHex(includePrefix: true))
+    }
+
+    let keystoreData = KeystoreData(
+        address: account.address,
+        secretKeyData: secretKey,
+        publicKeyData: account.publicKeyData,
+        cryptoType: account.cryptoType.utilsType
+    )
+
+    let definition = try builder.build(from: keystoreData, password: password)
+
+    return try jsonEncoder.encode(definition)
+}
+```
+
+To import it back, we use `KeystoreExtractor`:
+```swift
+func extractKeystoreData(request: AccountImportKeystoreRequest) {
+    let keystoreExtractor = KeystoreExtractor()
+
+    guard let data = request.keystore.data(using: .utf8) else {
+        throw AccountOperationFactoryError.invalidKeystore
+    }
+
+    let keystoreDefinition = try JSONDecoder().decode(
+        KeystoreDefinition.self,
+        from: data
+    )
+
+    guard let keystore = try? keystoreExtractor
+        .extractFromDefinition(keystoreDefinition, password: request.password)
+    else {
+        throw AccountOperationFactoryError.decryption
+    }
+
+    ...
+        
+}
+```
 
 ### Icon
 One of the features of Polkadot UI is a special icon, generated from public key data. Currently, there is [TypeScript implementation](https://github.com/polkadot-js/ui/blob/master/packages/ui-shared/src/icons/polkadot.ts) and we just re-implemented it for iOS. Generally, it just packs smaller circles inside the hexagon inscribed into an outer circle with a radius of 32 points. Colors to fill small circles are chosen based on binary representation of the public key.
