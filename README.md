@@ -69,12 +69,12 @@ public protocol ExtrinsicBuilderProtocol: AnyObject {
 }
 ```
 
-This is how to use it to create an extrinsic building closure for **Bond extra** call:
+This is how to use it to create an extrinsic building closure for **transfer** call:
 ```swift
 private func createExtrinsicBuilderClosure(amount: BigUInt) -> ExtrinsicBuilderClosure {
     let closure: ExtrinsicBuilderClosure = { builder in
-        let args = BondExtraCall(amount: amount)
-        let call = RuntimeCall(moduleName: "Staking", callName: "bond_extra", args: args)
+        let args = TransferCall(to: accountId, amount: amount)
+        let call = RuntimeCall(moduleName: "Balances", callName: "transfer", args: args)
 
         _ = try builder.adding(call: call)
         return builder
@@ -103,7 +103,6 @@ let processingQueue = DispatchQueue(label: "...")
 let autoconnect = true
 let connectionTimeout = 10.0
 let pingInterval = 30
-let logger = Logger.shared
 
 let engine = WebSocketEngine(
     url: url,
@@ -113,8 +112,7 @@ let engine = WebSocketEngine(
     processingQueue: processingQueue,
     autoconnect: autoconnect,
     connectionTimeout: timeInterval,
-    pingInterval: pingInterval,
-    logger: logger
+    pingInterval: pingInterval
 )
 
 // delegate is needed to process events from the engine
@@ -191,7 +189,7 @@ func subscribeToReachabilityStatus() {
     do {
         try reachabilityManager?.add(listener: self)
     } catch {
-        logger?.warning("Failed to subscribe to reachability changes")
+        print("Failed to subscribe to reachability changes")
     }
 }
 
