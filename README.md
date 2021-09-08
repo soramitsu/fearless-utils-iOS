@@ -47,7 +47,45 @@ We provide a simple example that demonstrates how to use one of the SDK capabili
 
 ## Documentation
 ### Runtime
+The idea of a Runtime is to share single runtime code between network nodes to execute. The runtime code implements node’s main logic, for example, consensus or data processing and can be upgraded without stopping the network. Runtime code consists of several modules called _pallets_ which implement some specific logic: consensus, asset management etc. So, different networks can have different pallets included to runtime code. It must be taken into account when a user switches between networks in a mobile application. Runtime exposes API that can be used to execute functions of included pallets.
 
+
+In library, the main class reflecting runtime is `RuntimeMetadata`:
+```swift
+public struct RuntimeMetadata {
+    public let metaReserved: UInt32
+    public let runtimeMetadataVersion: UInt8
+    public let modules: [ModuleMetadata]
+    public let extrinsic: ExtrinsicMetadata
+
+    public init(metaReserved: UInt32,
+                runtimeMetadataVersion: UInt8,
+                modules: [ModuleMetadata],
+                extrinsic: ExtrinsicMetadata) {
+        self.modules = modules
+        self.extrinsic = extrinsic
+        self.metaReserved = metaReserved
+        self.runtimeMetadataVersion = runtimeMetadataVersion
+    }
+    ...
+}
+```
+
+This struct and all the internal structures conform to `ScaleCodable` protocol. To obtain metadata for storage, constants, functions etc. you'll need to call corresponding functions:
+```swift
+let metadata = try RuntimeHelper.createRuntimeMetadata("westend-metadata")
+
+// Storage
+let storageMetadata = metadata.getStorageMetadata(in: "System", storageName: "Account")
+// Constant
+let constant = metadata.getConstant(in: "Staking", constantName: "SlashDeferDuration")
+// Function
+let function = metadata.getFunction(from: "Staking", with: "nominate")
+// Module
+let moduleIndex = metadata.getModuleIndex("System")
+// Call
+let callIndex = metadata.getCallIndex(in: "Staking", callName: "bond")
+```
 
 ### Scale
 SCALE encoding is a lightweight serialization for arbitrary data structures. We implemented this algorithm in our library to be able to send and receive such structures via JSON RPC calls. Implementation satisfies [Runtime](https://substrate.dev/docs/en/knowledgebase/runtime/) and [SCALE](https://substrate.dev/docs/en/knowledgebase/advanced/codec) specs published on Substrate Developer Hub.
