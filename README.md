@@ -91,7 +91,7 @@ Library provides an implementation of web socket engine, which simplifies commun
 To start an engine, you need to define several parameters:
 ```swift
 // store reference to WebSocketEngine
-private(set) var engine: WebSocketEngine?
+private(set) let engine: WebSocketEngine?
 
 ...
 
@@ -124,7 +124,7 @@ self.engine = engine
 
 To process connection state changes from an engine, it is necessary to implement `WebSocketEngineDelegate` protocol:
 ```swift
-protocol WebSocketEngineDelegate: AnyObject {
+public protocol WebSocketEngineDelegate: AnyObject {
     func webSocketDidChangeState(
         from oldState: WebSocketEngine.State,
         to newState: WebSocketEngine.State
@@ -336,13 +336,13 @@ let privateKey = keypair.privateKey().rawData()
 
 
 ### Icon
-One of the features of Polkadot UI is a special icon, generated from public key data. Currently, there is TypeScript implementation and we just re-implemented it for iOS. Generally, it just packs smaller circles inside the hexagon inscribed into an outer circle with a radius of 32 points. Colors to fill small circles are chosen based on binary representation of the public key.
+One of the features of Polkadot UI is a special icon, generated from public key data. Currently, there is [TypeScript implementation](https://github.com/polkadot-js/ui/blob/master/packages/ui-shared/src/icons/polkadot.ts) and we just re-implemented it for iOS. Generally, it just packs smaller circles inside the hexagon inscribed into an outer circle with a radius of 32 points. Colors to fill small circles are chosen based on binary representation of the public key.
 
 Usage:
 ```swift
 let iconGenerator = PolkadotIconGenerator()
 let address = "5Dqvi1p4C7EhPPFKCixpF3QiaJEaDwWrR9gfWR5eUsfC39TX"
-let icon = try? iconGenerator.generateFromAddress(account.address)
+let icon = try? iconGenerator.generateFromAddress(address)
 ```
 
 Icons example:
@@ -356,11 +356,12 @@ QR is one of the most common ways to pass wallet addresses and public keys from 
 ```swift
 let substrateEncoder = SubstrateQREncoder()
 
-let info = SubstrateQRInfo(
-            address: address,
-            rawPublicKey: publicKey,
-            username: username
-        )
+let info = SubstrateQRInfo
+(
+    address: address,
+    rawPublicKey: publicKey,
+    username: username
+)
 
 let result = try? substrateEncoder.encode(info: info)
 ```
@@ -369,7 +370,7 @@ let result = try? substrateEncoder.encode(info: info)
 ```swift
 let substrateDecoder = SubstrateQRDecoder(chainType: 2) // Kusama network
 
-let info = try substrateDecoder.decode(data: data)
+let info = try? substrateDecoder.decode(data: data)
 let address = info.address
 ```
 
@@ -407,10 +408,11 @@ func publicKeyToAccountId() throws -> Data
 **Data+FixedWidthInteger**: serializes data as a fixed length integer applying big-endian or little-endian byte order
 
 ```swift
-func scanValue<T: FixedWidthInteger>(
-        at index: Data.Index,
-        endianness: Endianness
-    ) -> T
+func scanValue<T: FixedWidthInteger>
+(
+    at index: Data.Index,
+    endianness: Endianness
+) -> T
 ```
 
 **Data+Hash**: a set of hashing functions (BLAKE, BLAKE2, xxHash)
