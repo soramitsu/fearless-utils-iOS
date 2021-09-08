@@ -47,7 +47,94 @@ We provide a simple example that demonstrates how to use one of the SDK capabili
 
 ## Documentation
 ### Runtime
+
+
 ### Scale
+SCALE encoding is a lightweight serialization for arbitrary data structures. We implemented this algorithm in our library to be able to send and receive such structures via JSON RPC calls. Implementation satisfies [Runtime](https://substrate.dev/docs/en/knowledgebase/runtime/) and [SCALE](https://substrate.dev/docs/en/knowledgebase/advanced/codec) specs published on Substrate Developer Hub.
+
+#### Standart Data Types
+Library provides the support for the following data types:
+
+`Bool?`
+
+`Int8`, `Int16`, `Int32`, `Int64`
+
+`UInt8`, `UInt16`, `UInt32`, `UInt64`
+
+`BigUInt`
+
+`Array`, `Tuple`, `Result`, `Optional`
+
+`String`
+
+`Data`
+
+
+#### Define a schema
+```swift
+struct AccountInfo: Codable, Equatable {
+    @StringCodable var nonce: UInt32
+    @StringCodable var consumers: UInt32
+    @StringCodable var providers: UInt32
+    let data: AccountData
+}
+
+struct AccountData: Codable, Equatable {
+    @StringCodable var free: BigUInt
+    @StringCodable var reserved: BigUInt
+    @StringCodable var miscFrozen: BigUInt
+    @StringCodable var feeFrozen: BigUInt
+}
+```
+
+#### Optional properties
+
+There is a special property wrapper `@OptionStringCodable` to work with optional properties:
+```swift
+public struct ExtrinsicSignedExtra: Codable {
+    enum CodingKeys: String, CodingKey {
+        case era
+        case nonce
+        case tip
+    }
+
+    public var era: Era?
+    @OptionStringCodable public  var nonce: UInt32?
+    @OptionStringCodable public  var tip: BigUInt?
+
+    public init(era: Era?, nonce: UInt32?, tip: BigUInt?) {
+        self.era = era
+        self.nonce = nonce
+        self.tip = tip
+    }
+}
+```
+
+You can use `@NullCodable` property wrapper to work with optional properties of complex types:
+```swift
+struct CrowdloanContributeCall: Codable {
+    @StringCodable var index: ParaId
+    @StringCodable var value: BigUInt
+    @NullCodable var signature: MultiSignature?
+}
+```
+
+#### Encoding and decoding
+```swift
+do {
+    let optional = ScaleOption.some(value: "Kusama")))
+
+    let encoder = ScaleEncoder()
+    try optional.encode(scaleEncoder: encoder)
+
+    let decoder = try ScaleDecoder(data: encoder.encode())
+    let newOptional = try ScaleOption<T>(scaleDecoder: decoder)
+} catch { 
+    ...
+}
+```
+    
+
 ### Extrinsic
 
 An extrinsic builder is a convenient tool to form extrinsics by setting up necessary parameters. It implements `ExtrinsicBuilderProtocol`:
