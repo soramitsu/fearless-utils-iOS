@@ -50,7 +50,7 @@ We provide a simple example that demonstrates how to use one of the SDK capabili
 ### Scale
 ### Extrinsic
 
-An extirnsic builder is a convenient tool to form extrinsics by setting up necessary parameters. It implements `ExtrinsicBuilderProtocol`:
+An extrinsic builder is a convenient tool to form extrinsics by setting up necessary parameters. It implements `ExtrinsicBuilderProtocol`:
 ```swift
 public protocol ExtrinsicBuilderProtocol: AnyObject {
     func with<A: Codable>(address: A) throws -> Self
