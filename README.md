@@ -113,6 +113,22 @@ func webSocketDidChangeState(
 }
 ```
 
+An application should track network reachability status and react accordingly. There are two functions: `connectIfNeeded` and `disconnectIfNeeded` that check connection state and do all the necessary work:
+```swift
+func didReceiveDidBecomeActive(notification _: Notification) {
+    if !isActive {
+        isActive = true
+        engine?.connectIfNeeded()
+    }
+}
+
+func didReceiveDidEnterBackground(notification _: Notification) {
+    if isActive {
+        isActive = false
+        engine?.disconnectIfNeeded()
+    }
+}
+```
 
 ### Crypto    
 #### SeedFactory
