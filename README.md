@@ -48,6 +48,72 @@ We provide a simple example that demonstrates how to use one of the SDK capabili
 ### Network
 WebSocketEngine description, sequence diagram demonstrating communication schema
 
+Initialization
+```swift
+// store reference to WebSocketEngine
+private(set) var engine: WebSocketEngine?
+
+...
+
+let url = URL.init(string: "...")
+let reachabilityManager = ReachabilityManager.shared
+let reconnectionStrategy = ExponentialReconnection()
+let version = "2.0"
+let processingQueue = DispatchQueue(label: "...")
+let autoconnect = true
+let connectionTimeout = 10.0
+let pingInterval = 30
+let logger = Logger.shared
+
+let engine = WebSocketEngine(
+    url: url,
+    reachabilityManager: reachabilityManager,
+    reconnectionStrategy: reconnectionStrategy,
+    version: version,
+    processingQueue: processingQueue,
+    autoconnect: autoconnect,
+    connectionTimeout: timeInterval,
+    pingInterval: pingInterval,
+    logger: logger
+)
+
+// delegate is needed to process events from the engine
+engine.delegate = self
+self.engine = engine
+```
+
+To process connection state changes from an engine, it is necessary to implement `WebSocketEngineDelegate` protocol:
+```swift
+protocol WebSocketEngineDelegate: AnyObject {
+    func webSocketDidChangeState(
+        from oldState: WebSocketEngine.State,
+        to newState: WebSocketEngine.State
+    )
+}
+```
+
+An example implementation could look like this:
+```swift
+func webSocketDidChangeState(
+    from _: WebSocketEngine.State,
+    to newState: WebSocketEngine.State
+) {
+    switch newState {
+    case let .connecting(attempt):
+        if attempt > 1 {
+            // What to do when network becomes unreachable
+            scheduleNetworkUnreachable()
+        }
+    case .connected:
+        // What to do when network becomes reachable
+        scheduleNetworkReachable()
+    default:
+        break
+    }
+}
+```
+
+
 ### Crypto    
 #### SeedFactory
 SeedFactory is responsible for creation of seed from a mnemonic and can either generate a random mnemonic-seed pair or derive seed from existing mnemonic words:
