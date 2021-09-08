@@ -45,6 +45,41 @@ We provide a simple example that demonstrates how to use one of the SDK capabili
 ### Runtime
 ### Scale
 ### Extrinsic
+
+An extirnsic builder is a convenient tool to form extrinsics by setting up necessary parameters. It implements `ExtrinsicBuilderProtocol`:
+```swift
+public protocol ExtrinsicBuilderProtocol: AnyObject {
+    func with<A: Codable>(address: A) throws -> Self
+    func with(nonce: UInt32) -> Self
+    func with(era: Era, blockHash: String) -> Self
+    func with(tip: BigUInt) -> Self
+    func with(shouldUseAtomicBatch: Bool) -> Self
+    func adding<T: RuntimeCallable>(call: T) throws -> Self
+
+    func signing(by signer: (Data) throws -> Data,
+                 of type: CryptoType,
+                 using encoder: DynamicScaleEncoding,
+                 metadata: RuntimeMetadata) throws -> Self
+
+    func build(encodingBy encoder: DynamicScaleEncoding, metadata: RuntimeMetadata) throws -> Data
+}
+```
+
+This is how to use it to create an extrinsic building closure for **Bond extra** call:
+```swift
+private func createExtrinsicBuilderClosure(amount: BigUInt) -> ExtrinsicBuilderClosure {
+    let closure: ExtrinsicBuilderClosure = { builder in
+        let args = BondExtraCall(amount: amount)
+        let call = RuntimeCall(moduleName: "Staking", callName: "bond_extra", args: args)
+
+        _ = try builder.adding(call: call)
+        return builder
+    }
+
+    return closure
+}
+```
+
 ### Network
 Library provides an implementation of web socket engine, which simplifies communication with the node: it provides a subscription mechanism with error recovery.
 
