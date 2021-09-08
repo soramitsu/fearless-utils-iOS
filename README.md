@@ -130,6 +130,39 @@ func didReceiveDidEnterBackground(notification _: Notification) {
 }
 ```
 
+`ios-substrate-sdk` provides reachability manager as well. It allows to check reachability state manually or add a delegate that would process reachability changes:
+```swift
+public protocol ReachabilityListenerDelegate: AnyObject {
+    func didChangeReachability(by manager: ReachabilityManagerProtocol)
+}
+
+public protocol ReachabilityManagerProtocol {
+    var isReachable: Bool { get }
+
+    func add(listener: ReachabilityListenerDelegate) throws
+    func remove(listener: ReachabilityListenerDelegate)
+}
+```
+
+Usage:
+```swift
+func subscribeToReachabilityStatus() {
+    do {
+        try reachabilityManager?.add(listener: self)
+    } catch {
+        logger?.warning("Failed to subscribe to reachability changes")
+    }
+}
+
+func clearReachabilitySubscription() {
+    reachabilityManager?.remove(listener: self)
+}
+ 
+func didChangeReachability(by manager: ReachabilityManagerProtocol) {
+    // Process changes here
+}
+```
+
 ### Crypto    
 #### SeedFactory
 SeedFactory is responsible for creation of seed from a mnemonic and can either generate a random mnemonic-seed pair or derive seed from existing mnemonic words:
