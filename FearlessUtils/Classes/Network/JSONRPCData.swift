@@ -1,8 +1,29 @@
 import Foundation
 
-struct JSONRPCError: Error, Decodable {
-    let message: String
-    let code: Int
+public struct JSONRPCError: Error, Decodable {
+    enum CodingKeys: String, CodingKey {
+        case message
+        case code
+        case data
+    }
+
+    public let message: String
+    public let code: Int
+    public let data: String?
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        message = try container.decode(String.self, forKey: .message)
+        code = try container.decode(Int.self, forKey: .code)
+        data = try? container.decode(String.self, forKey: .data)
+    }
+
+    public init(message: String, code: Int, data: String?) {
+        self.message = message
+        self.code = code
+        self.data = data
+    }
 }
 
 struct JSONRPCData<T: Decodable>: Decodable {
