@@ -32,7 +32,7 @@ public final class WebSocketEngine {
     public let completionQueue: DispatchQueue
     public let pingInterval: TimeInterval
 
-    private(set) var state: State = .notConnected {
+    public private(set) var state: State = .notConnected {
         didSet {
             if let delegate = delegate {
                 let oldState = oldValue
