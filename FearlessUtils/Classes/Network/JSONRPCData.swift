@@ -44,11 +44,22 @@ public struct JSONRPCSubscriptionUpdate<T: Decodable>: Decodable {
     public struct Result: Decodable {
         public let result: T
         public let subscription: String
+
+        public init(result: T, subscription: String) {
+            self.result = result
+            self.subscription = subscription
+        }
     }
 
     public let jsonrpc: String
     public let method: String
     public let params: Result
+
+    public init(jsonrpc: String, method: String, params: Result) {
+        self.jsonrpc = jsonrpc
+        self.method = method
+        self.params = params
+    }
 }
 
 struct JSONRPCSubscriptionBasicUpdate: Decodable {

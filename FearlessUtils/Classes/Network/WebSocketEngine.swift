@@ -15,7 +15,7 @@ public protocol WebSocketEngineDelegate: AnyObject {
     )
 }
 
-public final class WebSocketEngine {    
+public final class WebSocketEngine {
     public static let sharedProcessingQueue = DispatchQueue(label: "jp.co.soramitsu.fearless.ws.processing")
 
     public enum State {
@@ -32,7 +32,7 @@ public final class WebSocketEngine {
     public let completionQueue: DispatchQueue
     public let pingInterval: TimeInterval
 
-    private(set) var state: State = .notConnected {
+    public private(set) var state: State = .notConnected {
         didSet {
             if let delegate = delegate {
                 let oldState = oldValue
@@ -46,7 +46,7 @@ public final class WebSocketEngine {
     }
 
     internal let mutex = NSLock()
-    
+
     private let jsonEncoder = JSONEncoder()
     private let jsonDecoder = JSONDecoder()
     private let reconnectionStrategy: ReconnectionStrategyProtocol?

@@ -1,7 +1,7 @@
 import Foundation
 
 public enum RPCMethod {
-    public static let storageSubscibe = "state_subscribeStorage"
+    public static let storageSubscribe = "state_subscribeStorage"
     public static let chain = "system_chain"
     public static let getStorage = "state_getStorage"
     public static let getStorageKeysPaged = "state_getKeysPaged"
