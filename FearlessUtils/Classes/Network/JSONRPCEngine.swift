@@ -111,6 +111,9 @@ public protocol JSONRPCEngine: AnyObject {
         throws -> UInt16
 
     func cancelForIdentifier(_ identifier: UInt16)
+    
+    func generateRequestId() -> UInt16
+    func addSubscription(_ subscription: JSONRPCSubscribing)
 }
 
 public extension JSONRPCEngine {

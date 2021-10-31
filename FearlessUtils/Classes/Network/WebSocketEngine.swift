@@ -322,7 +322,7 @@ extension WebSocketEngine {
         }
     }
 
-    func addSubscription(_ subscription: JSONRPCSubscribing) {
+    public func addSubscription(_ subscription: JSONRPCSubscribing) {
         subscriptions[subscription.requestId] = subscription
     }
 
@@ -375,7 +375,7 @@ extension WebSocketEngine {
         return request
     }
 
-    func generateRequestId() -> UInt16 {
+    public func generateRequestId() -> UInt16 {
         let items = pendingRequests.map(\.requestId) + inProgressRequests.map(\.key)
         let existingIds: Set<UInt16> = Set(items)
 
