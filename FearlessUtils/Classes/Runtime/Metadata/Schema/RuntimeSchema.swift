@@ -44,8 +44,67 @@ extension Schema {
             return type
         }
 
+        // swiftlint:disable cyclomatic_complexity function_body_length
         public func typeName(for index: BigUInt?) throws -> String {
-            try typeMetadata(for: index).path.joined(separator: "::")
+            let type = try typeMetadata(for: index)
+
+            let baseName = type.path.joined(separator: "::")
+            func paramNames(types: [BigUInt?]) throws -> String {
+                try types
+                    .map { try typeName(for: $0) }
+                    .joined(separator: ", ")
+            }
+
+            switch type.def {
+            case .composite, .variant:
+                var name = baseName
+                if !type.params.isEmpty {
+                    let paramNames = try paramNames(types: type.params.map { $0.type })
+                    name += "<\(paramNames)>"
+                }
+
+                return name
+
+            case let .sequence(value):
+                let paramNames = try paramNames(types: [value.type])
+                return "Vec<\(paramNames)>"
+
+            case let .array(value):
+                let paramNames = try paramNames(types: [value.type])
+                return "[\(paramNames); \(value.length)]"
+
+            case .tuple:
+                guard !type.params.isEmpty else { throw Error.wrongData }
+                let paramNames = try paramNames(types: type.params.map { $0.type })
+                return "(\(paramNames))"
+
+            case let .enum(value):
+                switch value {
+                case .bool: return "bool"
+                case .char: return "char"
+                case .string: return "str"
+                case .u8: return "u8"
+                case .u16: return "u16"
+                case .u32: return "u32"
+                case .u64: return "u64"
+                case .u128: return "u128"
+                case .u256: return "u256"
+                case .i8: return "i8"
+                case .i16: return "i16"
+                case .i32: return "i32"
+                case .i64: return "i64"
+                case .i128: return "i128"
+                case .i256: return "i256"
+                }
+
+            case let .compact(value):
+                let paramNames = try paramNames(types: [value.type])
+                return "Compact<\(paramNames)>"
+
+            case let .bitSequence(value):
+                let paramNames = try paramNames(types: [value.order, value.store])
+                return "BitVec<\(paramNames)>"
+            }
         }
     }
 }
