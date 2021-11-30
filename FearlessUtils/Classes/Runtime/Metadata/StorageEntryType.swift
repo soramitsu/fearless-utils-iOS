@@ -7,7 +7,7 @@ public enum StorageEntryType {
     case doubleMap(_ value: DoubleMapEntry)
     case nMap(_ value: NMapEntry)
 
-    func typeName(using schemaResolver: Schema.Resolver) throws -> String {
+    public func typeName(using schemaResolver: Schema.Resolver) throws -> String {
         switch self {
         case .plain(let plain):
             return try plain.value(using: schemaResolver)
