@@ -73,9 +73,9 @@ extension Schema {
                 let paramNames = try paramNames(types: [value.type])
                 return "[\(paramNames); \(value.length)]"
 
-            case .tuple:
-                guard !type.params.isEmpty else { throw Error.wrongData }
-                let paramNames = try paramNames(types: type.params.map { $0.type })
+            case let .tuple(value):
+                guard !value.isEmpty else { throw Error.wrongData }
+                let paramNames = try paramNames(types: value)
                 return "(\(paramNames))"
 
             case let .enum(value):
