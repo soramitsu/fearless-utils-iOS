@@ -17,7 +17,7 @@ public class ExtrinsicExtraNode: Node {
             throw DynamicScaleEncoderError.dictExpected(json: value)
         }
 
-        for checkString in runtimeMetadata.extrinsic.signedExtensions {
+        for checkString in try runtimeMetadata.extrinsic.signedExtensions(using: runtimeMetadata.schemaResolver) {
             guard let check = ExtrinsicCheck(rawValue: checkString) else {
                 continue
             }
@@ -49,7 +49,8 @@ public class ExtrinsicExtraNode: Node {
 
     public func accept(decoder: DynamicScaleDecoding) throws -> JSON {
         let extra = try runtimeMetadata.extrinsic
-            .signedExtensions.reduce(into: [String: JSON]()) { (result, item) in
+            .signedExtensions(using: runtimeMetadata.schemaResolver)
+            .reduce(into: [String: JSON]()) { (result, item) in
                 guard let check = ExtrinsicCheck(rawValue: item) else {
                     return
                 }

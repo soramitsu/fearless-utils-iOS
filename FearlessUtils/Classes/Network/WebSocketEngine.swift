@@ -418,15 +418,15 @@ extension WebSocketEngine {
         do {
             let response = try jsonDecoder.decode(JSONRPCData<String>.self, from: data)
             subscriptions[identifier]?.remoteId = response.result
-            
+
             if let postponed = unknownResponsesByRemoteId[response.result] {
                 for data in postponed {
                     try processSubscriptionUpdate(data)
                 }
-                
+
                 unknownResponsesByRemoteId[response.result] = nil
             }
-            
+
             logger?.debug("Did receive subscription id: \(response.result)")
         } catch {
             processSubscriptionError(identifier, error: error, shouldUnsubscribe: true)
@@ -458,7 +458,7 @@ extension WebSocketEngine {
             if unknownResponsesByRemoteId[remoteId] == nil {
                 unknownResponsesByRemoteId[remoteId] = []
             }
-            
+
             unknownResponsesByRemoteId[remoteId]?.append(data)
         }
     }

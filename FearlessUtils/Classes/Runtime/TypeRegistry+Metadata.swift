@@ -5,12 +5,13 @@ public extension TypeRegistry {
                                           additionalTypes: Set<String> = []) throws -> TypeRegistry {
         var allTypes: Set<String> = additionalTypes
 
+        let schemaResolver = runtimeMetadata.schemaResolver
         for module in runtimeMetadata.modules {
             if let storage = module.storage {
                 for storageEntry in storage.entries {
                     switch storageEntry.type {
-                    case .plain(let value):
-                        allTypes.insert(value)
+                    case .plain(let plain):
+                        allTypes.insert(try plain.value(using: schemaResolver))
                     case .map(let map):
                         allTypes.insert(map.key)
                         allTypes.insert(map.value)
@@ -19,23 +20,23 @@ public extension TypeRegistry {
                         allTypes.insert(map.key2)
                         allTypes.insert(map.value)
                     case .nMap(let nMap):
-                        nMap.keyVec.forEach { allTypes.insert($0) }
-                        allTypes.insert(nMap.value)
+                        try nMap.keys(using: schemaResolver).forEach { allTypes.insert($0) }
+                        allTypes.insert(try nMap.value(using: schemaResolver))
                     }
                 }
             }
 
-            if let calls = module.calls {
+            if let calls = try module.calls(using: schemaResolver) {
                 let callTypes = calls.flatMap { $0.arguments.map { $0.type }}
                 allTypes.formUnion(callTypes)
             }
 
-            if let events = module.events {
+            if let events = try module.events(using: schemaResolver) {
                 let eventTypes = events.flatMap { $0.arguments }
                 allTypes.formUnion(eventTypes)
             }
 
-            let constantTypes = module.constants.map { $0.type }
+            let constantTypes = try module.constants.map { try $0.type(using: schemaResolver) }
             allTypes.formUnion(constantTypes)
         }
 

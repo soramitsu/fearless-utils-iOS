@@ -1,21 +1,22 @@
 import Foundation
+import BigInt
 
 public enum StorageEntryType {
-    case plain(_ value: String)
+    case plain(_ value: PlainEntry)
     case map(_ value: MapEntry)
     case doubleMap(_ value: DoubleMapEntry)
     case nMap(_ value: NMapEntry)
 
-    public var typeName: String {
+    func typeName(using schemaResolver: Schema.Resolver) throws -> String {
         switch self {
-        case .plain(let value):
-            return value
+        case .plain(let plain):
+            return try plain.value(using: schemaResolver)
         case .map(let singleMap):
             return singleMap.value
         case .doubleMap(let doubleMap):
             return doubleMap.value
         case .nMap(let nMap):
-            return nMap.value
+            return try nMap.value(using: schemaResolver)
         }
     }
 }
@@ -33,7 +34,11 @@ extension StorageEntryType: ScaleCodable {
             try UInt8(2).encode(scaleEncoder: scaleEncoder)
             try value.encode(scaleEncoder: scaleEncoder)
         case .nMap(let value):
-            try UInt8(3).encode(scaleEncoder: scaleEncoder)
+            if value.v14 {
+                try UInt8(1).encode(scaleEncoder: scaleEncoder)
+            } else {
+                try UInt8(3).encode(scaleEncoder: scaleEncoder)
+            }
             try value.encode(scaleEncoder: scaleEncoder)
         }
     }
@@ -43,7 +48,7 @@ extension StorageEntryType: ScaleCodable {
 
         switch rawValue {
         case 0:
-            let value = try String(scaleDecoder: scaleDecoder)
+            let value = try PlainEntry(scaleDecoder: scaleDecoder)
             self = .plain(value)
         case 1:
             let value = try MapEntry(scaleDecoder: scaleDecoder)
@@ -57,6 +62,66 @@ extension StorageEntryType: ScaleCodable {
         default:
             throw ScaleCodingError.unexpectedDecodedValue
         }
+    }
+
+    internal init(v14ScaleDecoder scaleDecoder: ScaleDecoding) throws {
+        let rawValue = try UInt8(scaleDecoder: scaleDecoder)
+
+        switch rawValue {
+        case 0:
+            let value = try PlainEntry(v14ScaleDecoder: scaleDecoder)
+            self = .plain(value)
+        case 1:
+            let value = try NMapEntry(v14ScaleDecoder: scaleDecoder)
+            self = .nMap(value)
+        default:
+            throw ScaleCodingError.unexpectedDecodedValue
+        }
+    }
+}
+
+public struct PlainEntry {
+    public let stringValue: String?
+    public let index: BigUInt?
+
+    public init(stringValue: String) {
+        self.stringValue = stringValue
+        self.index = nil
+    }
+
+    public init(index: BigUInt) {
+        self.stringValue = nil
+        self.index = index
+    }
+
+    fileprivate func typeMetadata(using schemaResolver: Schema.Resolver) throws -> TypeMetadata {
+        try schemaResolver.typeMetadata(for: index)
+    }
+
+    public func value(using schemaResolver: Schema.Resolver) throws -> String {
+        if let stringValue = stringValue {
+            return stringValue
+        }
+
+        return try schemaResolver.typeName(for: index)
+    }
+}
+
+extension PlainEntry: ScaleCodable {
+    public func encode(scaleEncoder: ScaleEncoding) throws {
+        assert((stringValue == nil) != (index == nil))
+        try stringValue.map { try $0.encode(scaleEncoder: scaleEncoder) }
+        try index.map { try $0.encode(scaleEncoder: scaleEncoder) }
+    }
+
+    public init(scaleDecoder: ScaleDecoding) throws {
+        stringValue = try String(scaleDecoder: scaleDecoder)
+        index = nil
+    }
+
+    public init(v14ScaleDecoder scaleDecoder: ScaleDecoding) throws {
+        stringValue = nil
+        index = try BigUInt(scaleDecoder: scaleDecoder)
     }
 }
 
@@ -97,11 +162,13 @@ public struct DoubleMapEntry {
     public let value: String
     public let key2Hasher: StorageHasher
 
-    public init(hasher: StorageHasher,
-                key1: String,
-                key2: String,
-                value: String,
-                key2Hasher: StorageHasher) {
+    public init(
+        hasher: StorageHasher,
+        key1: String,
+        key2: String,
+        value: String,
+        key2Hasher: StorageHasher
+    ) {
         self.hasher = hasher
         self.key1 = key1
         self.key2 = key2
@@ -129,32 +196,81 @@ extension DoubleMapEntry: ScaleCodable {
 }
 
 public struct NMapEntry {
-    public let keyVec: [String]
+    fileprivate let v14: Bool
+    private let keyEntries: [PlainEntry]
     public let hashers: [StorageHasher]
-    public let value: String
+    private let valueEntry: PlainEntry
 
-    public init(keyVec: [String],
-                hashers: [StorageHasher],
-                value: String) {
-        self.keyVec = keyVec
+    public func keys(using schemaResolver: Schema.Resolver) throws -> [String] {
+        let entries: [PlainEntry]
+        if v14 {
+            guard keyEntries.count == 1, let entry = keyEntries.first else {
+                throw Schema.Resolver.Error.wrongData
+            }
+
+            let typeMetadata = try entry.typeMetadata(using: schemaResolver)
+            switch typeMetadata.def {
+            case let .tuple(indices):
+                entries = indices.map { PlainEntry(index: $0) }
+            default:
+                entries = keyEntries
+            }
+        } else {
+            entries = keyEntries
+        }
+
+        return try entries.map { try $0.value(using: schemaResolver) }
+    }
+
+    public func value(using schemaResolver: Schema.Resolver) throws -> String {
+        try valueEntry.value(using: schemaResolver)
+    }
+
+    public init(keysStrings: [String], hashers: [StorageHasher], valueString: String) {
+        self.v14 = false
+        self.keyEntries = keysStrings.map { PlainEntry(stringValue: $0) }
         self.hashers = hashers
-        self.value = value
+        self.valueEntry = PlainEntry(stringValue: valueString)
+    }
+
+    public init(keysIndices: [BigUInt], hashers: [StorageHasher], valueIndex: BigUInt) {
+        self.v14 = true
+        self.keyEntries = keysIndices.map { PlainEntry(index: $0) }
+        self.hashers = hashers
+        self.valueEntry = PlainEntry(index: valueIndex)
     }
 }
 
 extension NMapEntry: ScaleCodable {
     public func encode(scaleEncoder: ScaleEncoding) throws {
-        try keyVec.encode(scaleEncoder: scaleEncoder)
-        try hashers.encode(scaleEncoder: scaleEncoder)
-        try value.encode(scaleEncoder: scaleEncoder)
+        if v14 {
+            // In V14 different order, and key entry is single value
+            try hashers.encode(scaleEncoder: scaleEncoder)
+            assert(keyEntries.count == 1)
+            try keyEntries.first?.encode(scaleEncoder: scaleEncoder)
+        } else {
+            try keyEntries.encode(scaleEncoder: scaleEncoder)
+            try hashers.encode(scaleEncoder: scaleEncoder)
+        }
+        try valueEntry.encode(scaleEncoder: scaleEncoder)
     }
 
     public init(scaleDecoder: ScaleDecoding) throws {
-        keyVec = try [String](scaleDecoder: scaleDecoder)
+        v14 = false
+        keyEntries = try [PlainEntry](scaleDecoder: scaleDecoder)
         hashers = try [StorageHasher](scaleDecoder: scaleDecoder)
-        value = try String(scaleDecoder: scaleDecoder)
+        valueEntry = try PlainEntry(scaleDecoder: scaleDecoder)
+    }
+
+    public init(v14ScaleDecoder scaleDecoder: ScaleDecoding) throws {
+        v14 = true
+        hashers = try [StorageHasher](scaleDecoder: scaleDecoder)
+        keyEntries = [try PlainEntry(v14ScaleDecoder: scaleDecoder)]
+        valueEntry = try PlainEntry(v14ScaleDecoder: scaleDecoder)
     }
 }
+
+// MARK: - StorageHasher::ScaleCodable
 
 extension StorageHasher: ScaleCodable {
     public func encode(scaleEncoder: ScaleEncoding) throws {

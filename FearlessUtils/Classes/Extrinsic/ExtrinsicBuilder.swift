@@ -75,7 +75,7 @@ public final class ExtrinsicBuilder {
                                callName: callName,
                                args: BatchArgs(calls: calls))
 
-        guard metadata.getFunction(from: call.moduleName, with: call.callName) != nil else {
+        guard try metadata.getFunction(from: call.moduleName, with: call.callName) != nil else {
             throw ExtrinsicBuilderError.unsupportedBatch
         }
 
@@ -89,7 +89,7 @@ public final class ExtrinsicBuilder {
 
     private func appendAdditionalSigned(encodingBy encoder: DynamicScaleEncoding,
                                         metadata: RuntimeMetadata) throws {
-        for checkString in metadata.extrinsic.signedExtensions {
+        for checkString in try metadata.extrinsic.signedExtensions(using: metadata.schemaResolver) {
             guard let check = ExtrinsicCheck(rawValue: checkString) else {
                 continue
             }

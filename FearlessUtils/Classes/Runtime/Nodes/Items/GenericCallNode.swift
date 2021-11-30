@@ -20,10 +20,10 @@ public class GenericCallNode: Node {
     public func accept(encoder: DynamicScaleEncoding, value: JSON) throws {
         let call = try value.map(to: RuntimeCall<JSON>.self)
 
-        guard let function = runtimeMetadata.getFunction(from: call.moduleName,
+        guard let function = try runtimeMetadata.getFunction(from: call.moduleName,
                                                          with: call.callName),
               let moduleIndex = runtimeMetadata.getModuleIndex(call.moduleName),
-              let callIndex = runtimeMetadata.getCallIndex(in: call.moduleName,
+              let callIndex = try runtimeMetadata.getCallIndex(in: call.moduleName,
                                                            callName: call.callName) else {
             throw GenericCallNodeError.unexpectedParams
         }
@@ -59,7 +59,7 @@ public class GenericCallNode: Node {
             throw GenericCallNodeError.unexpectedCallModule(value: UInt64(moduleIndex))
         }
 
-        guard let calls = module.calls, callIndex < calls.count  else {
+        guard let calls = try module.calls(using: runtimeMetadata.schemaResolver), callIndex < calls.count else {
             throw GenericCallNodeError.unexpectedCallFunction(value: UInt64(callIndex))
         }
 
