@@ -54,7 +54,7 @@ extension TypeMetadata {
         case sequence(Sequence)
         case array(Array)
         case tuple([BigUInt])
-        case `enum`(Enum)
+        case primitive(Primitive)
         case compact(Compact)
         case bitSequence(BitSequence)
     }
@@ -80,7 +80,7 @@ extension TypeMetadata.Def: ScaleCodable {
         case let .tuple(value):
             index = 4
             encoding = value
-        case let .enum(value):
+        case let .primitive(value):
             index = 5
             encoding = value
         case let .compact(value):
@@ -103,7 +103,7 @@ extension TypeMetadata.Def: ScaleCodable {
         case 2: self = .sequence(try Sequence(scaleDecoder: scaleDecoder))
         case 3: self = .array(try Array(scaleDecoder: scaleDecoder))
         case 4: self = .tuple(try [BigUInt](scaleDecoder: scaleDecoder))
-        case 5: self = .enum(try Enum(scaleDecoder: scaleDecoder))
+        case 5: self = .primitive(try Primitive(scaleDecoder: scaleDecoder))
         case 6: self = .compact(try Compact(scaleDecoder: scaleDecoder))
         case 7: self = .bitSequence(try BitSequence(scaleDecoder: scaleDecoder))
         default:
@@ -248,10 +248,10 @@ extension TypeMetadata.Def.Array: ScaleCodable {
     }
 }
 
-// MARK: TypeMetadata.Def.Enum
+// MARK: TypeMetadata.Def.Primitive
 
 extension TypeMetadata.Def {
-    public enum Enum: UInt8 {
+    public enum Primitive: UInt8 {
         case bool
         case char
         case string
@@ -270,7 +270,7 @@ extension TypeMetadata.Def {
     }
 }
 
-extension TypeMetadata.Def.Enum: ScaleCodable {
+extension TypeMetadata.Def.Primitive: ScaleCodable {
     public func encode(scaleEncoder: ScaleEncoding) throws {
         try rawValue.encode(scaleEncoder: scaleEncoder)
     }
@@ -282,7 +282,7 @@ extension TypeMetadata.Def.Enum: ScaleCodable {
                 Self.self,
                 .init(
                     codingPath: [],
-                    debugDescription: "Unexpected kind of TypeMetadata.Def.Enum: \(rawValue)",
+                    debugDescription: "Unexpected kind of TypeMetadata.Def.Primitive: \(rawValue)",
                     underlyingError: nil
                 )
             )

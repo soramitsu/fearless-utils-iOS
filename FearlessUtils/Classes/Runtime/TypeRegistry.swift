@@ -14,6 +14,7 @@ public protocol TypeRegistryProtocol {
 
 protocol TypeRegistering {
     func register(typeName: String, json: JSON) -> Node
+    func register(typeName: String, node: Node) -> Node
 }
 
 /**
@@ -51,7 +52,8 @@ public class TypeRegistry: TypeRegistryProtocol {
     init(json: JSON,
          nodeFactory: TypeNodeFactoryProtocol,
          typeResolver: TypeResolving,
-         additionalNodes: [Node]) throws {
+         additionalNodes: [Node]
+    ) throws {
         self.nodeFactory = nodeFactory
         self.typeResolver = typeResolver
 
@@ -107,9 +109,7 @@ public class TypeRegistry: TypeRegistryProtocol {
         }
 
         for item in refinedDict {
-            if let node = try nodeFactory.buildNode(from: item.value,
-                                                    typeName: item.key,
-                                                    mediator: self) {
+            if let node = try nodeFactory.buildNode(from: item.value, typeName: item.key, mediator: self) {
                 graph[item.key] = node
             }
         }
@@ -122,8 +122,7 @@ public class TypeRegistry: TypeRegistryProtocol {
         let nonGenericTypeNames = allTypeNames.subtracting(genericTypeNames)
 
         for genericTypeName in genericTypeNames {
-            if let resolvedKey = typeResolver.resolve(typeName: genericTypeName,
-                                                      using: nonGenericTypeNames) {
+            if let resolvedKey = typeResolver.resolve(typeName: genericTypeName, using: nonGenericTypeNames) {
                 graph[genericTypeName] = ProxyNode(typeName: resolvedKey, resolver: self)
             }
         }
@@ -141,10 +140,15 @@ extension TypeRegistry: TypeRegistering {
         graph[typeName] = GenericNode(typeName: typeName)
 
         if let node = try? nodeFactory.buildNode(from: json, typeName: typeName, mediator: self) {
-            graph[typeName] = node
+            return register(typeName: typeName, node: node)
         }
 
         return proxy
+    }
+    
+    func register(typeName: String, node: Node) -> Node {
+        graph[typeName] = node
+        return ProxyNode(typeName: typeName, resolver: self)
     }
 }
 

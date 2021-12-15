@@ -3,14 +3,28 @@ import Foundation
 public class HexCodingStrategy {
     static func encoding(data: Data, encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
-        let hex = data.toHex(includePrefix: true)
-        try container.encode(hex)
+        let array = data.map { String($0) }
+        try container.encode(array)
+//        let hex = data.toHex(includePrefix: true)
+//        try container.encode(hex)
     }
 
     static func decoding(with decoder: Decoder) throws -> Data {
         let container = try decoder.singleValueContainer()
-        let hex = try container.decode(String.self)
-        return try Data(hexString: hex)
+        if let hex = try? container.decode(String.self) {
+            return try Data(hexString: hex)
+        }
+        let bytes = try container.decode([String].self).map { byteRaw -> UInt8 in
+            guard let byte = UInt8(byteRaw) else {
+                throw DecodingError.dataCorrupted(
+                    .init(codingPath: container.codingPath, debugDescription: "")
+                )
+            }
+            
+            return byte
+        }
+    
+        return Data(bytes)
     }
 }
 
@@ -18,6 +32,7 @@ public extension JSONEncoder {
     static func scaleCompatible() -> JSONEncoder {
         let encoder = JSONEncoder()
         encoder.dataEncodingStrategy = .custom(HexCodingStrategy.encoding(data:encoder:))
+        encoder.keyEncodingStrategy = .convertToSnakeCase
         return encoder
     }
 }
@@ -26,6 +41,7 @@ public extension JSONDecoder {
     static func scaleCompatible() -> JSONDecoder {
         let decoder = JSONDecoder()
         decoder.dataDecodingStrategy = .custom(HexCodingStrategy.decoding(with:))
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         return decoder
     }
 }

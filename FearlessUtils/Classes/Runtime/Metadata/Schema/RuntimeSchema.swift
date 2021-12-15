@@ -22,12 +22,47 @@ public struct Schema: ScaleCodable {
 // MARK: - Resolver
 
 extension Schema {
-    public struct Resolver {
+    public final class Resolver {
+        private struct TypeResolved {
+            let metadata: TypeMetadata?
+        }
+        
         private let schema: Schema?
         public init(schema: Schema?) {
             self.schema = schema
         }
-
+        
+        private var resolvedTypes: [String: TypeResolved] = [:]
+        
+        public func resolveType(json: JSON) throws -> TypeMetadata? {
+            guard let string = json.stringValue else { return nil }
+            
+            if let index = BigUInt(string) {
+                return try typeMetadata(for: index)
+            }
+            
+            return try resolveType(name: string)
+        }
+        
+        public func resolveType(name: String) throws -> TypeMetadata? {
+            if let type = resolvedTypes[name] {
+                return type.metadata
+            }
+            
+            var metadata: TypeMetadata? = nil
+            if let items = schema?.types {
+                for item in items {
+                    if try typeName(for: item.type) == name {
+                        metadata = item.type
+                        break
+                    }
+                }
+            }
+            
+            resolvedTypes[name] = TypeResolved(metadata: metadata)
+            return metadata
+        }
+        
         public func typeMetadata(for index: BigUInt?) throws -> TypeMetadata {
             guard let schema = schema else {
                 throw Error.schemaNotProvided
@@ -43,42 +78,60 @@ extension Schema {
 
             return type
         }
+        
+        public func typeName(for index: BigUInt?) throws -> String {
+            try typeName(for: try typeMetadata(for: index))
+        }
+        
+        public func typeName(for type: TypeMetadata) throws -> String {
+            let name = try _typeName(for: type)
+            if resolvedTypes[name]?.metadata == nil {
+                resolvedTypes[name] = TypeResolved(metadata: type)
+            }
+            
+            return name
+        }
 
         // swiftlint:disable cyclomatic_complexity function_body_length
-        public func typeName(for index: BigUInt?) throws -> String {
-            let type = try typeMetadata(for: index)
-
-            let baseName = type.path.joined(separator: "::")
-            func paramNames(types: [BigUInt?]) throws -> String {
-                try types
-                    .map { try typeName(for: $0) }
-                    .joined(separator: ", ")
-            }
-
+        private func _typeName(for type: TypeMetadata) throws -> String {
             switch type.def {
             case .composite, .variant:
-                var name = baseName
+//                guard var name = type.path.last else {
+//                    throw Error.wrongData
+//                }
+                guard type.path.count > 0 else {
+                    throw Error.wrongData
+                }
+                var name = type.path.joined(separator: "::")
+                
                 if !type.params.isEmpty {
-                    let paramNames = try paramNames(types: type.params.map { $0.type })
+                    let paramNames = try type.params
+                        .map {
+                            var name = $0.name
+                            if let typeName = try $0.type.map({ try typeName(for: $0) }) {
+                                name += "::\(typeName)"
+                            }
+
+                            return name
+                        }
+                        .joined(separator: ", ")
+
                     name += "<\(paramNames)>"
                 }
 
                 return name
 
             case let .sequence(value):
-                let paramNames = try paramNames(types: [value.type])
-                return "Vec<\(paramNames)>"
+                return "Vec<\(try typeName(for: value.type))>"
 
             case let .array(value):
-                let paramNames = try paramNames(types: [value.type])
-                return "[\(paramNames); \(value.length)]"
+                return "[\(try typeName(for: value.type)); \(value.length)]"
 
             case let .tuple(value):
-                guard !value.isEmpty else { throw Error.wrongData }
-                let paramNames = try paramNames(types: value)
+                let paramNames = try value.map { try typeName(for: $0) }.joined(separator: ", ")
                 return "(\(paramNames))"
 
-            case let .enum(value):
+            case let .primitive(value):
                 switch value {
                 case .bool: return "bool"
                 case .char: return "char"
@@ -98,11 +151,13 @@ extension Schema {
                 }
 
             case let .compact(value):
-                let paramNames = try paramNames(types: [value.type])
-                return "Compact<\(paramNames)>"
+                return "Compact<\(try typeName(for: value.type))>"
 
             case let .bitSequence(value):
-                let paramNames = try paramNames(types: [value.order, value.store])
+                let paramNames = [
+                    try typeName(for: value.order),
+                    try typeName(for: value.store)
+                ].joined(separator: ", ")
                 return "BitVec<\(paramNames)>"
             }
         }

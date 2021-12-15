@@ -1,22 +1,32 @@
 import Foundation
 
 public extension TypeRegistry {
-    static func createFromTypesDefinition(data: Data,
-                                          additionalNodes: [Node]) throws -> TypeRegistry {
+    static func createFromTypesDefinition(
+        data: Data,
+        additionalNodes: [Node],
+        schemaResolver: Schema.Resolver
+    ) throws -> TypeRegistry {
         let jsonDecoder = JSONDecoder()
         let json = try jsonDecoder.decode(JSON.self, from: data)
 
-        return try createFromTypesDefinition(json: json,
-                                             additionalNodes: additionalNodes)
+        return try createFromTypesDefinition(
+            json: json,
+            additionalNodes: additionalNodes,
+            schemaResolver: schemaResolver
+        )
     }
 
-    static func createFromTypesDefinition(json: JSON,
-                                          additionalNodes: [Node]) throws -> TypeRegistry {
+    static func createFromTypesDefinition(
+        json: JSON,
+        additionalNodes: [Node],
+        schemaResolver: Schema.Resolver
+    ) throws -> TypeRegistry {
         guard let types = json.types else {
             throw TypeRegistryError.unexpectedJson
         }
 
         let factories: [TypeNodeFactoryProtocol] = [
+            RuntimeSchemaNodeFactory(schemaResolver: schemaResolver),
             StructNodeFactory(parser: TypeMappingParser.structure()),
             EnumNodeFactory(parser: TypeMappingParser.enumeration()),
             EnumValuesNodeFactory(parser: TypeValuesParser.enumeration()),
@@ -30,6 +40,7 @@ public extension TypeRegistry {
         ]
 
         let resolvers: [TypeResolving] = [
+            RuntimeSchemaResolver(schemaResolver: schemaResolver),
             CaseInsensitiveResolver(),
             TableResolver.noise(),
             RegexReplaceResolver.noise(),

@@ -16,8 +16,11 @@ class TupleNodeFactoryTests: XCTestCase {
 
         // when
 
-        let registry = try TypeRegistry
-            .createFromTypesDefinition(data: data, additionalNodes: [])
+        let registry = try TypeRegistry.createFromTypesDefinition(
+            data: data,
+            additionalNodes: [],
+            schemaResolver: Schema.Resolver(schema: nil)
+        )
 
         // then
 
@@ -46,8 +49,11 @@ class TupleNodeFactoryTests: XCTestCase {
         for json in [json1, json2, json3] {
             let data = json.data(using: .utf8)!
 
-            let registry = try TypeRegistry
-                .createFromTypesDefinition(data: data, additionalNodes: [])
+            let registry = try TypeRegistry.createFromTypesDefinition(
+                data: data,
+                additionalNodes: [],
+                schemaResolver: Schema.Resolver(schema: nil)
+            )
 
             guard let node = registry.node(for: type) else {
                 XCTFail("Unexpected empty node")

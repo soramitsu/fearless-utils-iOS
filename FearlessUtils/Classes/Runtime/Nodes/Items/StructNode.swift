@@ -10,7 +10,30 @@ public class StructNode: Node {
     }
 
     public func accept(encoder: DynamicScaleEncoding, value: JSON) throws {
-        guard let mapping = value.dictValue else {
+        var mapping: [String: JSON]? = value.dictValue
+        if mapping == nil {
+            if let arrayValue = value.arrayValue {
+                if arrayValue.count == typeMapping.count {
+                    // Accept eligible size of array as array of values
+                    mapping = [:]
+                    for (i, value) in arrayValue.enumerated() {
+                        let typeName = typeMapping[i].name
+                        mapping?[typeName] = value
+                    }
+                }
+            } else if typeMapping.count == 1 {
+                // accept single value JSON if struct fields count is the 1 (backward compatibility for <= V13 for some types)
+                switch value {
+                case .unsignedIntValue, .signedIntValue, .stringValue, .boolValue, .null:
+                    let typeName = typeMapping[0].name
+                    mapping = [typeName: value]
+                default:
+                    break
+                }
+            }
+        }
+        
+        guard let mapping = mapping else {
             throw DynamicScaleEncoderError.dictExpected(json: value)
         }
 

@@ -50,7 +50,9 @@ extension RuntimeMetadataV14 {
         public init(item: TypeMetadata.Def.Variant.Item, schemaResolver: Schema.Resolver) throws {
             self.name = item.name
             self._arguments = try item.fields.map {
-                guard let name = $0.name else { throw Schema.Resolver.Error.wrongData }
+                guard let name = $0.name else {
+                    throw Schema.Resolver.Error.wrongData
+                }
                 let typeName = try schemaResolver.typeName(for: $0.type)
                 return FunctionArgumentMetadata(name: name, type: typeName)
             }

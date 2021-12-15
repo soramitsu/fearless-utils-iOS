@@ -6,6 +6,7 @@ public extension TypeRegistry {
         var allTypes: Set<String> = additionalTypes
 
         let schemaResolver = runtimeMetadata.schemaResolver
+            
         for module in runtimeMetadata.modules {
             if let storage = module.storage {
                 for storageEntry in storage.entries {
@@ -46,7 +47,10 @@ public extension TypeRegistry {
 
         let json = JSON.dictionaryValue(["types": .dictionaryValue(jsonDic)])
 
-        return try TypeRegistry.createFromTypesDefinition(json: json,
-                                                          additionalNodes: [])
+        return try TypeRegistry.createFromTypesDefinition(
+            json: json,
+            additionalNodes: [],
+            schemaResolver: schemaResolver
+        )
     }
 }

@@ -35,15 +35,18 @@ public extension TypeRegistryCatalog {
                                          customNodes: [Node])
     throws -> TypeRegistryCatalog {
         let additonalNodes = BasisNodes.allNodes(for: runtimeMetadata) + customNodes
-        let baseRegistry = try TypeRegistry
-            .createFromTypesDefinition(data: definitionData,
-                                       additionalNodes: additonalNodes)
+        let baseRegistry = try TypeRegistry.createFromTypesDefinition(
+            data: definitionData,
+            additionalNodes: additonalNodes,
+            schemaResolver: runtimeMetadata.schemaResolver
+        )
 
         let versionedRegistries = try versionedJsons.mapValues {
-            try TypeRegistry.createFromTypesDefinition(json: $0, additionalNodes: [])
+            try TypeRegistry.createFromTypesDefinition(json: $0, additionalNodes: [], schemaResolver: runtimeMetadata.schemaResolver)
         }
 
         let typeResolver = OneOfTypeResolver(children: [
+            RuntimeSchemaResolver(schemaResolver: runtimeMetadata.schemaResolver),
             CaseInsensitiveResolver(),
             TableResolver.noise(),
             RegexReplaceResolver.noise(),

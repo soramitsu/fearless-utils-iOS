@@ -66,9 +66,9 @@ public class TypeRegistryCatalog: TypeRegistryCatalogProtocol {
         }
 
         let cacheKey = "\(typeName)_\(version)"
-
-        if let registry = registryCache[cacheKey] {
-            return registry.node(for: typeName)
+        
+        if let registry = registryCache[cacheKey], let node = registry.node(for: typeName) {
+            return node
         }
 
         let registry = getRegistry(for: typeName, version: version)

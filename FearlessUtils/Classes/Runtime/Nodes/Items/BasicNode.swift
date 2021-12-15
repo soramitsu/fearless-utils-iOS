@@ -1,5 +1,7 @@
 import Foundation
 
+// MARK: - U8Node
+
 public class U8Node: Node {
     public var typeName: String { PrimitiveType.u8.name }
 
@@ -13,6 +15,8 @@ public class U8Node: Node {
         try decoder.readU8()
     }
 }
+
+// MARK: - U16Node
 
 public class U16Node: Node {
     public var typeName: String { PrimitiveType.u16.name }
@@ -28,6 +32,8 @@ public class U16Node: Node {
     }
 }
 
+// MARK: - U32Node
+
 public class U32Node: Node {
     public var typeName: String { PrimitiveType.u32.name }
 
@@ -41,6 +47,8 @@ public class U32Node: Node {
         try decoder.readU32()
     }
 }
+
+// MARK: - U64Node
 
 public class U64Node: Node {
     public var typeName: String { PrimitiveType.u64.name }
@@ -56,6 +64,8 @@ public class U64Node: Node {
     }
 }
 
+// MARK: - U128Node
+
 public class U128Node: Node {
     public var typeName: String { PrimitiveType.u128.name }
 
@@ -69,6 +79,8 @@ public class U128Node: Node {
         try decoder.readU128()
     }
 }
+
+// MARK: - U256Node
 
 public class U256Node: Node {
     public var typeName: String { PrimitiveType.u256.name }
@@ -84,6 +96,8 @@ public class U256Node: Node {
     }
 }
 
+// MARK: - BoolNode
+
 public class BoolNode: Node {
     public var typeName: String { PrimitiveType.bool.name }
 
@@ -97,6 +111,8 @@ public class BoolNode: Node {
         try decoder.readBool()
     }
 }
+
+// MARK: - StringNode
 
 public class StringNode: Node {
     public var typeName: String { PrimitiveType.string.name }
