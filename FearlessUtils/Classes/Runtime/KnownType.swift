@@ -1,12 +1,12 @@
 import Foundation
 
 public enum KnownType: String, CaseIterable {
-    case balance = "BalanceOf"
+    case balance = "Balance"
     case index = "Index"
     case phase = "Phase"
     case call = "Call"
     case address = "Address"
-    case signature = "MultiSignature"
+    case signature = "ExtrinsicSignature"
 
     public var name: String { rawValue }
 }
