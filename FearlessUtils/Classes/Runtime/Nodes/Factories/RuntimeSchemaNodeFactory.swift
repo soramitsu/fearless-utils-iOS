@@ -42,14 +42,14 @@ class RuntimeSchemaNodeFactory: TypeNodeFactoryProtocol {
         value: TypeMetadata.Def.Composite,
         mediator: TypeRegistering
     ) throws -> Node {
-        if value.fields.count == 1 {
-            // return ProxyNode for this type
-            let underlyingNode = try underlyingNode(for: value.fields[0].type, mediator: mediator)
-            return AliasNode(
-                typeName: typeName,
-                underlyingTypeName: underlyingNode.typeName
-            )
-        }
+//        if value.fields.count == 1 {
+//            // return ProxyNode for this type
+//            let underlyingNode = try underlyingNode(for: value.fields[0].type, mediator: mediator)
+//            return AliasNode(
+//                typeName: typeName,
+//                underlyingTypeName: underlyingNode.typeName
+//            )
+//        }
         
         let childrenNodes = try value.fields.enumerated().compactMap { (i, field) -> NameNode? in
             guard let name = field.name else { return nil }
