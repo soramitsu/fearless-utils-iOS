@@ -4,7 +4,7 @@ public enum KnownType: String, CaseIterable {
     case balance = "Balance"
     case index = "Index"
     case phase = "Phase"
-    case call = "Call"
+    case call = "GenericCall"
     case address = "Address"
     case signature = "ExtrinsicSignature"
 
