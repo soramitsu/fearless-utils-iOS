@@ -1,12 +1,18 @@
 import Foundation
 
 public enum KnownType: String, CaseIterable {
+    // primitives that may vary by network, may have different index,
+    // MAY BE NOT USED by new runtime metadata implementation
     case balance = "Balance"
     case index = "Index"
-    case phase = "Phase"
+    
+    // name varies by network, mapping provided by remote JSON
     case call = "GenericCall"
-    case address = "Address"
-    case signature = "ExtrinsicSignature"
+    
+    // resolved for all versions of metadata
+    case phase = "frame_system::Phase"
+    case address = "sp_runtime::multiaddress::MultiAddress"
+    case signature = "sp_runtime::MultiSignature"
 
     public var name: String { rawValue }
 }
