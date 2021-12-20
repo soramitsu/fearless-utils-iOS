@@ -11,7 +11,7 @@ public enum KnownType: String, CaseIterable {
     
     // resolved for all versions of metadata
     case phase = "frame_system::Phase"
-    case address = "sp_runtime::multiaddress::MultiAddress<AccountId::sp_core::crypto::AccountId32, AccountIndex::()>"
+    case address = "sp_runtime::multiaddress::MultiAddress<AccountId: sp_core::crypto::AccountId32, AccountIndex: ()>"
     case signature = "sp_runtime::MultiSignature"
 
     public var name: String { rawValue }

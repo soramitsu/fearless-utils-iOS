@@ -106,7 +106,7 @@ extension Schema {
                         .map {
                             var name = $0.name
                             if let typeName = try $0.type.map({ try typeName(for: $0) }) {
-                                name += "::\(typeName)"
+                                name += ": \(typeName)"
                             }
 
                             return name
