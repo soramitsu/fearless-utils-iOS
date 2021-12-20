@@ -96,9 +96,6 @@ extension Schema {
         private func _typeName(for type: TypeMetadata) throws -> String {
             switch type.def {
             case .composite, .variant:
-//                guard var name = type.path.last else {
-//                    throw Error.wrongData
-//                }
                 guard type.path.count > 0 else {
                     throw Error.wrongData
                 }
