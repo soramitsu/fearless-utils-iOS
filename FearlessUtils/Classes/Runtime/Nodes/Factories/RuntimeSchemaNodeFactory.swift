@@ -51,11 +51,12 @@ class RuntimeSchemaNodeFactory: TypeNodeFactoryProtocol {
 //            )
 //        }
         
-        let childrenNodes = try value.fields.enumerated().compactMap { (i, field) -> NameNode? in
+        let childrenNodes = try value.fields.enumerated().compactMap { (index, field) -> NameNode? in
             guard let name = field.name else { return nil }
             return NameNode(
                 name: name,
-                node: try underlyingNode(for: field.type, mediator: mediator)
+                node: try underlyingNode(for: field.type, mediator: mediator),
+                index: index
             )
         }
         
@@ -103,7 +104,8 @@ class RuntimeSchemaNodeFactory: TypeNodeFactoryProtocol {
             // register this custom type with prepared node
             return NameNode(
                 name: variant.name,
-                node: mediator.register(typeName: variantNode.typeName, node: variantNode)
+                node: mediator.register(typeName: variantNode.typeName, node: variantNode),
+                index: variant.index
             )
         }
         

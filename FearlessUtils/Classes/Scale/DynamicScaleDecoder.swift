@@ -67,7 +67,7 @@ extension DynamicScaleDecoder: DynamicScaleDecoding {
 
     public func read(type: String) throws -> JSON {
         guard let node = registry.node(for: type, version: version) else {
-            throw DynamicScaleCoderError.unresolverType(name: type)
+            throw DynamicScaleCoderError.unresolvedType(name: type)
         }
 
         return try node.accept(decoder: self)
@@ -75,7 +75,7 @@ extension DynamicScaleDecoder: DynamicScaleDecoding {
 
     public func readOption(type: String) throws -> JSON {
         guard let node = registry.node(for: type, version: version) else {
-            throw DynamicScaleCoderError.unresolverType(name: type)
+            throw DynamicScaleCoderError.unresolvedType(name: type)
         }
 
         if node is BoolNode {
@@ -89,7 +89,7 @@ extension DynamicScaleDecoder: DynamicScaleDecoding {
 
     public func readVector(type: String) throws -> JSON {
         guard let node = registry.node(for: type, version: version) else {
-            throw DynamicScaleCoderError.unresolverType(name: type)
+            throw DynamicScaleCoderError.unresolvedType(name: type)
         }
 
         let length = try BigUInt(scaleDecoder: decoder)
@@ -101,7 +101,7 @@ extension DynamicScaleDecoder: DynamicScaleDecoding {
 
     public func readCompact(type: String) throws -> JSON {
         guard let node = registry.node(for: type, version: version) else {
-            throw DynamicScaleCoderError.unresolverType(name: type)
+            throw DynamicScaleCoderError.unresolvedType(name: type)
         }
 
         modifiers.append(.compact)
@@ -111,7 +111,7 @@ extension DynamicScaleDecoder: DynamicScaleDecoding {
 
     public func readFixedArray(type: String, length: UInt64) throws -> JSON {
         guard let node = registry.node(for: type, version: version) else {
-            throw DynamicScaleCoderError.unresolverType(name: type)
+            throw DynamicScaleCoderError.unresolvedType(name: type)
         }
 
         let jsons = try (0..<length).map { _ in try node.accept(decoder: self) }

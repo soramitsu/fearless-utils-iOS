@@ -12,7 +12,7 @@ class StructNodeFactory: TypeNodeFactoryProtocol {
             return nil
         }
 
-        let childrenNodes: [NameNode] = try children.map { child in
+        let childrenNodes: [NameNode] = try children.enumerated().map { index, child in
             guard let nameAndValueType = child.arrayValue,
                   nameAndValueType.count == 2,
                   let name = nameAndValueType.first?.stringValue,
@@ -23,7 +23,7 @@ class StructNodeFactory: TypeNodeFactoryProtocol {
 
             let node = mediator.register(typeName: valueTypeName, json: value)
 
-            return NameNode(name: name, node: node)
+            return NameNode(name: name, node: node, index: index)
         }
 
         return StructNode(typeName: typeName, typeMapping: childrenNodes)

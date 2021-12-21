@@ -15,7 +15,7 @@ public class ProxyNode: Node {
 
     public func accept(encoder: DynamicScaleEncoding, value: JSON) throws {
         guard let underlyingNode = resolver?.resolve(for: typeName) else {
-            throw DynamicScaleCoderError.unresolverType(name: typeName)
+            throw DynamicScaleCoderError.unresolvedType(name: typeName)
         }
 
         if underlyingNode is GenericNode {
@@ -27,7 +27,7 @@ public class ProxyNode: Node {
 
     public func accept(decoder: DynamicScaleDecoding) throws -> JSON {
         guard let underlyingNode = resolver?.resolve(for: typeName) else {
-            throw DynamicScaleCoderError.unresolverType(name: typeName)
+            throw DynamicScaleCoderError.unresolvedType(name: typeName)
         }
 
         if underlyingNode is GenericNode {
