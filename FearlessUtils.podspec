@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
 
   s.homepage         = 'https://github.com/soramitsu/fearless-utils-iOS'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'ERussel' => 'rezin@soramitsu.co.jp' }
+  s.author           = { 'Soramitsu' => 'admin@soramitsu.co.jp' }
   s.source           = { :git => 'https://github.com/soramitsu/fearless-utils-iOS.git', :tag => s.version.to_s }
   s.swift_version    = '5.0'
 
