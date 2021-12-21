@@ -22,11 +22,11 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64', 'VALID_ARCHS' => 'x86_64 armv7 arm64'  }
 
   s.source_files = 'FearlessUtils/Classes/**/*'
-  s.dependency 'IrohaCrypto/sr25519', '~> 0.8.0'
-  s.dependency 'IrohaCrypto/ed25519', '~> 0.8.0'
-  s.dependency 'IrohaCrypto/secp256k1', '~> 0.8.0'
-  s.dependency 'IrohaCrypto/Scrypt', '~> 0.8.0'
-  s.dependency 'IrohaCrypto/ss58', '~> 0.8.0'
+  s.dependency 'IrohaCrypto/sr25519'
+  s.dependency 'IrohaCrypto/ed25519'
+  s.dependency 'IrohaCrypto/secp256k1'
+  s.dependency 'IrohaCrypto/Scrypt'
+  s.dependency 'IrohaCrypto/ss58'
   s.dependency 'ReachabilitySwift', '~> 5.0'
   s.dependency 'RobinHood', '~> 2.6.1'
   s.dependency 'Starscream'
