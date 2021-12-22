@@ -100,10 +100,6 @@ public class TypeRegistry: TypeRegistryProtocol {
         let refinedDict = try dict.reduce(into: [String: JSON]()) { (result, item) in
             if let type = keyParser.parse(json: .stringValue(item.key))?.first?.stringValue {
                 result[type] = item.value
-                
-                if let id = BigUInt(type), let type = keyParser.parse(json: item.value)?.first?.stringValue {
-                    result[type] = .stringValue(String(id))
-                }
             } else {
                 throw TypeRegistryError.invalidKey(item.key)
             }
