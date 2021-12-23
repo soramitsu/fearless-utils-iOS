@@ -75,6 +75,7 @@ class BindingTests: BaseCodingTests {
     }
 
     func testOptionEnumCoding() throws {
+        // Need to refactor
         let expected = FundInfo(
             retiring: false,
             depositor: Data(repeating: 0, count: 32),
