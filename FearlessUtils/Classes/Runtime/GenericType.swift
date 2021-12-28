@@ -12,7 +12,7 @@ public enum GenericType: String, CaseIterable {
     case extrinsicDecoder = "ExtrinsicsDecoder"
     case extrinsicSignature = "FearlessExtrinsicSignature"
     case extrinsicExtra = "FearlessExtrinsicExtra"
-    case accountId = "GenericAccountId"
+    case accountId = "sp_core::crypto::AccountId32"
     case accountIndex = "GenericAccountIndex"
     case block = "GenericBlock"
     case call = "GenericCall"
