@@ -33,8 +33,36 @@ public final class DynamicScaleEncoder {
 
         try bigInt.encode(scaleEncoder: encoder)
     }
-
+    
+    // MARK: - Signed
+    
     private func encodeFixedInt(value: JSON, byteLength: Int) throws {
+        guard let str = value.stringValue, let intValue = BigInt(str) else {
+            throw DynamicScaleEncoderError.expectedStringForInt(json: value)
+        }
+
+        var encodedData: [UInt8] = intValue.serialize().reversed()
+
+        while encodedData.count < byteLength {
+            encodedData.append(0)
+        }
+
+        encoder.appendRaw(data: Data(encodedData))
+    }
+    
+    private func appendFixedSigned(json: JSON, byteLength: Int) throws {
+        if modifiers.last == .compact {
+            modifiers.removeLast()
+            assertionFailure()
+            throw DynamicScaleCoderError.notImplemented
+        } else {
+            try encodeFixedUInt(value: json, byteLength: byteLength)
+        }
+    }
+    
+    // MARK: - Unsigned
+
+    private func encodeFixedUInt(value: JSON, byteLength: Int) throws {
         guard let str = value.stringValue, let intValue = BigUInt(str) else {
             throw DynamicScaleEncoderError.expectedStringForInt(json: value)
         }
@@ -54,7 +82,7 @@ public final class DynamicScaleEncoder {
 
            try encodeCompact(value: json)
         } else {
-            try encodeFixedInt(value: json, byteLength: byteLength)
+            try encodeFixedUInt(value: json, byteLength: byteLength)
         }
     }
 }
@@ -162,6 +190,30 @@ extension DynamicScaleEncoder: DynamicScaleEncoding {
 
     public func appendU256(json: JSON) throws {
         try appendFixedUnsigned(json: json, byteLength: 32)
+    }
+    
+    public func appendI8(json: JSON) throws {
+        try appendFixedSigned(json: json, byteLength: 1)
+    }
+
+    public func appendI16(json: JSON) throws {
+        try appendFixedSigned(json: json, byteLength: 2)
+    }
+
+    public func appendI32(json: JSON) throws {
+        try appendFixedSigned(json: json, byteLength: 4)
+    }
+
+    public func appendI64(json: JSON) throws {
+        try appendFixedSigned(json: json, byteLength: 8)
+    }
+
+    public func appendI128(json: JSON) throws {
+        try appendFixedSigned(json: json, byteLength: 16)
+    }
+
+    public func appendI256(json: JSON) throws {
+        try appendFixedSigned(json: json, byteLength: 32)
     }
 
     public func appendBool(json: JSON) throws {

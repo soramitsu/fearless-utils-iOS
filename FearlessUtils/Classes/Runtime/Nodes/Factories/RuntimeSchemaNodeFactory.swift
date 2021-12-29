@@ -162,7 +162,7 @@ class RuntimeSchemaNodeFactory: TypeNodeFactoryProtocol {
         value: TypeMetadata.Def.Primitive,
         mediator: TypeRegistering
     ) throws -> Node? {
-        // Some types like signed integers not yet supported, nor presented in actual runtimes
+        // Some types like char not yet supported, nor presented in actual runtimes
         switch value {
         case .bool:
             return BoolNode()
@@ -184,23 +184,17 @@ class RuntimeSchemaNodeFactory: TypeNodeFactoryProtocol {
         case .u256:
             return U256Node()
         case .i8:
-            assertionFailure()
-            return nil
+            return I8Node()
         case .i16:
-            assertionFailure()
-            return nil
+            return I16Node()
         case .i32:
-            assertionFailure()
-            return nil
+            return I32Node()
         case .i64:
-            assertionFailure()
-            return nil
+            return I64Node()
         case .i128:
-            assertionFailure()
-            return nil
+            return I128Node()
         case .i256:
-            assertionFailure()
-            return nil
+            return I256Node()
         }
     }
     

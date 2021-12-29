@@ -39,11 +39,30 @@ public class DynamicScaleDecoder {
             return .boolValue(false)
         }
     }
-
+    
+    // MARK: - Signed
+    
     func decodeCompactOrFixedInt(length: Int) throws -> JSON {
         if modifiers.last == .compact {
             modifiers.removeLast()
+            assertionFailure()
+            throw DynamicScaleCoderError.notImplemented
+        } else {
+            return try decodeFixedInt(length: length)
+        }
+    }
 
+    private func decodeFixedInt(length: Int) throws -> JSON {
+        let data = try decoder.readAndConfirm(count: length)
+        let value = BigInt(Data(data.reversed()))
+        return .stringValue(String(value))
+    }
+    
+    // MARK: - Unsigned
+
+    func decodeCompactOrFixedUInt(length: Int) throws -> JSON {
+        if modifiers.last == .compact {
+            modifiers.removeLast()            
             return try decodeCompact()
         } else {
             return try decodeFixedInt(length: length)
@@ -55,7 +74,7 @@ public class DynamicScaleDecoder {
         return .stringValue(String(compact))
     }
 
-    private func decodeFixedInt(length: Int) throws -> JSON {
+    private func decodeFixedUInt(length: Int) throws -> JSON {
         let data = try decoder.readAndConfirm(count: length)
         let value = BigUInt(Data(data.reversed()))
         return .stringValue(String(value))
@@ -129,28 +148,52 @@ extension DynamicScaleDecoder: DynamicScaleDecoding {
         let string = try String(scaleDecoder: decoder)
         return .stringValue(string)
     }
-
+    
     public func readU8() throws -> JSON {
-        return try decodeCompactOrFixedInt(length: 1)
+        return try decodeCompactOrFixedUInt(length: 1)
     }
 
     public func readU16() throws -> JSON {
-        return try decodeCompactOrFixedInt(length: 2)
+        return try decodeCompactOrFixedUInt(length: 2)
     }
 
     public func readU32() throws -> JSON {
-        return try decodeCompactOrFixedInt(length: 4)
+        return try decodeCompactOrFixedUInt(length: 4)
     }
 
     public func readU64() throws -> JSON {
-        return try decodeCompactOrFixedInt(length: 8)
+        return try decodeCompactOrFixedUInt(length: 8)
     }
 
     public func readU128() throws -> JSON {
-        return try decodeCompactOrFixedInt(length: 16)
+        return try decodeCompactOrFixedUInt(length: 16)
     }
 
     public func readU256() throws -> JSON {
+        return try decodeCompactOrFixedUInt(length: 32)
+    }
+    
+    public func readI8() throws -> JSON {
+        return try decodeCompactOrFixedInt(length: 1)
+    }
+
+    public func readI16() throws -> JSON {
+        return try decodeCompactOrFixedInt(length: 2)
+    }
+
+    public func readI32() throws -> JSON {
+        return try decodeCompactOrFixedInt(length: 4)
+    }
+
+    public func readI64() throws -> JSON {
+        return try decodeCompactOrFixedInt(length: 8)
+    }
+
+    public func readI128() throws -> JSON {
+        return try decodeCompactOrFixedInt(length: 16)
+    }
+
+    public func readI256() throws -> JSON {
         return try decodeCompactOrFixedInt(length: 32)
     }
 

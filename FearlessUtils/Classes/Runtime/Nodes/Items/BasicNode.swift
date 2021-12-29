@@ -112,6 +112,102 @@ public class BoolNode: Node {
     }
 }
 
+// MARK: - I8Node
+
+public class I8Node: Node {
+    public var typeName: String { PrimitiveType.i8.name }
+
+    public init() {}
+
+    public func accept(encoder: DynamicScaleEncoding, value: JSON) throws {
+        try encoder.appendI8(json: value)
+    }
+
+    public func accept(decoder: DynamicScaleDecoding) throws -> JSON {
+        try decoder.readI8()
+    }
+}
+
+// MARK: - I16Node
+
+public class I16Node: Node {
+    public var typeName: String { PrimitiveType.i16.name }
+
+    public init() {}
+
+    public func accept(encoder: DynamicScaleEncoding, value: JSON) throws {
+        try encoder.appendI16(json: value)
+    }
+
+    public func accept(decoder: DynamicScaleDecoding) throws -> JSON {
+        try decoder.readI16()
+    }
+}
+
+// MARK: - I32Node
+
+public class I32Node: Node {
+    public var typeName: String { PrimitiveType.i32.name }
+
+    public init() {}
+
+    public func accept(encoder: DynamicScaleEncoding, value: JSON) throws {
+        try encoder.appendI32(json: value)
+    }
+
+    public func accept(decoder: DynamicScaleDecoding) throws -> JSON {
+        try decoder.readI32()
+    }
+}
+
+// MARK: - I64Node
+
+public class I64Node: Node {
+    public var typeName: String { PrimitiveType.i64.name }
+
+    public init() {}
+
+    public func accept(encoder: DynamicScaleEncoding, value: JSON) throws {
+        try encoder.appendI64(json: value)
+    }
+
+    public func accept(decoder: DynamicScaleDecoding) throws -> JSON {
+        try decoder.readI64()
+    }
+}
+
+// MARK: - I128Node
+
+public class I128Node: Node {
+    public var typeName: String { PrimitiveType.i128.name }
+
+    public init() {}
+
+    public func accept(encoder: DynamicScaleEncoding, value: JSON) throws {
+        try encoder.appendI128(json: value)
+    }
+
+    public func accept(decoder: DynamicScaleDecoding) throws -> JSON {
+        try decoder.readI128()
+    }
+}
+
+// MARK: - I256Node
+
+public class I256Node: Node {
+    public var typeName: String { PrimitiveType.i256.name }
+
+    public init() {}
+
+    public func accept(encoder: DynamicScaleEncoding, value: JSON) throws {
+        try encoder.appendI256(json: value)
+    }
+
+    public func accept(decoder: DynamicScaleDecoding) throws -> JSON {
+        try decoder.readI256()
+    }
+}
+
 // MARK: - StringNode
 
 public class StringNode: Node {
