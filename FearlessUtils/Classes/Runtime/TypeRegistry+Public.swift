@@ -26,7 +26,6 @@ public extension TypeRegistry {
         }
 
         let factories: [TypeNodeFactoryProtocol] = [
-            RuntimeSchemaNodeFactory(schemaResolver: schemaResolver),
             StructNodeFactory(parser: TypeMappingParser.structure()),
             EnumNodeFactory(parser: TypeMappingParser.enumeration()),
             EnumValuesNodeFactory(parser: TypeValuesParser.enumeration()),
@@ -36,7 +35,8 @@ public extension TypeRegistry {
             VectorNodeFactory(parser: RegexParser.vector()),
             OptionNodeFactory(parser: RegexParser.option()),
             CompactNodeFactory(parser: RegexParser.compact()),
-            AliasNodeFactory(parser: TermParser.generic())
+            AliasNodeFactory(parser: TermParser.generic()),
+            RuntimeSchemaNodeFactory(schemaResolver: schemaResolver)
         ]
 
         let resolvers: [TypeResolving] = [
