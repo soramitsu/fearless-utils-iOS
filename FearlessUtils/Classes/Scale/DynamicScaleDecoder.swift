@@ -65,7 +65,7 @@ public class DynamicScaleDecoder {
             modifiers.removeLast()            
             return try decodeCompact()
         } else {
-            return try decodeFixedInt(length: length)
+            return try decodeFixedUInt(length: length)
         }
     }
 
