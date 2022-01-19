@@ -24,6 +24,11 @@ public class EnumNode: Node {
         }
 
         try encoder.append(encodable: type.index)
+        
+        guard assocValue != JSON.null else {
+            return
+        }
+        
         try encoder.append(json: assocValue, type: type.node.typeName)
     }
 
