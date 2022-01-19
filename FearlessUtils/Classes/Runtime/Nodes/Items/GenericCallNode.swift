@@ -18,7 +18,7 @@ public class GenericCallNode: Node {
     }
 
     public func accept(encoder: DynamicScaleEncoding, value: JSON) throws {
-        let call = try value.map(to: RuntimeCall<JSON>.self)
+        let call = try value.plainMap(to: RuntimeCall<JSON>.self)
 
         guard let function = try runtimeMetadata.getFunction(from: call.moduleName,
                                                          with: call.callName),

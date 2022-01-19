@@ -37,10 +37,13 @@ public extension JSONEncoder {
 }
 
 public extension JSONDecoder {
-    static func scaleCompatible() -> JSONDecoder {
+    static func scaleCompatible(snakeCase: Bool = true) -> JSONDecoder {
         let decoder = JSONDecoder()
         decoder.dataDecodingStrategy = .custom(HexCodingStrategy.decoding(with:))
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        
+        if snakeCase {
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+        }
         return decoder
     }
 }
@@ -62,7 +65,7 @@ public extension Encodable {
         let container = EncodingContainer(value: self)
 
         let data = try JSONEncoder.scaleCompatible().encode(container)
-        let json = try JSONDecoder.scaleCompatible().decode(JsonContainer.self, from: data).value
+        let json = try JSONDecoder.scaleCompatible(snakeCase: false).decode(JsonContainer.self, from: data).value
 
         return json
     }
@@ -75,6 +78,15 @@ public extension JSON {
         let data = try encoder.encode(encodingContainer)
 
         let decoder = JSONDecoder.scaleCompatible()
+        return try decoder.decode(DecodingContainer<T>.self, from: data).value
+    }
+    
+    func plainMap<T: Decodable>(to type: T.Type) throws -> T {
+        let encoder = JSONEncoder.scaleCompatible()
+        let encodingContainer = JsonContainer(value: self)
+        let data = try encoder.encode(encodingContainer)
+
+        let decoder = JSONDecoder.scaleCompatible(snakeCase: false)
         return try decoder.decode(DecodingContainer<T>.self, from: data).value
     }
 }
