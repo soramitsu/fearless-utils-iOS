@@ -101,7 +101,7 @@ extension Schema {
                 }
                 var name = type.path.joined(separator: "::")
                 
-                if !type.params.isEmpty, false {
+                if !type.params.isEmpty, type.path.contains("Option") {
                     let paramNames = try type.params
                         .map {
                             var name = $0.name
