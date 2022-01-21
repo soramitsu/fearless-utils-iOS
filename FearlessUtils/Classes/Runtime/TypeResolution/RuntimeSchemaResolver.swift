@@ -9,7 +9,14 @@ public class RuntimeSchemaResolver: TypeResolving {
     }
     
     public func resolve(typeName: String, using availableNames: Set<String>) -> String? {
-        guard let id = BigUInt(typeName) else { return nil }
-        return try? schemaResolver.typeName(for: id)
+        if let id = BigUInt(typeName) {
+            return try? schemaResolver.typeName(for: id)
+        }
+        
+        if let _ = try? schemaResolver.resolveType(name: typeName) {
+            return typeName
+        }
+        
+        return nil
     }
 }

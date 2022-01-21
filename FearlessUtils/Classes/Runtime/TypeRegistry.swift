@@ -70,13 +70,17 @@ public class TypeRegistry: TypeRegistryProtocol {
             return node
         }
 
-        if let resolvedKey = resolutionCache[key] {
-            return graph[resolvedKey]
+        if let resolvedKey = resolutionCache[key], let node = graph[resolvedKey] {
+            return node
         }
 
         if let resolvedKey = typeResolver.resolve(typeName: key, using: allKeys) {
             resolutionCache[key] = resolvedKey
-            return graph[resolvedKey]
+            if let node = graph[resolvedKey] {
+                return node
+            }
+            
+            return try? nodeFactory.buildNode(from: .stringValue(key), typeName: key, mediator: self)
         }
 
         return nil
