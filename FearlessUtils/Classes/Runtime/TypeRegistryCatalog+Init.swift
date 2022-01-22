@@ -1,11 +1,12 @@
 import Foundation
 
 public extension TypeRegistryCatalog {
-    static func createFromTypeDefinition(_ definitionData: Data,
-                                         versioningData: Data,
-                                         runtimeMetadata: RuntimeMetadata,
-                                         customNodes: [Node] = [])
-    throws -> TypeRegistryCatalog {
+    static func createFromTypeDefinition(
+        _ definitionData: Data,
+        versioningData: Data,
+        runtimeMetadata: RuntimeMetadata,
+        customNodes: [Node] = []
+    ) throws -> TypeRegistryCatalog {
         let versionedJsons = try prepareVersionedJsons(from: versioningData)
 
         return try createFromTypeDefinition(
@@ -29,11 +30,12 @@ public extension TypeRegistryCatalog {
         )
     }
 
-    static func createFromTypeDefinition(_ definitionData: Data,
-                                         versionedJsons: [UInt64: JSON],
-                                         runtimeMetadata: RuntimeMetadata,
-                                         customNodes: [Node])
-    throws -> TypeRegistryCatalog {
+    static func createFromTypeDefinition(
+        _ definitionData: Data,
+        versionedJsons: [UInt64: JSON],
+        runtimeMetadata: RuntimeMetadata,
+        customNodes: [Node]
+    ) throws -> TypeRegistryCatalog {
         let additonalNodes = BasisNodes.allNodes(for: runtimeMetadata) + customNodes
         let baseRegistry = try TypeRegistry.createFromTypesDefinition(
             data: definitionData,

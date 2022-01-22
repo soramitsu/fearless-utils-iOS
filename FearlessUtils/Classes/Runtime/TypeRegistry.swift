@@ -50,10 +50,11 @@ public class TypeRegistry: TypeRegistryProtocol {
     public var registeredTypes: [Node] { graph.keys.compactMap { graph[$0] } }
     public var registeredTypeNames: Set<String> { allKeys }
 
-    init(json: JSON,
-         nodeFactory: TypeNodeFactoryProtocol,
-         typeResolver: TypeResolving,
-         additionalNodes: [Node]
+    init(
+        json: JSON,
+        nodeFactory: TypeNodeFactoryProtocol,
+        typeResolver: TypeResolving,
+        additionalNodes: [Node]
     ) throws {
         self.nodeFactory = nodeFactory
         self.typeResolver = typeResolver

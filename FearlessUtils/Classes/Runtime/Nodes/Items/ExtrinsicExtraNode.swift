@@ -7,6 +7,7 @@ public enum ExtrinsicExtraNodeError: Error {
 public class ExtrinsicExtraNode: Node {
     public var typeName: String { GenericType.extrinsicExtra.name }
     public let runtimeMetadata: RuntimeMetadata
+    public var typeRegistry: TypeRegistryProtocol?
 
     public init(runtimeMetadata: RuntimeMetadata) {
         self.runtimeMetadata = runtimeMetadata
@@ -18,7 +19,7 @@ public class ExtrinsicExtraNode: Node {
         }
 
         for checkString in try runtimeMetadata.extrinsic.signedExtensions(using: runtimeMetadata.schemaResolver) {
-            guard let check = ExtrinsicCheck(rawValue: checkString) else {
+            guard let check = ExtrinsicCheck.from(string: checkString) else {
                 continue
             }
 

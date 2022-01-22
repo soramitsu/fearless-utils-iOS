@@ -47,9 +47,11 @@ public extension TypeRegistry {
             RegexReplaceResolver.genericsFilter()
         ]
 
-        return try TypeRegistry(json: types,
-                                nodeFactory: OneOfTypeNodeFactory(children: factories),
-                                typeResolver: OneOfTypeResolver(children: resolvers),
-                                additionalNodes: additionalNodes)
+        return try TypeRegistry(
+            json: types,
+            nodeFactory: OneOfTypeNodeFactory(children: factories),
+            typeResolver: OneOfTypeResolver(children: resolvers),
+            additionalNodes: additionalNodes
+        )
     }
 }
