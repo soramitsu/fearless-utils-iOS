@@ -13,7 +13,13 @@ public enum KnownType: String, CaseIterable {
     case phase = "frame_system::Phase"
     case address = "sp_runtime::multiaddress::MultiAddress"
     case signature = "sp_runtime::MultiSignature"
-    case addressId = "sp_core::crypto::AccountId32"
+    case addressId32 = "sp_core::crypto::AccountId32" // regular networks
+    case addressId20 = "account::AccountId20" // ethereum-based networks like Moonbeam/Moonriver
+    
+    /// Sorted from Substrate based to Ethereum based
+    static var addressIdTypes: [KnownType] {
+        [.addressId32, .addressId20]
+    }
 
     public var name: String { rawValue }
 }

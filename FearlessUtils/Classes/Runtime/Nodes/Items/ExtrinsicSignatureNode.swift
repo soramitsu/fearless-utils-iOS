@@ -19,20 +19,21 @@ public class ExtrinsicSignatureNode: Node {
             return addressType
         }
         
-        let addressType: KnownType
         let resolver = runtimeMetadata.schemaResolver
-        let hasAddressInRuntime = (try? resolver.resolveType(name: KnownType.address.rawValue)) != nil
-        let hasAddressIdInRuntime = (try? resolver.resolveType(name: KnownType.addressId.rawValue)) != nil
         
-        if hasAddressInRuntime {
-            addressType = KnownType.address
-        } else if hasAddressIdInRuntime {
-            addressType = KnownType.addressId
-        } else {
+        let addressTypes: [KnownType] = [.address] + KnownType.addressIdTypes
+        for type in addressTypes {
+            let hasTypeInRuntime = (try? resolver.resolveType(name: type.name)) != nil
+            if hasTypeInRuntime {
+                _addressType = type
+                break
+            }
+        }
+        
+        guard let addressType = _addressType else {
             throw ExtrinsicSignatureNodeError.invalidRuntime
         }
         
-        _addressType = addressType
         return addressType
     }
 
@@ -50,8 +51,9 @@ public class ExtrinsicSignatureNode: Node {
         
         // Basically, all Substrate networks use "sp_runtime::multiaddress::MultiAddress" enum for destination
         // But some like Basilisk, use "sp_core::crypto::AccountId32" ([u8;32]) directly instead
+        // Moonbeam/Moonriver use AccountId20 ([u8;20])
         let addressType = try addressType()
-        if addressType == KnownType.addressId {
+        if KnownType.addressIdTypes.contains(addressType) {
             guard let id = address.arrayValue, id.count == 2, let idParam = id[1].arrayValue else {
                 assertionFailure()
                 throw GenericCallNodeError.unexpectedParams

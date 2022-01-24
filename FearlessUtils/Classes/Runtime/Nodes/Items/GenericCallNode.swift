@@ -43,7 +43,9 @@ public class GenericCallNode: Node {
             
             // Basically, all Substrate networks use "sp_runtime::multiaddress::MultiAddress" enum for destination
             // But some like Basilisk, use "sp_core::crypto::AccountId32" ([u8;32]) directly instead
-            if arg.type == KnownType.addressId.rawValue, arg.name == "dest" {
+            // Moonbeam/Moonriver use AccountId20 ([u8;20])
+            let addressIdTypes = KnownType.addressIdTypes.map { $0.name }
+            if addressIdTypes.contains(arg.type), arg.name == "dest" {
                 guard let id = param.arrayValue, id.count == 2, let idParam = id[1].arrayValue else {
                     assertionFailure()
                     throw GenericCallNodeError.unexpectedParams
