@@ -13,6 +13,7 @@ public enum KnownType: String, CaseIterable {
     case phase = "frame_system::Phase"
     case address = "sp_runtime::multiaddress::MultiAddress"
     case signature = "sp_runtime::MultiSignature"
+    case addressId = "sp_core::crypto::AccountId32"
 
     public var name: String { rawValue }
 }

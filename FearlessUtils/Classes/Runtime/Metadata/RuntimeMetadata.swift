@@ -7,10 +7,10 @@ public protocol RuntimeMetadataProtocol: ScaleCodable {
     var extrinsic: RuntimeExtrinsicMetadata { get }
 }
 
-public struct RuntimeMetadata {
+public final class RuntimeMetadata {
     public let metaReserved: UInt32
     public let version: UInt8
-    public var schemaResolver: Schema.Resolver { Schema.Resolver(schema: schema) }
+    public lazy var schemaResolver = Schema.Resolver(schema: schema)
 
     private let wrapped: RuntimeMetadataProtocol
     private init(
@@ -70,14 +70,18 @@ extension RuntimeMetadata: ScaleCodable {
         try wrapped.encode(scaleEncoder: scaleEncoder)
     }
 
-    public init(scaleDecoder: ScaleDecoding) throws {
-        self.metaReserved = try UInt32(scaleDecoder: scaleDecoder)
-        self.version = try UInt8(scaleDecoder: scaleDecoder)
+    public convenience init(scaleDecoder: ScaleDecoding) throws {
+        let metaReserved = try UInt32(scaleDecoder: scaleDecoder)
+        let version = try UInt8(scaleDecoder: scaleDecoder)
+        
+        let wrapped: RuntimeMetadataProtocol
         if version >= 14 {
-            self.wrapped = try RuntimeMetadataV14(scaleDecoder: scaleDecoder)
+            wrapped = try RuntimeMetadataV14(scaleDecoder: scaleDecoder)
         } else {
-            self.wrapped = try RuntimeMetadataV1(scaleDecoder: scaleDecoder)
+            wrapped = try RuntimeMetadataV1(scaleDecoder: scaleDecoder)
         }
+        
+        self.init(wrapping: wrapped, metaReserved: metaReserved, version: version)
     }
 }
 

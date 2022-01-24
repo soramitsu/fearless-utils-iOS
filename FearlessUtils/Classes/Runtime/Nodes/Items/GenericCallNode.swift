@@ -36,11 +36,23 @@ public class GenericCallNode: Node {
         try encoder.appendU8(json: .stringValue(String(callIndex)))
 
         for index in 0..<function.arguments.count {
-            guard let param = args[function.arguments[index].name] else {
+            let arg = function.arguments[index]
+            guard var param = args[arg.name] else {
                 throw GenericCallNodeError.unexpectedParams
             }
+            
+            // Basically, all Substrate networks use "sp_runtime::multiaddress::MultiAddress" enum for destination
+            // But some like Basilisk, use "sp_core::crypto::AccountId32" ([u8;32]) directly instead
+            if arg.type == KnownType.addressId.rawValue, arg.name == "dest" {
+                guard let id = param.arrayValue, id.count == 2, let idParam = id[1].arrayValue else {
+                    assertionFailure()
+                    throw GenericCallNodeError.unexpectedParams
+                }
+                
+                param = .arrayValue(idParam)
+            }
 
-            try encoder.append(json: param, type: function.arguments[index].type)
+            try encoder.append(json: param, type: arg.type)
         }
     }
 
