@@ -21,7 +21,13 @@ enum ExtrinsicCheck: String, CaseIterable {
             return from(string: overridenType)
         }
         
-        let typeName = string.components(separatedBy: "::").last
+        var typeName: String? = string
+        if typeName?.contains("<") == true {
+            typeName = typeName?.components(separatedBy: "<").first
+        }
+        
+        typeName = typeName?.components(separatedBy: "::").last
+        
         for check in Self.allCases {
             if let checkTypeName = check.rawValue.components(separatedBy: "::").last, checkTypeName == typeName {
                 overridenTypes[string] = check.rawValue

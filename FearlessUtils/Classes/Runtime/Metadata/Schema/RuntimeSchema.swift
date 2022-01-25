@@ -91,6 +91,10 @@ extension Schema {
             
             return name
         }
+        
+        private var ignoredGenericTypes: [String] {
+            [KnownType.address.name] + ExtrinsicCheck.allCases.map { $0.rawValue }
+        }
 
         // swiftlint:disable cyclomatic_complexity function_body_length
         private func _typeName(for type: TypeMetadata) throws -> String {
@@ -101,7 +105,7 @@ extension Schema {
                 }
                 var name = type.path.joined(separator: "::")
                 
-                if !type.params.isEmpty, type.path.contains("Option") {
+                if !type.params.isEmpty, !ignoredGenericTypes.contains(name) {
                     let paramNames = try type.params
                         .map {
                             var name = $0.name
