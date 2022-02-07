@@ -10,6 +10,7 @@ extension WebSocket: WebSocketConnectionProtocol {}
 
 public protocol WebSocketEngineDelegate: AnyObject {
     func webSocketDidChangeState(
+        engine: WebSocketEngine,
         from oldState: WebSocketEngine.State,
         to newState: WebSocketEngine.State
     )
@@ -25,7 +26,7 @@ public final class WebSocketEngine {
         case connected
     }
 
-    public let connection: WebSocketConnectionProtocol
+    public var connection: WebSocketConnectionProtocol
     public let version: String
     public let logger: SDKLoggerProtocol?
     public let reachabilityManager: ReachabilityManagerProtocol?
@@ -39,7 +40,7 @@ public final class WebSocketEngine {
                 let newState = state
 
                 completionQueue.async {
-                    delegate.webSocketDidChangeState(from: oldState, to: newState)
+                    delegate.webSocketDidChangeState(engine: self, from: oldState, to: newState)
                 }
             }
         }
@@ -67,6 +68,7 @@ public final class WebSocketEngine {
     private(set) var unknownResponsesByRemoteId: [String: [Data]] = [:]
 
     public weak var delegate: WebSocketEngineDelegate?
+    public var url: URL?
 
     public init(
         url: URL,
@@ -79,6 +81,7 @@ public final class WebSocketEngine {
         pingInterval: TimeInterval = 30,
         logger: SDKLoggerProtocol? = nil
     ) {
+        self.url = url
         self.version = version
         self.logger = logger
         self.reconnectionStrategy = reconnectionStrategy
@@ -118,6 +121,7 @@ public final class WebSocketEngine {
         pingInterval: TimeInterval = 30,
         logger: SDKLoggerProtocol? = nil
     ) {
+        url = nil
         self.connection = connection
         self.reachabilityManager = reachabilityManager
         self.reconnectionStrategy = reconnectionStrategy
