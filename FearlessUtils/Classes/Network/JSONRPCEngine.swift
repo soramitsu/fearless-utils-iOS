@@ -114,7 +114,6 @@ public protocol JSONRPCEngine: AnyObject {
     
     func generateRequestId() -> UInt16
     func addSubscription(_ subscription: JSONRPCSubscribing)
-    func reconnect(url: URL)
 }
 
 public extension JSONRPCEngine {
@@ -130,6 +129,4 @@ public extension JSONRPCEngine {
             completion: closure
         )
     }
-    
-    func reconnect(url: URL) {}
 }
