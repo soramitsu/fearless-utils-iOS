@@ -49,6 +49,7 @@ public extension TypeRegistry {
 
         return try TypeRegistry(
             json: types,
+            overrides: json["overrides"]?.arrayValue,
             nodeFactory: OneOfTypeNodeFactory(children: factories),
             typeResolver: OneOfTypeResolver(children: resolvers),
             additionalNodes: additionalNodes

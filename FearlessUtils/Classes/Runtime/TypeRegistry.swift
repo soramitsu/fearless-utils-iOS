@@ -6,11 +6,18 @@ public enum TypeRegistryError: Error {
     case invalidKey(String)
 }
 
+public struct ConstantPath: Hashable {
+    let moduleName: String
+    let constantName: String
+}
+
 public protocol TypeRegistryProtocol {
     var registeredTypes: [Node] { get }
     var registeredTypeNames: Set<String> { get }
+    var registeredOverrides: Set<ConstantPath> { get }
 
     func node(for key: String) -> Node?
+    func override(for moduleName: String, constantName: String) -> String?
 }
 
 protocol TypeRegistering {
@@ -46,12 +53,17 @@ public class TypeRegistry: TypeRegistryProtocol {
     private var typeResolver: TypeResolving
     private var resolutionCache: [String: String] = [:]
     private var allKeys: Set<String> = []
+    private var allOverrides: Set<ConstantPath> = []
+    
+    private var overrides: [ConstantPath: String] = [:]
 
     public var registeredTypes: [Node] { graph.keys.compactMap { graph[$0] } }
     public var registeredTypeNames: Set<String> { allKeys }
+    public var registeredOverrides: Set<ConstantPath> { allOverrides }
 
     init(
         json: JSON,
+        overrides: [JSON]?,
         nodeFactory: TypeNodeFactoryProtocol,
         typeResolver: TypeResolving,
         additionalNodes: [Node]
@@ -60,10 +72,12 @@ public class TypeRegistry: TypeRegistryProtocol {
         self.typeResolver = typeResolver
 
         try parse(json: json)
+        parse(overrides: overrides)
         override(nodes: additionalNodes)
         resolveGenerics()
 
         allKeys = Set(graph.keys)
+        allOverrides = Set(self.overrides.keys)
     }
 
     public func node(for key: String) -> Node? {
@@ -86,12 +100,32 @@ public class TypeRegistry: TypeRegistryProtocol {
 
         return nil
     }
+    
+    public func override(for moduleName: String, constantName: String) -> String? {
+        overrides[.init(moduleName: moduleName, constantName: constantName)]
+    }
 
     // MARK: Private
 
     private func override(nodes: [Node]) {
         for node in nodes {
             graph[node.typeName] = node
+        }
+    }
+    
+    private func parse(overrides: [JSON]?) {
+        guard let modules = overrides else { return }
+
+        for module in modules {
+            guard let moduleName = module["module"]?.stringValue else { continue }
+            guard let constants = module["constants"]?.arrayValue else { continue }
+            
+            for constant in constants {
+                guard let constantName = constant["name"]?.stringValue else { continue }
+                guard let value = constant["value"]?.stringValue else { continue }
+                
+                self.overrides[.init(moduleName: moduleName, constantName: constantName)] = value
+            }
         }
     }
 

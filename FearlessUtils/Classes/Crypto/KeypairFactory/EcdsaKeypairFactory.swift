@@ -8,8 +8,10 @@ public struct EcdsaKeypairFactory: DerivableSeedFactoryProtocol {
 
     public init() {}
 
-    public func createKeypairFromSeed(_ seed: Data,
-                                      chaincodeList: [Chaincode]) throws -> IRCryptoKeypairProtocol {
+    public func createKeypairFromSeed(
+        _ seed: Data,
+        chaincodeList: [Chaincode]
+    ) throws -> IRCryptoKeypairProtocol {
         let childSeed = try deriveChildSeedFromParent(seed, chaincodeList: chaincodeList)
         let childPrivateKey = try SECPrivateKey(rawData: childSeed)
         return try internalFactory.derive(fromPrivateKey: childPrivateKey)

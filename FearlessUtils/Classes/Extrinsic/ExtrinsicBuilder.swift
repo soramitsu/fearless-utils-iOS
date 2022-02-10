@@ -217,11 +217,34 @@ extension ExtrinsicBuilder: ExtrinsicBuilderProtocol {
         metadata: RuntimeMetadata
     ) throws -> Data {
         let call = try prepareExtrinsicCall(for: metadata)
-
+        
+        Log.enable(kind: "DynamicScale")
         let extrinsic = Extrinsic(signature: signature, call: call)
 
         try encoder.append(extrinsic, ofType: GenericType.extrinsic.name)
+        
+        let encoded = try encoder.encode()
+        Log.write("DynamicScale", message: "Extrinsic encoded: \(encoded.toHex(includePrefix: true))")
+        Log.disable(kind: "DynamicScale")
+        
+        return encoded
+    }
+}
 
-        return try encoder.encode()
+struct Log {
+    private static var enabled: [String] = []
+    
+    static func enable(kind: String) {
+        enabled.append(kind)
+    }
+    
+    static func disable(kind: String) {
+        enabled.removeAll { $0 == kind }
+    }
+    
+    static func write(_ kind: String, message: String) {
+        if enabled.contains(kind) {
+            print("[\(kind)] \(message)")
+        }
     }
 }
