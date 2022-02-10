@@ -69,4 +69,27 @@ extension WebSocketEngine: JSONRPCEngine {
 
         mutex.unlock()
     }
+    
+    public func reconnect(url: URL) {
+        self.connection.disconnect()
+        
+        self.url = url
+        let request = URLRequest(url: url, timeoutInterval: 10)
+
+        let engine = WSEngine(
+            transport: FoundationTransport(),
+            certPinner: FoundationSecurity(),
+            compressionHandler: nil
+        )
+
+        let connection = WebSocket(request: request, engine: engine)
+        connection.forceDisconnect()
+        self.connection = connection
+
+        connection.delegate = self
+        connection.callbackQueue = Self.sharedProcessingQueue
+        
+        self.changeState(.notConnected)
+        self.connectIfNeeded()
+    }
 }
