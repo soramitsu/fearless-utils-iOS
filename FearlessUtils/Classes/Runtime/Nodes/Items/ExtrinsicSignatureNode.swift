@@ -45,7 +45,9 @@ public class ExtrinsicSignatureNode: Node {
         guard
             var address = params[ExtrinsicSignature.CodingKeys.address.rawValue],
             let signature = params[ExtrinsicSignature.CodingKeys.signature.rawValue],
-            let extra = params[ExtrinsicSignature.CodingKeys.extra.rawValue] else {
+            let extra = params[ExtrinsicSignature.CodingKeys.extra.rawValue],
+            let signatureType = params[ExtrinsicSignature.CodingKeys.type.rawValue]?.stringValue
+        else {
             throw ExtrinsicSignatureNodeError.invalidParams
         }
         
@@ -63,7 +65,7 @@ public class ExtrinsicSignatureNode: Node {
         }
 
         try encoder.append(json: address, type: addressType.name)
-        try encoder.append(json: signature, type: KnownType.signature.name)
+        try encoder.append(json: signature, type: signatureType)
         try encoder.append(json: extra, type: GenericType.extrinsicExtra.name)
     }
 
