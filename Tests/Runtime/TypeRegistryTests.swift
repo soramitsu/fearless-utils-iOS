@@ -189,8 +189,11 @@ class TypeRegistryTests: XCTestCase {
 
         // when
 
-        let registry = try TypeRegistry
-            .createFromTypesDefinition(data: data, additionalNodes: [])
+        let registry = try TypeRegistry.createFromTypesDefinition(
+            data: data,
+            additionalNodes: [],
+            schemaResolver: Schema.Resolver(schema: nil)
+        )
 
         // then
 

@@ -32,9 +32,11 @@ final class RuntimeHelper {
 
         let data = try Data(contentsOf: url)
         let basisNodes = BasisNodes.allNodes(for: runtimeMetadata)
-        let registry = try TypeRegistry
-            .createFromTypesDefinition(data: data,
-                                       additionalNodes: basisNodes)
+        let registry = try TypeRegistry.createFromTypesDefinition(
+            data: data,
+            additionalNodes: basisNodes,
+            schemaResolver: runtimeMetadata.schemaResolver
+        )
 
         return registry
     }
@@ -103,28 +105,34 @@ final class RuntimeHelper {
     }
 
     static let dummyRuntimeMetadata: RuntimeMetadata = {
-        RuntimeMetadata(metaReserved: 1,
-                        runtimeMetadataVersion: 1,
-                        modules: [
-                            ModuleMetadata(name: "A",
-                                           storage: StorageMetadata(prefix: "_A", entries: []),
-                                           calls: [
-                                            FunctionMetadata(name: "B",
-                                                             arguments: [
-                                                                FunctionArgumentMetadata(name: "arg1", type: "bool"),
-                                                                FunctionArgumentMetadata(name: "arg2", type: "u8")
-                                                             ], documentation: [])
-                                           ],
-                                           events: [
-                                            EventMetadata(name: "A",
-                                                          arguments: ["bool", "u8"],
-                                                          documentation: [])
-                                           ],
-                                           constants: [],
-                                           errors: [],
-                                           index: 1)
-                        ],
-                        extrinsic: ExtrinsicMetadata(version: 1,
-                                                     signedExtensions: []))
+        RuntimeMetadata.v1(
+            modules: [
+                RuntimeMetadataV1.ModuleMetadata(
+                    name: "A",
+                    storage: RuntimeMetadataV1.StorageMetadata(prefix: "_A", entries: []),
+                    calls: [
+                        RuntimeMetadataV1.FunctionMetadata(
+                            name: "B",
+                            arguments: [
+                                RuntimeMetadataV1.FunctionArgumentMetadata(name: "arg1", type: "bool"),
+                                RuntimeMetadataV1.FunctionArgumentMetadata(name: "arg2", type: "u8")
+                            ],
+                            documentation: []
+                        )
+                    ],
+                    events: [
+                        RuntimeMetadataV1.EventMetadata(
+                            name: "A",
+                            arguments: ["bool", "u8"],
+                            documentation: []
+                        )
+                    ],
+                    constants: [],
+                    errors: [],
+                    index: 1
+                )
+            ],
+            extrinsic: RuntimeMetadataV1.ExtrinsicMetadata(version: 1, signedExtensions: [])
+        )
     }()
 }

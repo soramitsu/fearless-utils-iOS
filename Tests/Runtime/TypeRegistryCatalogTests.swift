@@ -16,7 +16,7 @@ class TypeRegistryCatalogTests: XCTestCase {
 
         // then
 
-        XCTAssertEqual(node?.typeName, "CompactAssignmentsFrom258")
+        XCTAssertEqual(node?.typeName, "CompactAssignmentsWith16")
     }
 
     func testTypeExtractedFromWithoutVersioning() throws {
@@ -31,7 +31,7 @@ class TypeRegistryCatalogTests: XCTestCase {
 
         // then
 
-        XCTAssertEqual(node?.typeName, "CompactAssignmentsFrom258")
+        XCTAssertEqual(node?.typeName, "CompactAssignmentsWith24")
     }
 
     func testTypeExtractedFromProperVersion() throws {

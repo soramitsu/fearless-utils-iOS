@@ -14,30 +14,37 @@ public class EnumNode: Node {
             let enumValue = value.arrayValue,
             enumValue.count == 2,
             let caseValue = enumValue.first?.stringValue,
-            let assocValue = enumValue.last else {
+            let assocValue = enumValue.last
+        else {
             throw DynamicScaleEncoderError.unexpectedEnumJSON(json: value)
         }
 
-        guard let index = typeMapping.firstIndex(where: { $0.name == caseValue }) else {
+        guard let type = typeMapping.first(where: { $0.name == caseValue }) else {
             throw DynamicScaleEncoderError.unexpectedEnumCase(value: caseValue)
         }
 
-        try encoder.append(encodable: UInt8(index))
-        try encoder.append(json: assocValue, type: typeMapping[index].node.typeName)
+        try encoder.append(encodable: type.index)
+        
+        guard assocValue != JSON.null else {
+            return
+        }
+        
+        try encoder.append(json: assocValue, type: type.node.typeName)
     }
 
     public func accept(decoder: DynamicScaleDecoding) throws -> JSON {
         guard let caseValueStr = try decoder.readU8().stringValue,
-              let caseValue = Int(caseValueStr) else {
+              let caseIndex = UInt8(caseValueStr)
+        else {
             throw DynamicScaleDecoderError.unexpectedEnumCase
         }
 
-        guard caseValue < typeMapping.count else {
-            throw DynamicScaleDecoderError.invalidEnumCase(value: caseValue, count: typeMapping.count)
+        guard let type = typeMapping.first(where: { $0.index == caseIndex }) else {
+            throw DynamicScaleDecoderError.invalidEnumCase(index: caseIndex)
         }
 
-        let json = try decoder.read(type: typeMapping[caseValue].node.typeName)
+        let json = try decoder.read(type: type.node.typeName)
 
-        return .arrayValue([.stringValue(typeMapping[caseValue].name), json])
+        return .arrayValue([.stringValue(type.name), json])
     }
 }

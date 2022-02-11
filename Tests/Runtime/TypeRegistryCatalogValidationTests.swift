@@ -64,7 +64,15 @@ class TypeRegistryCatalogValidationTests: XCTestCase {
                                        networkName: "polkadot",
                                        runtimeMetadataName: "polkadot-metadata")
 
+        let unsupportedNodeTypes: [PrimitiveType] = [
+            .i8, .i16, .i32, .i64, .i128, .i256
+        ]
+        
         for value in PrimitiveType.allCases {
+            guard !unsupportedNodeTypes.contains(value) else {
+                continue
+            }
+            
             guard let node = catalog.node(for: value.name, version: 28) else {
                 XCTFail("Unexpected empty node")
                 return

@@ -28,10 +28,12 @@ public class TypeRegistryCatalog: TypeRegistryCatalogProtocol {
     public let mutex = NSLock()
     public var registryCache: [String: TypeRegistryProtocol] = [:]
 
-    public init(baseRegistry: TypeRegistryProtocol,
-                versionedRegistries: [UInt64: TypeRegistryProtocol],
-                runtimeMetadataRegistry: TypeRegistryProtocol,
-                typeResolver: TypeResolving) {
+    public init(
+        baseRegistry: TypeRegistryProtocol,
+        versionedRegistries: [UInt64: TypeRegistryProtocol],
+        runtimeMetadataRegistry: TypeRegistryProtocol,
+        typeResolver: TypeResolving
+    ) {
         self.baseRegistry = baseRegistry
         self.versionedRegistries = versionedRegistries
         self.runtimeMetadataRegistry = runtimeMetadataRegistry
@@ -66,17 +68,16 @@ public class TypeRegistryCatalog: TypeRegistryCatalogProtocol {
         }
 
         let cacheKey = "\(typeName)_\(version)"
-
-        if let registry = registryCache[cacheKey] {
-            return registry.node(for: typeName)
+        
+        if let registry = registryCache[cacheKey], let node = registry.node(for: typeName) {
+            return node
         }
 
         let registry = getRegistry(for: typeName, version: version)
         return fallbackToRuntimeMetadataIfNeeded(from: registry, typeName: typeName, cacheKey: cacheKey)
     }
 
-    public func replacingRuntimeMetadata(_ newMetadata: RuntimeMetadata) throws
-    -> TypeRegistryCatalogProtocol {
+    public func replacingRuntimeMetadata(_ newMetadata: RuntimeMetadata) throws -> TypeRegistryCatalogProtocol {
         mutex.lock()
 
         defer {

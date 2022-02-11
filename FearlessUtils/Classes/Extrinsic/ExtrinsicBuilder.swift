@@ -10,10 +10,12 @@ public protocol ExtrinsicBuilderProtocol: AnyObject {
     func with(shouldUseAtomicBatch: Bool) -> Self
     func adding<T: RuntimeCallable>(call: T) throws -> Self
 
-    func signing(by signer: (Data) throws -> Data,
-                 of type: CryptoType,
-                 using encoder: DynamicScaleEncoding,
-                 metadata: RuntimeMetadata) throws -> Self
+    func signing(
+        by signer: (Data) throws -> Data,
+        of type: CryptoType,
+        using encoder: DynamicScaleEncoding,
+        metadata: RuntimeMetadata
+    ) throws -> Self
 
     func build(encodingBy encoder: DynamicScaleEncoding, metadata: RuntimeMetadata) throws -> Data
 }
@@ -48,9 +50,11 @@ public final class ExtrinsicBuilder {
     private var signature: ExtrinsicSignature?
     private var shouldUseAtomicBatch: Bool = true
 
-    public init(specVersion: UInt32,
-                transactionVersion: UInt32,
-                genesisHash: String) {
+    public init(
+        specVersion: UInt32,
+        transactionVersion: UInt32,
+        genesisHash: String
+    ) {
         self.specVersion = specVersion
         self.transactionVersion = transactionVersion
         self.genesisHash = genesisHash
@@ -71,11 +75,13 @@ public final class ExtrinsicBuilder {
 
         let callName = shouldUseAtomicBatch ? KnowRuntimeModule.Utitlity.batchAll : KnowRuntimeModule.Utitlity.batch
 
-        let call = RuntimeCall(moduleName: KnowRuntimeModule.Utitlity.name,
-                               callName: callName,
-                               args: BatchArgs(calls: calls))
+        let call = RuntimeCall(
+            moduleName: KnowRuntimeModule.Utitlity.name,
+            callName: callName,
+            args: BatchArgs(calls: calls)
+        )
 
-        guard metadata.getFunction(from: call.moduleName, with: call.callName) != nil else {
+        guard try metadata.getFunction(from: call.moduleName, with: call.callName) != nil else {
             throw ExtrinsicBuilderError.unsupportedBatch
         }
 
@@ -87,9 +93,11 @@ public final class ExtrinsicBuilder {
         try encoder.append(extra, ofType: GenericType.extrinsicExtra.name)
     }
 
-    private func appendAdditionalSigned(encodingBy encoder: DynamicScaleEncoding,
-                                        metadata: RuntimeMetadata) throws {
-        for checkString in metadata.extrinsic.signedExtensions {
+    private func appendAdditionalSigned(
+        encodingBy encoder: DynamicScaleEncoding,
+        metadata: RuntimeMetadata
+    ) throws {
+        for checkString in try metadata.extrinsic.signedExtensions(using: metadata.schemaResolver) {
             guard let check = ExtrinsicCheck(rawValue: checkString) else {
                 continue
             }
@@ -109,8 +117,10 @@ public final class ExtrinsicBuilder {
         }
     }
 
-    private func prepareSignaturePayload(encodingBy encoder: DynamicScaleEncoding,
-                                         using metadata: RuntimeMetadata) throws -> Data {
+    private func prepareSignaturePayload(
+        encodingBy encoder: DynamicScaleEncoding,
+        using metadata: RuntimeMetadata
+    ) throws -> Data {
         let call = try prepareExtrinsicCall(for: metadata)
         try encoder.append(json: call, type: GenericType.call.name)
 
@@ -165,10 +175,12 @@ extension ExtrinsicBuilder: ExtrinsicBuilderProtocol {
         return self
     }
 
-    public func signing(by signer: (Data) throws -> Data,
-                        of type: CryptoType,
-                        using encoder: DynamicScaleEncoding,
-                        metadata: RuntimeMetadata) throws -> Self {
+    public func signing(
+        by signer: (Data) throws -> Data,
+        of type: CryptoType,
+        using encoder: DynamicScaleEncoding,
+        metadata: RuntimeMetadata
+    ) throws -> Self {
         guard let address = address else {
             throw ExtrinsicBuilderError.missingAddress
         }
@@ -191,15 +203,19 @@ extension ExtrinsicBuilder: ExtrinsicBuilderProtocol {
         let sigJson = try signature.toScaleCompatibleJSON()
 
         let extra = ExtrinsicSignedExtra(era: era, nonce: nonce ?? 0, tip: tip)
-        self.signature = ExtrinsicSignature(address: address,
-                                            signature: sigJson,
-                                            extra: extra)
+        self.signature = ExtrinsicSignature(
+            address: address,
+            signature: sigJson,
+            extra: extra
+        )
 
         return self
     }
 
-    public func build(encodingBy encoder: DynamicScaleEncoding,
-                      metadata: RuntimeMetadata) throws -> Data {
+    public func build(
+        encodingBy encoder: DynamicScaleEncoding,
+        metadata: RuntimeMetadata
+    ) throws -> Data {
         let call = try prepareExtrinsicCall(for: metadata)
 
         let extrinsic = Extrinsic(signature: signature, call: call)

@@ -104,6 +104,9 @@
 		AE4B521426CBA71B00A66D2C /* BIP32HDKDEtalon.json in Resources */ = {isa = PBXBuildFile; fileRef = AE4B521326CBA71B00A66D2C /* BIP32HDKDEtalon.json */; };
 		AE4B521826CE127200A66D2C /* BIP32HDKD.json in Resources */ = {isa = PBXBuildFile; fileRef = AE4B521726CE127200A66D2C /* BIP32HDKD.json */; };
 		B2BF1BE136637C8404B79450 /* Pods_FearlessUtils_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9A63E44DBCDCE738F798358 /* Pods_FearlessUtils_Example.framework */; };
+		C74FAB9B272019AB00B5C452 /* polkadot-v14-metadata in Resources */ = {isa = PBXBuildFile; fileRef = C74FAB9A272019AB00B5C452 /* polkadot-v14-metadata */; };
+		C74FAB9E272019C600B5C452 /* westend-v14-metadata in Resources */ = {isa = PBXBuildFile; fileRef = C74FAB9C272019C600B5C452 /* westend-v14-metadata */; };
+		C74FAB9F272019C600B5C452 /* kusama-v14-metadata in Resources */ = {isa = PBXBuildFile; fileRef = C74FAB9D272019C600B5C452 /* kusama-v14-metadata */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -224,6 +227,9 @@
 		B9A63E44DBCDCE738F798358 /* Pods_FearlessUtils_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FearlessUtils_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0EC4D272FE196149F4492DE /* Pods-FearlessUtils_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FearlessUtils_Example.release.xcconfig"; path = "Target Support Files/Pods-FearlessUtils_Example/Pods-FearlessUtils_Example.release.xcconfig"; sourceTree = "<group>"; };
 		C16B9A0A217A972DC441B811 /* FearlessUtils.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = FearlessUtils.podspec; path = ../FearlessUtils.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		C74FAB9A272019AB00B5C452 /* polkadot-v14-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "polkadot-v14-metadata"; sourceTree = "<group>"; };
+		C74FAB9C272019C600B5C452 /* westend-v14-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "westend-v14-metadata"; sourceTree = "<group>"; };
+		C74FAB9D272019C600B5C452 /* kusama-v14-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "kusama-v14-metadata"; sourceTree = "<group>"; };
 		DBD8662893B1E1373B778CC2 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -346,8 +352,11 @@
 				8429C80D25C434DA0086D7F6 /* polkadot.json */,
 				8429C80C25C434DA0086D7F6 /* westend.json */,
 				84452B6025D2ADC300F47EC5 /* westend-metadata */,
+				C74FAB9C272019C600B5C452 /* westend-v14-metadata */,
 				84452C0A25D2D54300F47EC5 /* kusama-metadata */,
+				C74FAB9D272019C600B5C452 /* kusama-v14-metadata */,
 				84452C0E25D2D5C300F47EC5 /* polkadot-metadata */,
+				C74FAB9A272019AB00B5C452 /* polkadot-v14-metadata */,
 				8467F4C626B285EC00C5B6F4 /* statemine-metadata */,
 				84F4394125DBAAA200AEDA56 /* test-metadata */,
 			);
@@ -683,6 +692,8 @@
 				AE4B521426CBA71B00A66D2C /* BIP32HDKDEtalon.json in Resources */,
 				84452B6125D2ADC300F47EC5 /* westend-metadata in Resources */,
 				84452C0B25D2D54300F47EC5 /* kusama-metadata in Resources */,
+				C74FAB9E272019C600B5C452 /* westend-v14-metadata in Resources */,
+				C74FAB9B272019AB00B5C452 /* polkadot-v14-metadata in Resources */,
 				8429C81825C434E40086D7F6 /* default.json in Resources */,
 				8467FD1524E677C6005D486C /* ecdsaHDKD.json in Resources */,
 				84452C0F25D2D5C300F47EC5 /* polkadot-metadata in Resources */,
@@ -695,6 +706,7 @@
 				84A0DE3224DBF49700F436A8 /* keystore-ecdsa.json in Resources */,
 				84CB472524DBE98500837E11 /* keystore-sr25519.json in Resources */,
 				8429C82225C434EA0086D7F6 /* polkadot.json in Resources */,
+				C74FAB9F272019C600B5C452 /* kusama-v14-metadata in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

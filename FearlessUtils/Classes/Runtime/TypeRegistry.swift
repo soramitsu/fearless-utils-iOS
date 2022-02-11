@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 public enum TypeRegistryError: Error {
     case unexpectedJson
@@ -14,6 +15,7 @@ public protocol TypeRegistryProtocol {
 
 protocol TypeRegistering {
     func register(typeName: String, json: JSON) -> Node
+    func register(typeName: String, node: Node) -> Node
 }
 
 /**
@@ -48,10 +50,12 @@ public class TypeRegistry: TypeRegistryProtocol {
     public var registeredTypes: [Node] { graph.keys.compactMap { graph[$0] } }
     public var registeredTypeNames: Set<String> { allKeys }
 
-    init(json: JSON,
-         nodeFactory: TypeNodeFactoryProtocol,
-         typeResolver: TypeResolving,
-         additionalNodes: [Node]) throws {
+    init(
+        json: JSON,
+        nodeFactory: TypeNodeFactoryProtocol,
+        typeResolver: TypeResolving,
+        additionalNodes: [Node]
+    ) throws {
         self.nodeFactory = nodeFactory
         self.typeResolver = typeResolver
 
@@ -67,13 +71,17 @@ public class TypeRegistry: TypeRegistryProtocol {
             return node
         }
 
-        if let resolvedKey = resolutionCache[key] {
-            return graph[resolvedKey]
+        if let resolvedKey = resolutionCache[key], let node = graph[resolvedKey] {
+            return node
         }
 
         if let resolvedKey = typeResolver.resolve(typeName: key, using: allKeys) {
             resolutionCache[key] = resolvedKey
-            return graph[resolvedKey]
+            if let node = graph[resolvedKey] {
+                return node
+            }
+            
+            return try? nodeFactory.buildNode(from: .stringValue(key), typeName: key, mediator: self)
         }
 
         return nil
@@ -107,9 +115,7 @@ public class TypeRegistry: TypeRegistryProtocol {
         }
 
         for item in refinedDict {
-            if let node = try nodeFactory.buildNode(from: item.value,
-                                                    typeName: item.key,
-                                                    mediator: self) {
+            if let node = try nodeFactory.buildNode(from: item.value, typeName: item.key, mediator: self) {
                 graph[item.key] = node
             }
         }
@@ -122,8 +128,7 @@ public class TypeRegistry: TypeRegistryProtocol {
         let nonGenericTypeNames = allTypeNames.subtracting(genericTypeNames)
 
         for genericTypeName in genericTypeNames {
-            if let resolvedKey = typeResolver.resolve(typeName: genericTypeName,
-                                                      using: nonGenericTypeNames) {
+            if let resolvedKey = typeResolver.resolve(typeName: genericTypeName, using: nonGenericTypeNames) {
                 graph[genericTypeName] = ProxyNode(typeName: resolvedKey, resolver: self)
             }
         }
@@ -141,10 +146,15 @@ extension TypeRegistry: TypeRegistering {
         graph[typeName] = GenericNode(typeName: typeName)
 
         if let node = try? nodeFactory.buildNode(from: json, typeName: typeName, mediator: self) {
-            graph[typeName] = node
+            return register(typeName: typeName, node: node)
         }
 
         return proxy
+    }
+    
+    func register(typeName: String, node: Node) -> Node {
+        graph[typeName] = node
+        return ProxyNode(typeName: typeName, resolver: self)
     }
 }
 

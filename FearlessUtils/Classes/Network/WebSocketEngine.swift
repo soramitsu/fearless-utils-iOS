@@ -10,6 +10,7 @@ extension WebSocket: WebSocketConnectionProtocol {}
 
 public protocol WebSocketEngineDelegate: AnyObject {
     func webSocketDidChangeState(
+        engine: WebSocketEngine,
         from oldState: WebSocketEngine.State,
         to newState: WebSocketEngine.State
     )
@@ -25,7 +26,7 @@ public final class WebSocketEngine {
         case connected
     }
 
-    public let connection: WebSocketConnectionProtocol
+    public var connection: WebSocketConnectionProtocol
     public let version: String
     public let logger: SDKLoggerProtocol?
     public let reachabilityManager: ReachabilityManagerProtocol?
@@ -39,7 +40,7 @@ public final class WebSocketEngine {
                 let newState = state
 
                 completionQueue.async {
-                    delegate.webSocketDidChangeState(from: oldState, to: newState)
+                    delegate.webSocketDidChangeState(engine: self, from: oldState, to: newState)
                 }
             }
         }
@@ -67,6 +68,7 @@ public final class WebSocketEngine {
     private(set) var unknownResponsesByRemoteId: [String: [Data]] = [:]
 
     public weak var delegate: WebSocketEngineDelegate?
+    public var url: URL?
 
     public init(
         url: URL,
@@ -79,6 +81,7 @@ public final class WebSocketEngine {
         pingInterval: TimeInterval = 30,
         logger: SDKLoggerProtocol? = nil
     ) {
+        self.url = url
         self.version = version
         self.logger = logger
         self.reconnectionStrategy = reconnectionStrategy
@@ -118,6 +121,7 @@ public final class WebSocketEngine {
         pingInterval: TimeInterval = 30,
         logger: SDKLoggerProtocol? = nil
     ) {
+        url = nil
         self.connection = connection
         self.reachabilityManager = reachabilityManager
         self.reconnectionStrategy = reconnectionStrategy
@@ -322,7 +326,7 @@ extension WebSocketEngine {
         }
     }
 
-    func addSubscription(_ subscription: JSONRPCSubscribing) {
+    public func addSubscription(_ subscription: JSONRPCSubscribing) {
         subscriptions[subscription.requestId] = subscription
     }
 
@@ -375,7 +379,7 @@ extension WebSocketEngine {
         return request
     }
 
-    func generateRequestId() -> UInt16 {
+    public func generateRequestId() -> UInt16 {
         let items = pendingRequests.map(\.requestId) + inProgressRequests.map(\.key)
         let existingIds: Set<UInt16> = Set(items)
 
@@ -418,15 +422,15 @@ extension WebSocketEngine {
         do {
             let response = try jsonDecoder.decode(JSONRPCData<String>.self, from: data)
             subscriptions[identifier]?.remoteId = response.result
-            
+
             if let postponed = unknownResponsesByRemoteId[response.result] {
                 for data in postponed {
                     try processSubscriptionUpdate(data)
                 }
-                
+
                 unknownResponsesByRemoteId[response.result] = nil
             }
-            
+
             logger?.debug("Did receive subscription id: \(response.result)")
         } catch {
             processSubscriptionError(identifier, error: error, shouldUnsubscribe: true)
@@ -458,7 +462,7 @@ extension WebSocketEngine {
             if unknownResponsesByRemoteId[remoteId] == nil {
                 unknownResponsesByRemoteId[remoteId] = []
             }
-            
+
             unknownResponsesByRemoteId[remoteId]?.append(data)
         }
     }

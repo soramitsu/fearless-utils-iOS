@@ -14,8 +14,10 @@ public class SessionKeysSubstrateNode: Node {
         }
 
         guard Self.fieldNames.count == fieldValues.count else {
-            throw DynamicScaleEncoderError.unexpectedStructFields(json: value,
-                                                                  expectedFields: Self.fieldNames)
+            throw DynamicScaleEncoderError.unexpectedStructFields(
+                json: value,
+                expectedFields: Self.fieldNames
+            )
         }
 
         for index in 0..<Self.fieldNames.count {

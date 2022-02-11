@@ -1,11 +1,15 @@
 import Foundation
 
-public enum StorageEntryModifier: UInt8 {
+// MARK: - RuntimeStorageEntryModifier
+
+public enum RuntimeStorageEntryModifier: UInt8 {
     case optional
     case defaultModifier
 }
 
-extension StorageEntryModifier: ScaleCodable {
+// MARK: - ScaleCodable
+
+extension RuntimeStorageEntryModifier: ScaleCodable {
     public func encode(scaleEncoder: ScaleEncoding) throws {
         try rawValue.encode(scaleEncoder: scaleEncoder)
     }
@@ -13,7 +17,7 @@ extension StorageEntryModifier: ScaleCodable {
     public init(scaleDecoder: ScaleDecoding) throws {
         let rawValue = try UInt8(scaleDecoder: scaleDecoder)
 
-        guard let value = StorageEntryModifier(rawValue: rawValue)  else {
+        guard let value = RuntimeStorageEntryModifier(rawValue: rawValue) else {
             throw ScaleCodingError.unexpectedDecodedValue
         }
 

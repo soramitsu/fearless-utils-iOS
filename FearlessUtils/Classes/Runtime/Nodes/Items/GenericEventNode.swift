@@ -34,7 +34,7 @@ public class GenericEventNode: Node {
             throw GenericEventNodeError.unexpectedEventModule(value: eventModule)
         }
 
-        guard let events = module.events, events.count > eventIndex else {
+        guard let events = try module.events(using: runtimeMetadata.schemaResolver), events.count > eventIndex else {
             throw GenericEventNodeError.unexpectedEventIndex(value: eventIndex)
         }
 
@@ -68,7 +68,7 @@ public class GenericEventNode: Node {
             throw GenericEventNodeError.unexpectedEventModule(value: UInt64(eventModule))
         }
 
-        guard let events = module.events, events.count > eventIndex else {
+        guard let events = try module.events(using: runtimeMetadata.schemaResolver), events.count > eventIndex else {
             throw GenericEventNodeError.unexpectedEventIndex(value: UInt64(eventIndex))
         }
 

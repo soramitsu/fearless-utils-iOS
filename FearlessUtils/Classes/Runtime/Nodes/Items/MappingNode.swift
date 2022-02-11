@@ -32,7 +32,7 @@ public class MappingNode: Node {
 
         for index in 0..<typeMapping.count {
             guard let child = mapping[typeMapping[index].name] else {
-                throw DynamicScaleCoderError.unresolverType(name: typeMapping[index].name)
+                throw DynamicScaleCoderError.unresolvedType(name: typeMapping[index].name)
             }
 
             try encoder.append(json: child, type: typeMapping[index].type)

@@ -8,10 +8,10 @@ public class GenericNode: Node {
     }
 
     public func accept(encoder: DynamicScaleEncoding, value: JSON) throws {
-        throw DynamicScaleCoderError.unresolverType(name: typeName)
+        throw DynamicScaleCoderError.unresolvedType(name: typeName)
     }
 
     public func accept(decoder: DynamicScaleDecoding) throws -> JSON {
-        throw DynamicScaleCoderError.unresolverType(name: typeName)
+        throw DynamicScaleCoderError.unresolvedType(name: typeName)
     }
 }

@@ -111,6 +111,10 @@ public protocol JSONRPCEngine: AnyObject {
         throws -> UInt16
 
     func cancelForIdentifier(_ identifier: UInt16)
+    
+    func generateRequestId() -> UInt16
+    func addSubscription(_ subscription: JSONRPCSubscribing)
+    func reconnect(url: URL)
 }
 
 public extension JSONRPCEngine {
@@ -126,4 +130,6 @@ public extension JSONRPCEngine {
             completion: closure
         )
     }
+    
+    func reconnect(url: URL) {}
 }
