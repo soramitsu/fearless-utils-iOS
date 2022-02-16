@@ -26,7 +26,7 @@ extension KeystoreBuilder: KeystoreBuilding {
         return self
     }
 
-    public func build(from data: KeystoreData, password: String?) throws -> KeystoreDefinition {
+    public func build(from data: KeystoreData, password: String?, isEthereum: Bool) throws -> KeystoreDefinition {
         let scryptParameters = try ScryptParameters()
 
         let scryptData: Data
@@ -64,17 +64,23 @@ extension KeystoreBuilder: KeystoreBuilding {
         let pcksData = KeystoreConstants.pkcs8Header + secretKeyData +
             KeystoreConstants.pkcs8Divider + data.publicKeyData
         let encrypted = try NaclSecretBox.secretBox(message: pcksData, nonce: nonce, key: encryptionKey)
+
         let encoded = scryptParameters.encode() + nonce + encrypted
 
+        let cryptoType = isEthereum ? "ethereum" : data.cryptoType.rawValue
         let encodingType = [KeystoreEncodingType.scrypt.rawValue, KeystoreEncodingType.xsalsa.rawValue]
-        let encodingContent = [KeystoreEncodingContent.pkcs8.rawValue, data.cryptoType.rawValue]
+        let encodingContent = [KeystoreEncodingContent.pkcs8.rawValue, cryptoType]
         let keystoreEncoding = KeystoreEncoding(content: encodingContent,
                                                 type: encodingType,
                                                 version: String(KeystoreConstants.version))
 
+        let isHardware: Bool? = isEthereum ? false : nil
+        let tags: [String]? = isEthereum ? [] : nil
         let meta = KeystoreMeta(name: name,
                                 createdAt: Int64(creationDate.timeIntervalSince1970),
-                                genesisHash: genesisHash)
+                                genesisHash: genesisHash,
+                                isHardware: isHardware,
+                                tags: tags)
 
         return KeystoreDefinition(address: data.address,
                                   encoded: encoded.base64EncodedString(),

@@ -10,7 +10,7 @@ public protocol KeystoreBuilding {
     func with(creationDate: Date) -> Self
     func with(genesisHash: String) -> Self
 
-    func build(from data: KeystoreData, password: String?) throws -> KeystoreDefinition
+    func build(from data: KeystoreData, password: String?, isEthereum: Bool) throws -> KeystoreDefinition
 }
 
 public enum KeystoreExtractorError: Error {
