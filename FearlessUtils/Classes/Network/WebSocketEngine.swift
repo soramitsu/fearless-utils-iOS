@@ -38,10 +38,7 @@ public final class WebSocketEngine {
             if let delegate = delegate {
                 let oldState = oldValue
                 let newState = state
-
-                completionQueue.async {
                     delegate.webSocketDidChangeState(engine: self, from: oldState, to: newState)
-                }
             }
         }
     }
