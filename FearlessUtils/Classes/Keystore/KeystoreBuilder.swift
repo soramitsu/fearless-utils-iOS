@@ -11,6 +11,10 @@ public class KeystoreBuilder {
 }
 
 extension KeystoreBuilder: KeystoreBuilding {
+    enum Constants {
+        static let ethereum = "ethereum"
+    }
+    
     public func with(name: String) -> Self {
         self.name = name
         return self
@@ -67,7 +71,7 @@ extension KeystoreBuilder: KeystoreBuilding {
 
         let encoded = scryptParameters.encode() + nonce + encrypted
 
-        let cryptoType = isEthereum ? "ethereum" : data.cryptoType.rawValue
+        let cryptoType = isEthereum ? Constants.ethereum : data.cryptoType.rawValue
         let encodingType = [KeystoreEncodingType.scrypt.rawValue, KeystoreEncodingType.xsalsa.rawValue]
         let encodingContent = [KeystoreEncodingContent.pkcs8.rawValue, cryptoType]
         let keystoreEncoding = KeystoreEncoding(content: encodingContent,
