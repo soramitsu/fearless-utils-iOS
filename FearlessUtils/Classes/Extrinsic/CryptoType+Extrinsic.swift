@@ -1,7 +1,7 @@
 import Foundation
 
 extension CryptoType {
-    init?(onChainType: UInt8) {
+    public init?(onChainType: UInt8) {
         switch onChainType {
         case 0:
             self = .ed25519

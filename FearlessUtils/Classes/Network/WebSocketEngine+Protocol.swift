@@ -71,7 +71,7 @@ extension WebSocketEngine: JSONRPCEngine {
     }
     
     public func reconnect(url: URL) {
-        self.connection.disconnect()
+        self.connection.disconnect(closeCode: 0)
         
         self.url = url
         let request = URLRequest(url: url, timeoutInterval: 10)
@@ -81,15 +81,13 @@ extension WebSocketEngine: JSONRPCEngine {
             certPinner: FoundationSecurity(),
             compressionHandler: nil
         )
-
+        
         let connection = WebSocket(request: request, engine: engine)
-        connection.forceDisconnect()
         self.connection = connection
 
         connection.delegate = self
         connection.callbackQueue = Self.sharedProcessingQueue
-        
-        self.changeState(.notConnected)
-        self.connectIfNeeded()
+
+        self.changeState(.connecting(attempt: 0))
     }
 }

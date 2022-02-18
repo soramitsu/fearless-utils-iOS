@@ -93,6 +93,7 @@ extension DynamicScaleEncoder: DynamicScaleEncoding {
             throw DynamicScaleCoderError.unresolvedType(name: type)
         }
 
+        Log.write("DynamicScale", message: "append of type \(type) json: \(json)")
         try node.accept(encoder: self, value: json)
     }
 
@@ -103,9 +104,11 @@ extension DynamicScaleEncoder: DynamicScaleEncoding {
 
         if node is BoolNode {
             try handleBoolOption(for: json.boolValue)
+            Log.write("DynamicScale", message: "append option bool: \(json.boolValue)")
         } else {
             handleCommonOption(for: json)
 
+            Log.write("DynamicScale", message: "append option of type \(type) json: \(json)")
             if !json.isNull {
                 try node.accept(encoder: self, value: json)
             }
@@ -121,6 +124,7 @@ extension DynamicScaleEncoder: DynamicScaleEncoding {
             throw DynamicScaleEncoderError.arrayExpected(json: json)
         }
 
+        Log.write("DynamicScale", message: "append vector of type \(type): \(items)")
         try BigUInt(items.count).encode(scaleEncoder: encoder)
 
         for item in items {
@@ -135,6 +139,7 @@ extension DynamicScaleEncoder: DynamicScaleEncoding {
 
         modifiers.append(.compact)
 
+        Log.write("DynamicScale", message: "append compact of type \(type) json: \(json)")
         try node.accept(encoder: self, value: json)
     }
 
@@ -147,6 +152,7 @@ extension DynamicScaleEncoder: DynamicScaleEncoding {
             throw DynamicScaleEncoderError.arrayExpected(json: json)
         }
 
+        Log.write("DynamicScale", message: "append fixed array of type \(type): \(items)")
         for item in items {
             try node.accept(encoder: self, value: item)
         }
@@ -157,6 +163,7 @@ extension DynamicScaleEncoder: DynamicScaleEncoding {
             throw DynamicScaleEncoderError.hexExpected(json: json)
         }
 
+        Log.write("DynamicScale", message: "append bytes: \(hex)")
         encoder.appendRaw(data: data)
     }
 
@@ -165,54 +172,67 @@ extension DynamicScaleEncoder: DynamicScaleEncoding {
             throw DynamicScaleEncoderError.hexExpected(json: json)
         }
 
+        Log.write("DynamicScale", message: "append string: \(str)")
         try str.encode(scaleEncoder: encoder)
     }
 
     public func appendU8(json: JSON) throws {
+        Log.write("DynamicScale", message: "append u8: \(json)")
         try appendFixedUnsigned(json: json, byteLength: 1)
     }
 
     public func appendU16(json: JSON) throws {
+        Log.write("DynamicScale", message: "append u16: \(json)")
         try appendFixedUnsigned(json: json, byteLength: 2)
     }
 
     public func appendU32(json: JSON) throws {
+        Log.write("DynamicScale", message: "append u32: \(json)")
         try appendFixedUnsigned(json: json, byteLength: 4)
     }
 
     public func appendU64(json: JSON) throws {
+        Log.write("DynamicScale", message: "append u64: \(json)")
         try appendFixedUnsigned(json: json, byteLength: 8)
     }
 
     public func appendU128(json: JSON) throws {
+        Log.write("DynamicScale", message: "append u128: \(json)")
         try appendFixedUnsigned(json: json, byteLength: 16)
     }
 
     public func appendU256(json: JSON) throws {
+        Log.write("DynamicScale", message: "append u256: \(json)")
         try appendFixedUnsigned(json: json, byteLength: 32)
     }
     
     public func appendI8(json: JSON) throws {
+        Log.write("DynamicScale", message: "append i8: \(json)")
         try appendFixedSigned(json: json, byteLength: 1)
     }
 
     public func appendI16(json: JSON) throws {
+        Log.write("DynamicScale", message: "append i16: \(json)")
         try appendFixedSigned(json: json, byteLength: 2)
     }
 
     public func appendI32(json: JSON) throws {
+        Log.write("DynamicScale", message: "append i32: \(json)")
         try appendFixedSigned(json: json, byteLength: 4)
     }
 
     public func appendI64(json: JSON) throws {
+        Log.write("DynamicScale", message: "append i64: \(json)")
         try appendFixedSigned(json: json, byteLength: 8)
     }
 
     public func appendI128(json: JSON) throws {
+        Log.write("DynamicScale", message: "append i128: \(json)")
         try appendFixedSigned(json: json, byteLength: 16)
     }
 
     public func appendI256(json: JSON) throws {
+        Log.write("DynamicScale", message: "append i256: \(json)")
         try appendFixedSigned(json: json, byteLength: 32)
     }
 
@@ -220,11 +240,13 @@ extension DynamicScaleEncoder: DynamicScaleEncoding {
         guard let value = json.boolValue else {
             throw DynamicScaleEncoderError.expectedStringForBool(json: json)
         }
-
+        
+        Log.write("DynamicScale", message: "append bool: \(value)")
         try value.encode(scaleEncoder: encoder)
     }
 
     public func append<T: ScaleCodable>(encodable: T) throws {
+        Log.write("DynamicScale", message: "append generic: \(encodable)")
         try encodable.encode(scaleEncoder: encoder)
     }
 

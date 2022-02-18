@@ -13,6 +13,7 @@ public enum KnownType: String, CaseIterable {
     case phase = "frame_system::Phase"
     case address = "sp_runtime::multiaddress::MultiAddress"
     case signature = "sp_runtime::MultiSignature"
+    case extrinsic = "sp_runtime::generic::unchecked_extrinsic::UncheckedExtrinsic"
     case addressId32 = "sp_core::crypto::AccountId32" // regular networks
     case addressId20 = "account::AccountId20" // ethereum-based networks like Moonbeam/Moonriver
     
