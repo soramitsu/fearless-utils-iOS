@@ -14,6 +14,21 @@ extension CryptoType {
         }
     }
 
+    public init?(rawValue: String) {
+        switch rawValue {
+        case "ecdsa":
+            self = .ecdsa
+        case "sr25519":
+            self = .sr25519
+        case "ed25519":
+            self = .ed25519
+        case "ethereum":
+            self = .ecdsa
+        default:
+            return nil
+        }
+    }
+
     var onChainType: UInt8 {
         switch self {
         case .sr25519:
