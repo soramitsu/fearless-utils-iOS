@@ -5,6 +5,7 @@ import BigInt
 
 public protocol RuntimeExtrinsicMetadata {
     var version: UInt8 { get }
+    var type: BigUInt? { get }
     func signedExtensions(using schemaResolver: Schema.Resolver) throws -> [String]
 }
 
@@ -13,6 +14,7 @@ public protocol RuntimeExtrinsicMetadata {
 extension RuntimeMetadataV1 {
     public struct ExtrinsicMetadata: RuntimeExtrinsicMetadata {
         public let version: UInt8
+        public let type: BigUInt? = nil
         public let signedExtensions: [String]
 
         public init(version: UInt8, signedExtensions: [String]) {
@@ -42,12 +44,13 @@ extension RuntimeMetadataV1.ExtrinsicMetadata: ScaleCodable {
 
 extension RuntimeMetadataV14 {
     public struct ExtrinsicMetadata: RuntimeExtrinsicMetadata {
-        public let type: BigUInt
+        private let _type: BigUInt
+        public var type: BigUInt? { _type }
         public let version: UInt8
         public let signedExtensions: [SignedExtension]
 
         public init(type: BigUInt, version: UInt8, signedExtensions: [SignedExtension]) {
-            self.type = type
+            self._type = type
             self.version = version
             self.signedExtensions = signedExtensions
         }
@@ -62,13 +65,13 @@ extension RuntimeMetadataV14 {
 
 extension RuntimeMetadataV14.ExtrinsicMetadata: ScaleCodable {
     public func encode(scaleEncoder: ScaleEncoding) throws {
-        try type.encode(scaleEncoder: scaleEncoder)
+        try _type.encode(scaleEncoder: scaleEncoder)
         try version.encode(scaleEncoder: scaleEncoder)
         try signedExtensions.encode(scaleEncoder: scaleEncoder)
     }
 
     public init(scaleDecoder: ScaleDecoding) throws {
-        type = try BigUInt(scaleDecoder: scaleDecoder)
+        _type = try BigUInt(scaleDecoder: scaleDecoder)
         version = try UInt8(scaleDecoder: scaleDecoder)
         signedExtensions = try [SignedExtension](scaleDecoder: scaleDecoder)
     }

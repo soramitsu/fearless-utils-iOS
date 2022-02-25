@@ -34,9 +34,13 @@ public struct KeystoreMeta: Codable {
         case name
         case createdAt = "whenCreated"
         case genesisHash
+        case isHardware
+        case tags
     }
 
     public let name: String?
     public let createdAt: Int64?
     public let genesisHash: String?
+    public let isHardware: Bool?
+    public let tags: [String]?
 }

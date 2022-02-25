@@ -55,14 +55,17 @@ public extension TypeRegistryCatalog {
             RegexReplaceResolver.genericsFilter()
         ])
 
-        let runtimeMetadataRegistry = try TypeRegistry
-            .createFromRuntimeMetadata(runtimeMetadata,
-                                       additionalTypes: RuntimeTypes.known)
+        let runtimeMetadataRegistry = try TypeRegistry.createFromRuntimeMetadata(
+            runtimeMetadata,
+            additionalTypes: RuntimeTypes.known
+        )
 
-        return TypeRegistryCatalog(baseRegistry: baseRegistry,
-                                   versionedRegistries: versionedRegistries,
-                                   runtimeMetadataRegistry: runtimeMetadataRegistry,
-                                   typeResolver: typeResolver)
+        return TypeRegistryCatalog(
+            baseRegistry: baseRegistry,
+            versionedRegistries: versionedRegistries,
+            runtimeMetadataRegistry: runtimeMetadataRegistry,
+            typeResolver: typeResolver
+        )
     }
 
     private static func prepareVersionedJsons(from data: Data) throws -> [UInt64: JSON] {
@@ -81,8 +84,14 @@ public extension TypeRegistryCatalog {
         }
 
         let typeKey = "types"
+        let overridesKey = "overrides"
+        
+        var currentVersionDict = [typeKey: types]
+        if let overrides = versionedDefinitionJson.overrides {
+            currentVersionDict[overridesKey] = overrides
+        }
 
-        let initDict = [currentVersion: JSON.dictionaryValue([typeKey: types])]
+        let initDict = [currentVersion: JSON.dictionaryValue(currentVersionDict)]
 
         return versioning.reduce(into: initDict) { (result, versionedJson) in
             guard
