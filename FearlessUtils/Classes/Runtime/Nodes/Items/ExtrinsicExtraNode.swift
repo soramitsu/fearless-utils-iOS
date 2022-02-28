@@ -19,7 +19,7 @@ public class ExtrinsicExtraNode: Node {
         }
 
         for checkString in try runtimeMetadata.extrinsic.signedExtensions(using: runtimeMetadata.schemaResolver) {
-            guard let check = ExtrinsicCheck.from(string: checkString) else {
+            guard let check = ExtrinsicCheck.from(string: checkString, runtimeMetadata: runtimeMetadata) else {
                 continue
             }
 
@@ -42,6 +42,13 @@ public class ExtrinsicExtraNode: Node {
                 }
 
                 try encoder.appendCompact(json: tip, type: KnownType.balance.name)
+            case .assetTxPayment: // yet exclusively Statemint/Statemint case
+                guard let tip = params[ExtrinsicSignedExtra.CodingKeys.tip.rawValue] else {
+                    throw ExtrinsicExtraNodeError.invalidParams
+                }
+
+                try encoder.appendCompact(json: tip, type: KnownType.balance.name)
+                try encoder.appendOption(json: .null, type: PrimitiveType.u32.name)
             default:
                 continue
             }

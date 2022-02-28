@@ -9,16 +9,22 @@ enum ExtrinsicCheck: String, CaseIterable {
     case weight = "frame_system::extensions::check_weight::CheckWeight"
     case txPayment = "pallet_transaction_payment::ChargeTransactionPayment"
     case attests = "polkadot_runtime_common::claims::PrevalidateAttests"
+    case assetTxPayment = "pallet_asset_tx_payment::ChargeAssetTxPayment" // Statemine/Statemint case
     
-    private static var overridenTypes: [String: String] = [:]
+    /// Overiden types explain which network has what full names
+    /// Key UInt32 - is metadata reserver number to identify network
+    /// Value - is String:String dictionary, which has fixing mappings from original name to actual name
+    private static var overridenTypes: [UInt32: [String: String]] = [:]
     
-    static func from(string: String) -> Self? {
+    static func from(string: String, runtimeMetadata: RuntimeMetadata) -> Self? {
         if let check = ExtrinsicCheck(rawValue: string) {
             return check
         }
         
+        var overridenTypes = overridenTypes[runtimeMetadata.metaReserved] ?? [:]
+        
         if let overridenType = overridenTypes[string] {
-            return from(string: overridenType)
+            return from(string: overridenType, runtimeMetadata: runtimeMetadata)
         }
         
         var typeName: String? = string
@@ -31,7 +37,8 @@ enum ExtrinsicCheck: String, CaseIterable {
         for check in Self.allCases {
             if let checkTypeName = check.rawValue.components(separatedBy: "::").last, checkTypeName == typeName {
                 overridenTypes[string] = check.rawValue
-                return from(string: check.rawValue)
+                self.overridenTypes[runtimeMetadata.metaReserved] = overridenTypes
+                return from(string: check.rawValue, runtimeMetadata: runtimeMetadata)
             }
         }
         
