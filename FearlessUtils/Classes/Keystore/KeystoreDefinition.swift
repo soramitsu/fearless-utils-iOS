@@ -40,7 +40,7 @@ public struct KeystoreEncoding: Codable {
             throw DecodingError.typeMismatch(
                 Self.self,
                 .init(
-                    codingPath: [],
+                    codingPath: data.codingPath,
                     debugDescription: "Unexpected keystore encoding type",
                     underlyingError: nil
                 )
