@@ -20,7 +20,7 @@ open class SubstrateQREncoder: SubstrateQREncodable {
         }
 
         guard let data = fields.joined(separator: separator).data(using: .utf8) else {
-            throw SubstrateQREncoderError.brokenData
+            throw QREncoderError.brokenData
         }
 
         return data

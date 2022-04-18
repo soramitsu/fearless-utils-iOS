@@ -16,18 +16,18 @@ open class SubstrateQRDecoder: SubstrateQRDecodable {
         self.separator = separator
     }
 
-    public func decode(data: Data) throws -> SubstrateQRInfo {
+    public func decode(data: Data) throws -> QRInfo {
         guard let fields = String(data: data, encoding: .utf8)?
             .components(separatedBy: separator) else {
-            throw SubstrateQRDecoderError.brokenFormat
+            throw QRDecoderError.brokenFormat
         }
 
         guard fields.count >= 3, fields.count <= 4 else {
-            throw SubstrateQRDecoderError.unexpectedNumberOfFields
+            throw QRDecoderError.unexpectedNumberOfFields
         }
 
         guard fields[0] == prefix else {
-            throw SubstrateQRDecoderError.undefinedPrefix
+            throw QRDecoderError.undefinedPrefix
         }
 
         let address = fields[1]
@@ -35,7 +35,7 @@ open class SubstrateQRDecoder: SubstrateQRDecodable {
         let publicKey = try Data(hexString: fields[2])
 
         guard publicKey.matchPublicKeyToAccountId(accountId) else {
-            throw SubstrateQRDecoderError.accountIdMismatch
+            throw QRDecoderError.accountIdMismatch
         }
 
         let username = fields.count > 3 ? fields[3] : nil
