@@ -9,7 +9,7 @@ public protocol QRDecodable {
 }
 
 public protocol QREncodable {
-    func encode(info: SubstrateQRInfo) throws -> Data
+    func encode(info: AddressQRInfo) throws -> Data
 }
 
 public enum QREncoderError: Error, Equatable {

@@ -1,14 +1,14 @@
 import Foundation
 import IrohaCrypto
 
-open class SubstrateQREncoder: SubstrateQREncodable {
+open class AddressQREncoder: AddressQREncodable {
     let separator: String
 
     public init(separator: String = SubstrateQR.fieldsSeparator) {
         self.separator = separator
     }
 
-    public func encode(info: SubstrateQRInfo) throws -> Data {
+    public func encode(info: AddressQRInfo) throws -> Data {
         var fields: [String] = [
             info.prefix,
             info.address,
