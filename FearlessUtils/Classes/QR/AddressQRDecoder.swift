@@ -37,14 +37,14 @@ open class AddressQRDecoder: AddressQRDecodable {
         let username = fields.count > 3 ? fields[3] : nil
         var accountId: Data?
         
-        if !address.hasPrefix("0x") {
-            accountId = try addressFactory.accountId(fromAddress: address, type: chainType)
-        } else {
+        if address.hasPrefix("0x") {
             return AddressQRInfo(
                 address: address,
                 rawPublicKey: publicKey,
                 username: username
             )
+        } else {
+            accountId = try addressFactory.accountId(fromAddress: address, type: chainType)
         }
 
         guard let accountId = accountId, publicKey.matchPublicKeyToAccountId(accountId) else {
