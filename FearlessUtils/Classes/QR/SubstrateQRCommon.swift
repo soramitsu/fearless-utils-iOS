@@ -1,9 +1,9 @@
 import Foundation
 
-public protocol SubstrateQREncodable: QREncodable {}
-public protocol SubstrateQRDecodable: QRDecodable {}
+public protocol AddressQREncodable: QREncodable {}
+public protocol AddressQRDecodable: QRDecodable {}
 
-public struct SubstrateQRInfo: QRInfo, Equatable {
+public struct AddressQRInfo: QRInfo, Equatable {
     public let prefix: String
     public let address: String
     public let rawPublicKey: Data
