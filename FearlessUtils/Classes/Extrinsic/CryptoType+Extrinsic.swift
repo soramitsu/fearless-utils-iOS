@@ -4,9 +4,9 @@ extension CryptoType {
     public init?(onChainType: UInt8) {
         switch onChainType {
         case 0:
-            self = .ed25519
-        case 1:
             self = .sr25519
+        case 1:
+            self = .ed25519
         case 2:
             self = .ecdsa
         default:
