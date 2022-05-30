@@ -25,20 +25,20 @@ public final class RuntimeMetadata {
 
     public func getFunction(from module: String, with name: String) throws -> RuntimeFunctionMetadata? {
         try wrapped.modules
-            .first { $0.name == module }?
+            .first { $0.name.lowercased() == module.lowercased() }?
             .calls(using: schemaResolver)?
-            .first { $0.name == name }
+            .first { $0.name.lowercased() == name.lowercased() }
     }
 
     public func getModuleIndex(_ name: String) -> UInt8? {
-        wrapped.modules.first(where: { $0.name == name })?.index
+        wrapped.modules.first(where: { $0.name.lowercased() == name.lowercased() })?.index
     }
 
     public func getCallIndex(in moduleName: String, callName: String) throws -> UInt8? {
         guard let index = try wrapped.modules
-                .first(where: { $0.name == moduleName })?
+            .first(where: { $0.name.lowercased() == moduleName.lowercased() })?
                 .calls(using: schemaResolver)?
-                .firstIndex(where: { $0.name == callName})
+            .firstIndex(where: { $0.name.lowercased() == callName.lowercased() })
         else {
             return nil
         }
@@ -47,13 +47,13 @@ public final class RuntimeMetadata {
     }
 
     public func getStorageMetadata(in moduleName: String, storageName: String) -> RuntimeStorageEntryMetadata? {
-        wrapped.modules.first(where: { $0.name == moduleName })?
-            .storage?.entries.first(where: { $0.name == storageName})
+        wrapped.modules.first(where: { $0.name.lowercased() == moduleName.lowercased() })?
+            .storage?.entries.first(where: { $0.name.lowercased() == storageName.lowercased() })
     }
 
     public func getConstant(in moduleName: String, constantName: String) -> RuntimeModuleConstantMetadata? {
-        wrapped.modules.first(where: { $0.name == moduleName })?
-            .constants.first(where: { $0.name == constantName})
+        wrapped.modules.first(where: { $0.name.lowercased() == moduleName.lowercased() })?
+            .constants.first(where: { $0.name.lowercased() == constantName.lowercased() })
     }
 }
 
