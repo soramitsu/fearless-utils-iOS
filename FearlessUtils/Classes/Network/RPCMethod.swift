@@ -19,4 +19,5 @@ public enum RPCMethod {
     public static let getExtrinsicNonce = "system_accountNextIndex"
     public static let helthCheck = "system_health"
     public static let runtimeVersionSubscribe = "state_subscribeRuntimeVersion"
+    public static let existentialDeposit = "tokens_queryExistentialDeposit"
 }
