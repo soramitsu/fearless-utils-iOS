@@ -35,10 +35,8 @@ extension Schema {
         // MARK: - Constructor
         public init(schema: Schema?) {
             self.schema = schema
-            do {
-                if let mappedSchema = try? mapSchemaToDictionary() {
-                    self.resolvedTypes = mappedSchema
-                }
+            if let mappedSchema = try? mapSchemaToDictionary() {
+                self.resolvedTypes = mappedSchema
             }
         }
         
