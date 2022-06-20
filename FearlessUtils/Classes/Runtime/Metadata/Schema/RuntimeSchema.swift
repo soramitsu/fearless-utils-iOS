@@ -23,17 +23,25 @@ public struct Schema: ScaleCodable {
 
 extension Schema {
     public final class Resolver {
+        
+        // MARK: - Private properties
         private struct TypeResolved {
             let metadata: TypeMetadata?
         }
         
         private let schema: Schema?
-        public init(schema: Schema?) {
-            self.schema = schema
-        }
-        
         private var resolvedTypes: [String: TypeResolved] = [:]
         
+        // MARK: - Constructor
+        public init(schema: Schema?) {
+            self.schema = schema
+            if let mappedSchema = try? mapSchemaToDictionary() {
+                self.resolvedTypes = mappedSchema
+            }
+        }
+        
+        
+        // MARK: - Public methods
         public func resolveType(json: JSON) throws -> TypeMetadata? {
             guard let string = json.stringValue else { return nil }
             
@@ -45,21 +53,11 @@ extension Schema {
         }
         
         public func resolveType(name: String) throws -> TypeMetadata? {
-            if let type = resolvedTypes[name] {
-                return type.metadata
-            }
-            
             var metadata: TypeMetadata? = nil
-            if let items = schema?.types {
-                for item in items {
-                    if try typeName(for: item.type) == name {
-                        metadata = item.type
-                        break
-                    }
-                }
+            if let type = resolvedTypes[name] {
+                metadata = type.metadata
             }
             
-            resolvedTypes[name] = TypeResolved(metadata: metadata)
             return metadata
         }
         
@@ -90,6 +88,25 @@ extension Schema {
             }
             
             return name
+        }
+        
+        // MARK: - Private methods
+        
+        private func mapSchemaToDictionary() throws -> [String: TypeResolved] {
+            var result = [String: TypeResolved]()
+            guard let items = schema?.types else {
+                return result
+            }
+            do {
+                let mappedSchema = try items.reduce([String: TypeResolved]()) { (dict, schemaItem) -> [String: TypeResolved] in
+                    var dict = dict
+                    let key = try typeName(for: schemaItem.type)
+                    dict[key] = TypeResolved(metadata: schemaItem.type)
+                    return dict
+                }
+                result = mappedSchema
+            }
+            return result
         }
         
         private var ignoredGenericTypes: [String] {
