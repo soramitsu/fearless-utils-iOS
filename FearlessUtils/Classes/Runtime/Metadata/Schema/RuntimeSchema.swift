@@ -19,18 +19,26 @@ public struct Schema: ScaleCodable {
     }
 }
 
+extension Schema: Codable & Equatable {
+    public static func == (lhs: Schema, rhs: Schema) -> Bool {
+        return lhs.types == rhs.types
+    }
+}
+
 // MARK: - Resolver
 
 extension Schema {
-    public final class Resolver {
-        
+    public final class Resolver: Codable & Equatable {
+
         // MARK: - Private properties
-        private struct TypeResolved {
-            let metadata: TypeMetadata?
-        }
         
         private let schema: Schema?
-        private var resolvedTypes: [String: TypeResolved] = [:]
+        private var resolvedTypes: [String: TypeMetadata?] = [:]
+        
+        enum CodingKeys: String, CodingKey {
+            case schema
+            case resolvedTypes
+        }
         
         // MARK: - Constructor
         public init(schema: Schema?) {
@@ -40,6 +48,24 @@ extension Schema {
             }
         }
         
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            
+            self.schema = try container.decode(Schema.self, forKey: .schema)
+            self.resolvedTypes = try container.decode([String: TypeMetadata?].self, forKey: .resolvedTypes)
+        }
+
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            
+            try container.encode(schema, forKey: .schema)
+            try container.encode(resolvedTypes, forKey: .resolvedTypes)
+        }
+        
+        public static func == (lhs: Schema.Resolver, rhs: Schema.Resolver) -> Bool {
+            return lhs.schema == rhs.schema
+            && lhs.resolvedTypes == rhs.resolvedTypes
+        }
         
         // MARK: - Public methods
         public func resolveType(json: JSON) throws -> TypeMetadata? {
@@ -55,7 +81,7 @@ extension Schema {
         public func resolveType(name: String) throws -> TypeMetadata? {
             var metadata: TypeMetadata? = nil
             if let type = resolvedTypes[name] {
-                metadata = type.metadata
+                metadata = type
             }
             
             return metadata
@@ -83,8 +109,8 @@ extension Schema {
         
         public func typeName(for type: TypeMetadata) throws -> String {
             let name = try _typeName(for: type)
-            if resolvedTypes[name]?.metadata == nil {
-                resolvedTypes[name] = TypeResolved(metadata: type)
+            if resolvedTypes[name] == nil {
+                resolvedTypes[name] = type
             }
             
             return name
@@ -92,16 +118,16 @@ extension Schema {
         
         // MARK: - Private methods
         
-        private func mapSchemaToDictionary() throws -> [String: TypeResolved] {
-            var result = [String: TypeResolved]()
+        private func mapSchemaToDictionary() throws -> [String: TypeMetadata?] {
+            var result = [String: TypeMetadata?]()
             guard let items = schema?.types else {
                 return result
             }
             do {
-                let mappedSchema = try items.reduce([String: TypeResolved]()) { (dict, schemaItem) -> [String: TypeResolved] in
+                let mappedSchema = try items.reduce([String: TypeMetadata?]()) { (dict, schemaItem) -> [String: TypeMetadata?] in
                     var dict = dict
                     let key = try typeName(for: schemaItem.type)
-                    dict[key] = TypeResolved(metadata: schemaItem.type)
+                    dict[key] = schemaItem.type
                     return dict
                 }
                 result = mappedSchema
@@ -206,3 +232,5 @@ public struct SchemaItem: ScaleCodable {
         self.type = try TypeMetadata(scaleDecoder: scaleDecoder)
     }
 }
+
+extension SchemaItem: Codable & Equatable {}
