@@ -30,7 +30,7 @@ public final class RuntimeMetadata {
     public func getFunction(from module: String, with name: String) throws -> RuntimeFunctionMetadata? {
         try wrapped.modules
             .first { $0.name.lowercased() == module.lowercased() }?
-            .calls(using: wrapped.resolver ?? schemaResolver)?
+            .calls(using: schemaResolver)?
             .first { $0.name.lowercased() == name.lowercased() }
     }
 
@@ -41,7 +41,7 @@ public final class RuntimeMetadata {
     public func getCallIndex(in moduleName: String, callName: String) throws -> UInt8? {
         guard let index = try wrapped.modules
             .first(where: { $0.name.lowercased() == moduleName.lowercased() })?
-            .calls(using: wrapped.resolver ?? schemaResolver)?
+            .calls(using: schemaResolver)?
             .firstIndex(where: { $0.name.lowercased() == callName.lowercased() })
         else {
             return nil
