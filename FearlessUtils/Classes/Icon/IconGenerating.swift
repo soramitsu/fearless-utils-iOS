@@ -8,3 +8,7 @@ public protocol IconGenerating {
     func generateFromAddress(_ address: String) throws -> DrawableIcon
     func ethereumIconFromAddress(_ address: String) throws -> DrawableIcon
 }
+
+extension IconGenerating {
+    func ethereumIconFromAddress(_ address: String) throws -> DrawableIcon {}
+}
