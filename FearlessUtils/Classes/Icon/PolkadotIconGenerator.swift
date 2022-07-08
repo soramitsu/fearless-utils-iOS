@@ -74,6 +74,22 @@ public class PolkadotIconGenerator: IconGenerating {
         return PolkadotIcon(radius: Self.diameter / 2.0,
                             circles: circles)
     }
+    
+    public func ethereumIconFromAddress(_ address: String) throws -> DrawableIcon {
+        let accountId = try deriveAccountIdFromAddress(address)
+
+        let colors = try getColorsForData(accountId)
+        let centers = generateCircleCenters()
+
+        let circles = (0..<centers.count).map { index in
+            PolkadotIcon.Circle(origin: centers[index],
+                              color: colors[index],
+                              radius: Self.circleRadius)
+        }
+
+        return PolkadotIcon(radius: Self.diameter / 2.0,
+                            circles: circles)
+    }
 
     private func deriveAccountIdFromAddress(_ address: String) throws -> Data {
         let zero: [UInt8] = try (Data(repeating: 0, count: 32) as NSData).blake2b(64).map { $0 }
