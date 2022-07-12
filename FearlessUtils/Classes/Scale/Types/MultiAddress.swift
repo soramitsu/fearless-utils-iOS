@@ -9,6 +9,7 @@ public enum MultiAddress: Equatable {
     static let address20Field = "Address20"
 
     case accoundId(_ value: Data)
+    case accountTo(_ value: Data)
     case accountIndex(_ value: BigUInt)
     case raw(_ value: Data)
     case address32(_ value: Data)
@@ -48,23 +49,30 @@ extension MultiAddress: Codable {
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
 
         switch self {
         case .accoundId(let value):
+            var container = encoder.unkeyedContainer()
             try container.encode(Self.accountIdField)
             try container.encode(value)
         case .accountIndex(let value):
+            var container = encoder.unkeyedContainer()
             try container.encode(Self.indexField)
             try container.encode(String(value))
         case .raw(let value):
+            var container = encoder.unkeyedContainer()
             try container.encode(Self.rawField)
             try container.encode(value)
         case .address32(let value):
+            var container = encoder.unkeyedContainer()
             try container.encode(Self.address32Field)
             try container.encode(value)
         case .address20(let value):
+            var container = encoder.unkeyedContainer()
             try container.encode(Self.address20Field)
+            try container.encode(value)
+        case .accountTo(let value):
+            var container = encoder.singleValueContainer()
             try container.encode(value)
         }
     }
