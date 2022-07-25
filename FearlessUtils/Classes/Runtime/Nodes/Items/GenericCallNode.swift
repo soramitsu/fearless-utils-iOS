@@ -45,7 +45,8 @@ public class GenericCallNode: Node {
             // But some like Basilisk, use "sp_core::crypto::AccountId32" ([u8;32]) directly instead
             // Moonbeam/Moonriver use AccountId20 ([u8;20])
             let addressIdTypes = KnownType.addressIdTypes.map { $0.name }
-            if addressIdTypes.contains(arg.type), arg.name == "dest" {
+            let isTransfer = arg.name == "dest" || arg.name == "to" || arg.name == "referrer"
+            if addressIdTypes.contains(arg.type) && isTransfer {
                 guard let id = param.arrayValue, id.count == 2, let idParam = id[1].arrayValue else {
                     assertionFailure()
                     throw GenericCallNodeError.unexpectedParams
