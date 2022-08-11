@@ -7,7 +7,7 @@ enum ExtrinsicCheck: String, CaseIterable {
     case mortality = "frame_system::extensions::check_mortality::CheckMortality"
     case nonce = "frame_system::extensions::check_nonce::CheckNonce"
     case weight = "frame_system::extensions::check_weight::CheckWeight"
-    case txPayment = "pallet_transaction_payment::ChargeTransactionPayment"
+    case txPayment = "framenode_runtime::extensions::ChargeTransactionPayment"
     case attests = "polkadot_runtime_common::claims::PrevalidateAttests"
     case assetTxPayment = "pallet_asset_tx_payment::ChargeAssetTxPayment" // Statemine/Statemint case
     

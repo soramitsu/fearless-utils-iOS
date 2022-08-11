@@ -43,8 +43,14 @@ extension MultiAddress: Codable {
             let data = try container.decode(Data.self)
             self = .address20(data)
         default:
-            throw DecodingError.dataCorruptedError(in: container,
-                                                   debugDescription: "Unexpected type")
+            if let fallback = try? decoder.singleValueContainer(),
+               let data = try? fallback.decode(Data.self) {
+                let sender = MultiAddress.accoundId(data)
+                self = sender
+            } else {
+                throw DecodingError.dataCorruptedError(in: container,
+                                                       debugDescription: "Unexpected type")
+            }
         }
     }
 

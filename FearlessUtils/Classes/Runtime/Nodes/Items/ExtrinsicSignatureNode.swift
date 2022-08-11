@@ -70,7 +70,8 @@ public class ExtrinsicSignatureNode: Node {
     }
 
     public func accept(decoder: DynamicScaleDecoding) throws -> JSON {
-        let address = try decoder.read(type: KnownType.address.name)
+        let addressType = try addressType()
+        let address = try decoder.read(type: addressType.name)
         let signature = try decoder.read(type: KnownType.signature.name)
         let extra = try decoder.read(type: GenericType.extrinsicExtra.name)
 

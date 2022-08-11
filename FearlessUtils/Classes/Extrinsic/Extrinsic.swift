@@ -58,6 +58,15 @@ public struct ExtrinsicSignature: Codable {
         self.extra = extra
         self.type = type
     }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        self.address = try container.decode(JSON.self, forKey: .address)
+        self.signature = try container.decode(JSON.self, forKey: .signature)
+        self.extra = try container.decode(ExtrinsicSignedExtra.self, forKey: .extra)
+        self.type = KnownType.signature.rawValue
+    }
 }
 
 enum MultiSignatureError: Error {
