@@ -56,10 +56,25 @@ public class TypeRegistry: TypeRegistryProtocol {
     private var allOverrides: Set<ConstantPath> = []
     
     private var overrides: [ConstantPath: String] = [:]
+    
+    private let json: JSON
+    private let overridesJson: [JSON]?
+    private let additionalNodes: [Node]
 
-    public var registeredTypes: [Node] { graph.keys.compactMap { graph[$0] } }
-    public var registeredTypeNames: Set<String> { allKeys }
-    public var registeredOverrides: Set<ConstantPath> { allOverrides }
+    public lazy var registeredTypes: [Node] = {
+        resolveJsons()
+        return graph.keys.compactMap { graph[$0] }
+    }()
+    
+    public lazy var registeredTypeNames: Set<String> = {
+        resolveJsons()
+        return allKeys
+    }()
+    
+    public lazy var registeredOverrides: Set<ConstantPath> = {
+        resolveJsons()
+        return allOverrides
+    }()
 
     init(
         json: JSON,
@@ -70,17 +85,14 @@ public class TypeRegistry: TypeRegistryProtocol {
     ) throws {
         self.nodeFactory = nodeFactory
         self.typeResolver = typeResolver
-
-        try parse(json: json)
-        parse(overrides: overrides)
-        override(nodes: additionalNodes)
-        resolveGenerics()
-
-        allKeys = Set(graph.keys)
-        allOverrides = Set(self.overrides.keys)
+        self.json = json
+        self.overridesJson = overrides
+        self.additionalNodes = additionalNodes
     }
 
     public func node(for key: String) -> Node? {
+        resolveJsons()
+        
         if let node = graph[key] {
             return node
         }
@@ -102,10 +114,21 @@ public class TypeRegistry: TypeRegistryProtocol {
     }
     
     public func override(for moduleName: String, constantName: String) -> String? {
-        overrides[.init(moduleName: moduleName, constantName: constantName)]
+        resolveJsons()
+        return overrides[.init(moduleName: moduleName, constantName: constantName)]
     }
 
     // MARK: Private
+    
+    private func resolveJsons() {
+        parse(json: json)
+        parse(overrides: overridesJson)
+        override(nodes: additionalNodes)
+        resolveGenerics()
+
+        allKeys = Set(graph.keys)
+        allOverrides = Set(self.overrides.keys)
+    }
 
     private func override(nodes: [Node]) {
         for node in nodes {
@@ -129,18 +152,16 @@ public class TypeRegistry: TypeRegistryProtocol {
         }
     }
 
-    private func parse(json: JSON) throws {
+    private func parse(json: JSON) {
         guard let dict = json.dictValue else {
-            throw TypeRegistryError.unexpectedJson
+            return
         }
 
         let keyParser = TermParser.generic()
 
-        let refinedDict = try dict.reduce(into: [String: JSON]()) { (result, item) in
+        let refinedDict = dict.reduce(into: [String: JSON]()) { (result, item) in
             if let type = keyParser.parse(json: .stringValue(item.key))?.first?.stringValue {
                 result[type] = item.value
-            } else {
-                throw TypeRegistryError.invalidKey(item.key)
             }
         }
 
@@ -149,7 +170,7 @@ public class TypeRegistry: TypeRegistryProtocol {
         }
 
         for item in refinedDict {
-            if let node = try nodeFactory.buildNode(from: item.value, typeName: item.key, mediator: self) {
+            if let node = try? nodeFactory.buildNode(from: item.value, typeName: item.key, mediator: self) {
                 graph[item.key] = node
             }
         }
