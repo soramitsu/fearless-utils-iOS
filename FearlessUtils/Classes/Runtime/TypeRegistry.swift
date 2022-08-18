@@ -121,6 +121,9 @@ public class TypeRegistry: TypeRegistryProtocol {
     // MARK: Private
     
     private func resolveJsons() {
+        guard graph.keys.isEmpty else {
+            return
+        }
         parse(json: json)
         parse(overrides: overridesJson)
         override(nodes: additionalNodes)
