@@ -22,28 +22,10 @@ public class TypeRegistryCatalog: TypeRegistryCatalogProtocol {
     public let runtimeMetadataRegistry: TypeRegistryProtocol
     public let baseRegistry: TypeRegistryProtocol
     public let versionedRegistries: [UInt64: TypeRegistryProtocol]
-    public let versionedTypes: [String: [UInt64]]
-    public let versionedOverrides: [ConstantPath: [UInt64]]
     public let typeResolver: TypeResolving
-
-    public let allTypes: Set<String>
-    public let mutex = NSLock()
-    public var registryCache: [String: TypeRegistryProtocol] = [:]
-
-    public init(
-        baseRegistry: TypeRegistryProtocol,
-        versionedRegistries: [UInt64: TypeRegistryProtocol],
-        runtimeMetadataRegistry: TypeRegistryProtocol,
-        typeResolver: TypeResolving
-    ) {
-        self.baseRegistry = baseRegistry
-        self.versionedRegistries = versionedRegistries
-        self.runtimeMetadataRegistry = runtimeMetadataRegistry
-        self.typeResolver = typeResolver
-
-        let allVersions = versionedRegistries.keys.sorted()
-
-        versionedTypes = allVersions.reduce(into: [String: [UInt64]]()) { (result, item) in
+    
+    public lazy var versionedTypes: [String: [UInt64]] = {
+        let versionedTypes = allVersions.reduce(into: [String: [UInt64]]()) { (result, item) in
             guard let typeRegistry = versionedRegistries[item] else { return }
 
             let typeNames = typeRegistry.registeredTypeNames.filter { !(typeRegistry.node(for: $0) is GenericNode) }
@@ -57,7 +39,11 @@ public class TypeRegistryCatalog: TypeRegistryCatalogProtocol {
             }
         }
         
-        versionedOverrides = allVersions.reduce(into: [ConstantPath: [UInt64]]()) { result, item in
+        return versionedTypes
+    }()
+    
+    public lazy var versionedOverrides: [ConstantPath: [UInt64]] = {
+        let versionedOverrides = allVersions.reduce(into: [ConstantPath: [UInt64]]()) { result, item in
             guard let typeRegistry = versionedRegistries[item] else { return }
             for constantPath in typeRegistry.registeredOverrides {
                 let versions: [UInt64] = result[constantPath] ?? []
@@ -67,8 +53,29 @@ public class TypeRegistryCatalog: TypeRegistryCatalogProtocol {
                 }
             }
         }
+        
+        return versionedOverrides
+    }()
 
-        allTypes = Set(versionedTypes.keys)
+    public lazy var allTypes: Set<String> = {
+        Set(versionedTypes.keys)
+    }()
+    
+    public let mutex = NSLock()
+    public var registryCache: [String: TypeRegistryProtocol] = [:]
+    private let allVersions: [Dictionary<UInt64, TypeRegistryProtocol>.Keys.Element]
+
+    public init(
+        baseRegistry: TypeRegistryProtocol,
+        versionedRegistries: [UInt64: TypeRegistryProtocol],
+        runtimeMetadataRegistry: TypeRegistryProtocol,
+        typeResolver: TypeResolving
+    ) {
+        self.baseRegistry = baseRegistry
+        self.versionedRegistries = versionedRegistries
+        self.runtimeMetadataRegistry = runtimeMetadataRegistry
+        self.typeResolver = typeResolver
+        self.allVersions = versionedRegistries.keys.sorted()
     }
 
     public func node(for typeName: String, version: UInt64) -> Node? {
