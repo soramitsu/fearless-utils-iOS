@@ -80,7 +80,7 @@ extension WebSocketEngine: JSONRPCEngine {
             compressionHandler: nil
         )
         
-        self.connection.disconnect()
+        self.connection.forceDisconnect()
         self.connection.delegate = nil
         
         let connection = WebSocket(request: request, engine: engine)
