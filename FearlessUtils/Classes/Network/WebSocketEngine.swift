@@ -4,6 +4,8 @@ import Starscream
 public protocol WebSocketConnectionProtocol: WebSocketClient {
     var callbackQueue: DispatchQueue { get }
     var delegate: WebSocketDelegate? { get set }
+    
+    func forceDisconnect()
 }
 
 extension WebSocket: WebSocketConnectionProtocol {}
