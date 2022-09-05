@@ -3,7 +3,7 @@ import BigInt
 
 public extension Decimal {
     static var decimalToBigUIntHandler: NSDecimalNumberHandler {
-        NSDecimalNumberHandler(roundingMode: .down,
+        NSDecimalNumberHandler(roundingMode: .up,
                                scale: 0,
                                raiseOnExactness: false,
                                raiseOnOverflow: false,
