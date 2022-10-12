@@ -260,6 +260,7 @@ struct Log {
     }
     
     static func disable(kind: String) {
+        guard !enabled.isEmpty else {return}
         enabled.removeAll { $0 == kind }
     }
     
