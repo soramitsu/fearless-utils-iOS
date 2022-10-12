@@ -80,10 +80,16 @@ extension WebSocketEngine: JSONRPCEngine {
             compressionHandler: nil
         )
         
+        self.connection.forceDisconnect()
+        self.connection.delegate = nil
+        
         let connection = WebSocket(request: request, engine: engine)
         self.connection = connection
 
         connection.delegate = self
         connection.callbackQueue = Self.sharedProcessingQueue
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+            connection.connect()
+        }
     }
 }
