@@ -5,7 +5,8 @@ public extension TypeRegistryCatalog {
         _ definitionData: Data,
         versioningData: Data,
         runtimeMetadata: RuntimeMetadata,
-        customNodes: [Node] = []
+        customNodes: [Node] = [],
+        usedRuntimePaths: [String: [String]]
     ) throws -> TypeRegistryCatalog {
         let versionedJsons = try prepareVersionedJsons(from: versioningData)
 
@@ -13,20 +14,23 @@ public extension TypeRegistryCatalog {
             definitionData,
             versionedJsons: versionedJsons,
             runtimeMetadata: runtimeMetadata,
-            customNodes: customNodes
+            customNodes: customNodes,
+            usedRuntimePaths: usedRuntimePaths
         )
     }
 
     static func createFromTypeDefinition(
         _ definitionData: Data,
         runtimeMetadata: RuntimeMetadata,
-        customNodes: [Node] = []
+        customNodes: [Node] = [],
+        usedRuntimePaths: [String: [String]]
     ) throws -> TypeRegistryCatalog {
         try createFromTypeDefinition(
             definitionData,
             versionedJsons: [:],
             runtimeMetadata: runtimeMetadata,
-            customNodes: customNodes
+            customNodes: customNodes,
+            usedRuntimePaths: usedRuntimePaths
         )
     }
 
@@ -34,7 +38,8 @@ public extension TypeRegistryCatalog {
         _ definitionData: Data,
         versionedJsons: [UInt64: JSON],
         runtimeMetadata: RuntimeMetadata,
-        customNodes: [Node]
+        customNodes: [Node],
+        usedRuntimePaths: [String: [String]]
     ) throws -> TypeRegistryCatalog {
         let additonalNodes = BasisNodes.allNodes(for: runtimeMetadata) + customNodes
         let baseRegistry = try TypeRegistry.createFromTypesDefinition(
@@ -57,7 +62,8 @@ public extension TypeRegistryCatalog {
 
         let runtimeMetadataRegistry = try TypeRegistry.createFromRuntimeMetadata(
             runtimeMetadata,
-            additionalTypes: RuntimeTypes.known
+            additionalTypes: RuntimeTypes.known,
+            usedRuntimePaths: usedRuntimePaths
         )
 
         return TypeRegistryCatalog(

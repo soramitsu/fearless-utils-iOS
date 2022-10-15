@@ -10,7 +10,10 @@ enum TypeRegistryCatalogError: Error {
 public protocol TypeRegistryCatalogProtocol {
     func node(for typeName: String, version: UInt64) -> Node?
     func override(for moduleName: String, constantName: String, version: UInt64) -> String?
-    func replacingRuntimeMetadata(_ newMetadata: RuntimeMetadata) throws -> TypeRegistryCatalogProtocol
+    func replacingRuntimeMetadata(
+        _ newMetadata: RuntimeMetadata,
+        usedRuntimePaths: [String: [String]]
+    ) throws -> TypeRegistryCatalogProtocol
 }
 
 /**
@@ -117,7 +120,10 @@ public class TypeRegistryCatalog: TypeRegistryCatalogProtocol {
         return nil
     }
 
-    public func replacingRuntimeMetadata(_ newMetadata: RuntimeMetadata) throws -> TypeRegistryCatalogProtocol {
+    public func replacingRuntimeMetadata(
+        _ newMetadata: RuntimeMetadata,
+        usedRuntimePaths: [String: [String]]
+    ) throws -> TypeRegistryCatalogProtocol {
         mutex.lock()
 
         defer {
@@ -126,7 +132,10 @@ public class TypeRegistryCatalog: TypeRegistryCatalogProtocol {
 
         registryCache = [:]
 
-        let newRuntimeRegistry = try TypeRegistry.createFromRuntimeMetadata(newMetadata)
+        let newRuntimeRegistry = try TypeRegistry.createFromRuntimeMetadata(
+            newMetadata,
+            usedRuntimePaths: usedRuntimePaths
+        )
 
         return TypeRegistryCatalog(
             baseRegistry: baseRegistry,
