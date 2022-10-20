@@ -120,10 +120,8 @@ extension Schema {
             guard let items = schema?.types else {
                 return
             }
-            do {
-                try items.forEach { schemaItem in
-                    _ = try typeName(for: schemaItem.type)
-                }
+            try items.forEach { schemaItem in
+                _ = try typeName(for: schemaItem.type)
             }
         }
         
