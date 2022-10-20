@@ -50,30 +50,31 @@ public extension TypeRegistry {
                         jsonDic[nMapValue] = .stringValue(nMapValue)
                     }
                     
-                    if let calls = try runtimeModules[runtimeModuleIndex].calls(using: schemaResolver) {
-                        calls.forEach { call in
-                            call.arguments.forEach { argument in
-                                jsonDic[argument.type] = .stringValue(argument.type)
-                            }
-                        }
-                    }
-
-                    if let events = try runtimeModules[runtimeModuleIndex].events(using: schemaResolver) {
-                        events.forEach { event in
-                            event.arguments.forEach { argument in
-                                jsonDic[argument] = .stringValue(argument)
-                            }
-                        }
-                    }
-
-                    try runtimeModules[runtimeModuleIndex].constants.forEach({ constant in
-                        let type = try constant.type(using: schemaResolver)
-                        jsonDic[type] = .stringValue(type)
-                    })
-                    
                     storageEntrys.remove(at: storageEntryIndex)
                 }
             }
+            
+            if let calls = try runtimeModules[runtimeModuleIndex].calls(using: schemaResolver) {
+                calls.forEach { call in
+                    call.arguments.forEach { argument in
+                        jsonDic[argument.type] = .stringValue(argument.type)
+                    }
+                }
+            }
+
+            if let events = try runtimeModules[runtimeModuleIndex].events(using: schemaResolver) {
+                events.forEach { event in
+                    event.arguments.forEach { argument in
+                        jsonDic[argument] = .stringValue(argument)
+                    }
+                }
+            }
+
+            try runtimeModules[runtimeModuleIndex].constants.forEach({ constant in
+                let type = try constant.type(using: schemaResolver)
+                jsonDic[type] = .stringValue(type)
+            })
+            
             runtimeModules.remove(at: runtimeModuleIndex)
         }
 
