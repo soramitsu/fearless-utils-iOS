@@ -117,21 +117,14 @@ extension Schema {
         // MARK: - Private methods
         
         private func mapSchemaToDictionary() throws {
-            var result = [String: TypeMetadata?]()
             guard let items = schema?.types else {
                 return
             }
             do {
-                let mappedSchema = try items.reduce([String: TypeMetadata?]()) { (dict, schemaItem) -> [String: TypeMetadata?] in
-                    var dict = dict
-                    let schemaItem = schemaItem
-                    let key = try typeName(for: schemaItem.type)
-                    dict[key] = schemaItem.type
-                    return dict
+                try items.forEach { schemaItem in
+                    _ = try typeName(for: schemaItem.type)
                 }
-                result = mappedSchema
             }
-            resolvedTypes = result
         }
         
         private var ignoredGenericTypes: [String] {
