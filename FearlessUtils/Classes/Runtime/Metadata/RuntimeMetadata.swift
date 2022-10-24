@@ -3,7 +3,6 @@ import BigInt
 
 public protocol RuntimeMetadataProtocol: ScaleCodable {
     var schema: Schema? { get }
-    var resolver: Schema.Resolver? { get }
     var modules: [RuntimeModuleMetadata] { get }
     var extrinsic: RuntimeExtrinsicMetadata { get }
 }
@@ -11,20 +10,18 @@ public protocol RuntimeMetadataProtocol: ScaleCodable {
 public final class RuntimeMetadata {
     public let metaReserved: UInt32
     public let version: UInt8
-    public lazy var schemaResolver: Schema.Resolver = {
-        let resolver = wrapped.resolver ?? Schema.Resolver(schema: wrapped.schema)
-        return resolver
-    }()
+    public let schemaResolver: Schema.Resolver
 
     private let wrapped: RuntimeMetadataProtocol
     private init(
         wrapping runtimeMetadata: RuntimeMetadataProtocol,
         metaReserved: UInt32,
         version: UInt8
-    ) {
+    ) throws {
         self.metaReserved = metaReserved
         self.version = version
         self.wrapped = runtimeMetadata
+        self.schemaResolver = try Schema.Resolver(schema: wrapped.schema)
     }
 
     public func getFunction(from module: String, with name: String) throws -> RuntimeFunctionMetadata? {
@@ -63,7 +60,6 @@ public final class RuntimeMetadata {
 
 extension RuntimeMetadata: RuntimeMetadataProtocol {
     public var schema: Schema? { wrapped.schema }
-    public var resolver: Schema.Resolver? { wrapped.resolver }
     public var modules: [RuntimeModuleMetadata] { wrapped.modules }
     public var extrinsic: RuntimeExtrinsicMetadata { wrapped.extrinsic }
 }
@@ -86,21 +82,7 @@ extension RuntimeMetadata: ScaleCodable {
             wrapped = try RuntimeMetadataV1(scaleDecoder: scaleDecoder)
         }
         
-        self.init(wrapping: wrapped, metaReserved: metaReserved, version: version)
-    }
-    
-    public convenience init(scaleDecoder: ScaleDecoding, resolver: Schema.Resolver) throws {
-        let metaReserved = try UInt32(scaleDecoder: scaleDecoder)
-        let version = try UInt8(scaleDecoder: scaleDecoder)
-        
-        let wrapped: RuntimeMetadataProtocol
-        if version >= 14 {
-            wrapped = try RuntimeMetadataV14(scaleDecoder: scaleDecoder, resolver: resolver)
-        } else {
-            wrapped = try RuntimeMetadataV1(scaleDecoder: scaleDecoder)
-        }
-        
-        self.init(wrapping: wrapped, metaReserved: metaReserved, version: version)
+        try self.init(wrapping: wrapped, metaReserved: metaReserved, version: version)
     }
 }
 
@@ -108,8 +90,8 @@ extension RuntimeMetadata {
     public static func v1(
         modules: [RuntimeMetadataV1.ModuleMetadata],
         extrinsic: RuntimeMetadataV1.ExtrinsicMetadata
-    ) -> RuntimeMetadata {
-        .init(
+    ) throws -> RuntimeMetadata {
+        try .init(
             wrapping: RuntimeMetadataV1(modules: modules, extrinsic: extrinsic),
             metaReserved: 1,
             version: 1
@@ -119,16 +101,14 @@ extension RuntimeMetadata {
     public static func v14(
         types: [SchemaItem],
         modules: [RuntimeMetadataV14.ModuleMetadata],
-        extrinsic: RuntimeMetadataV14.ExtrinsicMetadata,
-        resolver: Schema.Resolver?
-    ) -> RuntimeMetadata {
-        .init(
+        extrinsic: RuntimeMetadataV14.ExtrinsicMetadata
+    ) throws -> RuntimeMetadata {
+        try .init(
             wrapping: RuntimeMetadataV14(
                 types: types,
                 modules: modules,
                 extrinsic: extrinsic,
-                type: 603,
-                resolver: resolver
+                type: 603
             ),
             metaReserved: 14,
             version: 14
@@ -169,9 +149,6 @@ public struct RuntimeMetadataV1: RuntimeMetadataProtocol, ScaleCodable {
 public struct RuntimeMetadataV14: RuntimeMetadataProtocol, ScaleCodable {
     private let _schema: Schema
     public var schema: Schema? { _schema }
-    
-    private let _resolver: Schema.Resolver?
-    public var resolver: Schema.Resolver? { _resolver }
 
     private let _modules: [ModuleMetadata]
     public var modules: [RuntimeModuleMetadata] { _modules }
@@ -185,14 +162,12 @@ public struct RuntimeMetadataV14: RuntimeMetadataProtocol, ScaleCodable {
         types: [SchemaItem],
         modules: [ModuleMetadata],
         extrinsic: ExtrinsicMetadata,
-        type: BigUInt,
-        resolver: Schema.Resolver?
+        type: BigUInt
     ) {
         self._schema = Schema(types: types)
         self._modules = modules
         self._extrinsic = extrinsic
         self.type = type
-        self._resolver = resolver
     }
 
     public func encode(scaleEncoder: ScaleEncoding) throws {
@@ -207,14 +182,5 @@ public struct RuntimeMetadataV14: RuntimeMetadataProtocol, ScaleCodable {
         _modules = try [ModuleMetadata](scaleDecoder: scaleDecoder)
         _extrinsic = try ExtrinsicMetadata(scaleDecoder: scaleDecoder)
         type = try BigUInt(scaleDecoder: scaleDecoder)
-        _resolver = Schema.Resolver(schema: _schema)
-    }
-    
-    public init(scaleDecoder: ScaleDecoding, resolver: Schema.Resolver) throws {
-        _schema = try Schema(scaleDecoder: scaleDecoder)
-        _modules = try [ModuleMetadata](scaleDecoder: scaleDecoder)
-        _extrinsic = try ExtrinsicMetadata(scaleDecoder: scaleDecoder)
-        type = try BigUInt(scaleDecoder: scaleDecoder)
-        _resolver = resolver
     }
 }

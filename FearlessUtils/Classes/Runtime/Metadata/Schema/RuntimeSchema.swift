@@ -41,11 +41,9 @@ extension Schema {
         }
         
         // MARK: - Constructor
-        public init(schema: Schema?) {
+        public init(schema: Schema?) throws {
             self.schema = schema
-            if let mappedSchema = try? mapSchemaToDictionary() {
-                self.resolvedTypes = mappedSchema
-            }
+            try mapSchemaToDictionary()
         }
         
         public init(from decoder: Decoder) throws {
@@ -118,21 +116,13 @@ extension Schema {
         
         // MARK: - Private methods
         
-        private func mapSchemaToDictionary() throws -> [String: TypeMetadata?] {
-            var result = [String: TypeMetadata?]()
+        private func mapSchemaToDictionary() throws {
             guard let items = schema?.types else {
-                return result
+                return
             }
-            do {
-                let mappedSchema = try items.reduce([String: TypeMetadata?]()) { (dict, schemaItem) -> [String: TypeMetadata?] in
-                    var dict = dict
-                    let key = try typeName(for: schemaItem.type)
-                    dict[key] = schemaItem.type
-                    return dict
-                }
-                result = mappedSchema
+            try items.forEach { schemaItem in
+                _ = try typeName(for: schemaItem.type)
             }
-            return result
         }
         
         private var ignoredGenericTypes: [String] {
