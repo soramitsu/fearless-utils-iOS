@@ -88,8 +88,6 @@ extension WebSocketEngine: JSONRPCEngine {
 
         connection.delegate = self
         connection.callbackQueue = Self.sharedProcessingQueue
-        DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
-            connection.connect()
-        }
+        connection.connect()
     }
 }
