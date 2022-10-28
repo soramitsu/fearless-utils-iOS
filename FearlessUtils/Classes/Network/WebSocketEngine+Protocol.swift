@@ -70,7 +70,10 @@ extension WebSocketEngine: JSONRPCEngine {
         mutex.unlock()
     }
     
-    public func reconnect(url: URL) {        
+    public func reconnect(url: URL) {
+        self.connection.delegate = nil
+        self.disconnectIfNeeded()
+        
         self.url = url
         let request = URLRequest(url: url, timeoutInterval: 10)
 
@@ -80,14 +83,12 @@ extension WebSocketEngine: JSONRPCEngine {
             compressionHandler: nil
         )
         
-        self.connection.forceDisconnect()
-        self.connection.delegate = nil
-        
         let connection = WebSocket(request: request, engine: engine)
         self.connection = connection
 
-        connection.delegate = self
         connection.callbackQueue = Self.sharedProcessingQueue
-        connection.connect()
+        connection.delegate = self
+        
+        self.connectIfNeeded()
     }
 }
