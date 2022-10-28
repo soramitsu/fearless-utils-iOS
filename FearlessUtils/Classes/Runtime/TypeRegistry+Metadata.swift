@@ -50,6 +50,35 @@ public extension TypeRegistry {
                         jsonDic[nMapValue] = .stringValue(nMapValue)
                     }
                     
+                    storageEntrys.remove(at: storageEntryIndex)
+                }
+            }
+            
+            if let calls = try runtimeModules[runtimeModuleIndex].calls(using: schemaResolver) {
+                calls.forEach { call in
+                    call.arguments.forEach { argument in
+                        jsonDic[argument.type] = .stringValue(argument.type)
+                    }
+                    
+                    switch storageEntrys[storageEntryIndex].type {
+                    case .plain(let plain):
+                        let plainType = try plain.value(using: schemaResolver)
+                        jsonDic[plainType] = .stringValue(plainType)
+                    case .map(let map):
+                        jsonDic[map.key] = .stringValue(map.key)
+                        jsonDic[map.value] = .stringValue(map.value)
+                    case .doubleMap(let map):
+                        jsonDic[map.key1] = .stringValue(map.key1)
+                        jsonDic[map.key2] = .stringValue(map.key2)
+                        jsonDic[map.value] = .stringValue(map.value)
+                    case .nMap(let nMap):
+                        try nMap.keys(using: schemaResolver).forEach {
+                            jsonDic[$0] = .stringValue($0)
+                        }
+                        let nMapValue = try nMap.value(using: schemaResolver)
+                        jsonDic[nMapValue] = .stringValue(nMapValue)
+                    }
+                    
                     if let calls = try runtimeModules[runtimeModuleIndex].calls(using: schemaResolver) {
                         calls.forEach { call in
                             call.arguments.forEach { argument in
@@ -74,6 +103,20 @@ public extension TypeRegistry {
                     storageEntrys.remove(at: storageEntryIndex)
                 }
             }
+
+            if let events = try runtimeModules[runtimeModuleIndex].events(using: schemaResolver) {
+                events.forEach { event in
+                    event.arguments.forEach { argument in
+                        jsonDic[argument] = .stringValue(argument)
+                    }
+                }
+            }
+
+            try runtimeModules[runtimeModuleIndex].constants.forEach({ constant in
+                let type = try constant.type(using: schemaResolver)
+                jsonDic[type] = .stringValue(type)
+            })
+            
             runtimeModules.remove(at: runtimeModuleIndex)
         }
 
