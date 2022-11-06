@@ -2,6 +2,10 @@ import Foundation
 import Starscream
 
 extension WebSocketEngine: JSONRPCEngine {
+    public var pendingEngineRequests: [JSONRPCRequest] {
+        self.pendingRequests
+    }
+    
     public func callMethod<P: Encodable, T: Decodable>(
         _ method: String,
         params: P?,
@@ -70,25 +74,9 @@ extension WebSocketEngine: JSONRPCEngine {
         mutex.unlock()
     }
     
-    public func reconnect(url: URL) {
-        self.connection.delegate = nil
-        self.disconnectIfNeeded()
-        
-        self.url = url
-        let request = URLRequest(url: url, timeoutInterval: 10)
-
-        let engine = WSEngine(
-            transport: FoundationTransport(),
-            certPinner: FoundationSecurity(),
-            compressionHandler: nil
-        )
-        
-        let connection = WebSocket(request: request, engine: engine)
-        self.connection = connection
-
-        connection.callbackQueue = Self.sharedProcessingQueue
-        connection.delegate = self
-        
-        self.connectIfNeeded()
+    public func connect(with pendingRequests: [JSONRPCRequest]) {
+        pendingRequests.forEach {
+            updateConnectionForRequest($0)
+        }
     }
 }
