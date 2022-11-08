@@ -95,6 +95,8 @@ public final class JSONRPCSubscription<T: Decodable>: JSONRPCSubscribing {
 }
 
 public protocol JSONRPCEngine: AnyObject {
+    var pendingEngineRequests: [JSONRPCRequest] { get }
+    
     func callMethod<P: Encodable, T: Decodable>(
         _ method: String,
         params: P?,
@@ -114,7 +116,7 @@ public protocol JSONRPCEngine: AnyObject {
     
     func generateRequestId() -> UInt16
     func addSubscription(_ subscription: JSONRPCSubscribing)
-    func reconnect(url: URL)
+    func connect(with pendingRequests: [JSONRPCRequest])
 }
 
 public extension JSONRPCEngine {

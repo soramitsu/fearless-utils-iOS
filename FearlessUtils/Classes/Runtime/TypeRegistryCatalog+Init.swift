@@ -38,7 +38,7 @@ public extension TypeRegistryCatalog {
         _ definitionData: Data,
         versionedJsons: [UInt64: JSON],
         runtimeMetadata: RuntimeMetadata,
-        customNodes: [Node],
+        customNodes: [Node] = [],
         usedRuntimePaths: [String: [String]]
     ) throws -> TypeRegistryCatalog {
         let additonalNodes = BasisNodes.allNodes(for: runtimeMetadata) + customNodes
