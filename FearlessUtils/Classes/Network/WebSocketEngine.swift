@@ -68,8 +68,10 @@ public final class WebSocketEngine {
 
     public weak var delegate: WebSocketEngineDelegate?
     public var url: URL?
+    public var connectionName: String?
 
     public init(
+        connectionName: String?,
         url: URL,
         reachabilityManager: ReachabilityManagerProtocol? = nil,
         reconnectionStrategy: ReconnectionStrategyProtocol? = ExponentialReconnection(),
@@ -80,6 +82,7 @@ public final class WebSocketEngine {
         pingInterval: TimeInterval = 30,
         logger: SDKLoggerProtocol? = nil
     ) {
+        self.connectionName = connectionName
         self.url = url
         self.version = version
         self.logger = logger
