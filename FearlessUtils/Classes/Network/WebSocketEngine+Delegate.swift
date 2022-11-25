@@ -63,7 +63,7 @@ extension WebSocketEngine: WebSocketDelegate {
             pingScheduler.cancel()
 
             connection.disconnect()
-            startConnecting(1)
+            startConnecting(0)
 
             notify(
                 requests: cancelledRequests,
