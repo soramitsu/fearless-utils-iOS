@@ -79,4 +79,19 @@ extension WebSocketEngine: JSONRPCEngine {
             updateConnectionForRequest($0)
         }
     }
+    
+    public func reconnect(url: URL) {
+        self.connection.delegate = nil
+        
+        self.url = url
+        let request = URLRequest(url: url, timeoutInterval: 10)
+        let engine = self.connection.engine
+        
+        let connection = WebSocket(request: request, engine: engine)
+        self.connection = connection
+        
+        connection.callbackQueue = Self.sharedProcessingQueue
+        connection.delegate = self
+    }
 }
+
