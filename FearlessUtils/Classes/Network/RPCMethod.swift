@@ -21,4 +21,14 @@ public enum RPCMethod {
     public static let runtimeVersionSubscribe = "state_subscribeRuntimeVersion"
     public static let existentialDeposit = "tokens_queryExistentialDeposit"
     public static let stateCall = "state_call"
+    
+    // Polkaswap
+    public static let checkIsSwapPossible = "liquidityProxy_isPathAvailable"
+    public static let availableMarketAlgorithms = "liquidityProxy_listEnabledSourcesForPath"
+    public static let recalculateSwapValues = "liquidityProxy_quote"
+    public static let swapExtrinsic = "liquidityProxy_swap"
+    public static let listSupportedSources = "dexApi_listSupportedSources"
+    
+    public static let accountPools = "PoolXYK_AccountPools"
+    public static let isPairEnabled = "tradingPair_isPairEnabled"
 }
