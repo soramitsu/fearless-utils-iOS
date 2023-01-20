@@ -8,7 +8,15 @@ public enum JSON {
     case arrayValue([JSON])
     case dictionaryValue([String: JSON])
     case boolValue(Bool)
+    case doubleValue(Double)
     case null
+    
+    public var doubleValue: Double? {
+        if case .doubleValue(let double) = self {
+            return double
+        }
+        return nil
+    }
 
     public var stringValue: String? {
         if case .stringValue(let str) = self {
@@ -105,6 +113,8 @@ extension JSON: Codable {
             self = .dictionaryValue(node)
         } else if let list = try? [JSON](from: decoder) {
             self = .arrayValue(list)
+        } else if let double = try? Double(from: decoder) {
+            self = .doubleValue(double)
         } else {
             self = .null
         }
@@ -123,6 +133,8 @@ extension JSON: Codable {
         case .dictionaryValue(let value):
             try value.encode(to: encoder)
         case .arrayValue(let value):
+            try value.encode(to: encoder)
+        case .doubleValue(let value):
             try value.encode(to: encoder)
         case .null:
             try (JSON?).none.encode(to: encoder)
