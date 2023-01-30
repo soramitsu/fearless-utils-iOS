@@ -74,12 +74,6 @@ extension WebSocketEngine: JSONRPCEngine {
         mutex.unlock()
     }
     
-    public func connect(with pendingRequests: [JSONRPCRequest]) {
-        pendingRequests.forEach {
-            updateConnectionForRequest($0)
-        }
-    }
-    
     public func reconnect(url: URL) {
         self.connection.delegate = nil
         
