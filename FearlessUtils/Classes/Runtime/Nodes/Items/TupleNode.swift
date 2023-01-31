@@ -10,7 +10,25 @@ public class TupleNode: Node {
     }
 
     public func accept(encoder: DynamicScaleEncoding, value: JSON) throws {
-        guard let components = value.arrayValue else {
+        var components: [JSON]? = value.arrayValue
+        if components == nil {
+            if let dictValue = value.dictValue {
+                if dictValue.count == innerNodes.count {
+                    // Accept eligible size of dictionary as array of values
+                    components = dictValue.values.map { $0 }
+                }
+            } else if innerNodes.count == 1 {
+                // accept single value JSON if tuple fields count is the 1 (backward compatibility for <= V13 for some types)
+                switch value {
+                case .unsignedIntValue, .signedIntValue, .stringValue, .boolValue, .null:
+                    components = [value]
+                default:
+                    break
+                }
+            }
+        }
+        
+        guard let components = components else {
             throw DynamicScaleEncoderError.unexpectedTupleJSON(json: value)
         }
 

@@ -1,7 +1,7 @@
 import Foundation
 
 public enum DynamicScaleCoderError: Error {
-    case unresolverType(name: String)
+    case unresolvedType(name: String)
     case notImplemented
     case invalidParams
 }
@@ -28,5 +28,6 @@ public enum DynamicScaleEncoderError: Error {
 public enum DynamicScaleDecoderError: Error {
     case unexpectedOption(byte: UInt8)
     case unexpectedEnumCase
-    case invalidEnumCase(value: Int, count: Int)
+    case invalidEnumCase(index: UInt8)
+    case invalidCustomEnumCase(value: Int, count: Int)
 }

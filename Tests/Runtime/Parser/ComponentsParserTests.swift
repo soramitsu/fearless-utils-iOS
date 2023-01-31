@@ -35,8 +35,9 @@ class ComponentsParserTests: XCTestCase {
                                        expectedResult: [String]?) {
         let result = parser.parse(json: .stringValue(type))
 
+        
         if let expectedResult = expectedResult {
-            XCTAssertEqual(result?.map({ $0.stringValue }), expectedResult)
+            XCTAssertEqual(expectedResult, result?.compactMap { $0.stringValue })
         } else {
             XCTAssertNil(result)
         }

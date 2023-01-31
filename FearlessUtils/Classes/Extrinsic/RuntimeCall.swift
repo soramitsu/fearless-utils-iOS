@@ -15,12 +15,28 @@ public struct RuntimeCall<T: Codable>: RuntimeCallable {
 
     public let moduleName: String
     public let callName: String
-    public let args: T
+    public let args: Args
 
     public init(moduleName: String, callName: String, args: T) {
         self.moduleName = moduleName
         self.callName = callName
         self.args = args
+    }
+
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        moduleName = try container.decode(String.self)
+        var nested = try container.nestedUnkeyedContainer()
+        callName = try nested.decode(String.self)
+        args = try nested.decode(Args.self)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(moduleName)
+        var nested = container.nestedUnkeyedContainer()
+        try nested.encode(callName)
+        try nested.encode(args)
     }
 }
 

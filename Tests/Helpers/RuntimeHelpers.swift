@@ -32,9 +32,11 @@ final class RuntimeHelper {
 
         let data = try Data(contentsOf: url)
         let basisNodes = BasisNodes.allNodes(for: runtimeMetadata)
-        let registry = try TypeRegistry
-            .createFromTypesDefinition(data: data,
-                                       additionalNodes: basisNodes)
+        let registry = try TypeRegistry.createFromTypesDefinition(
+            data: data,
+            additionalNodes: basisNodes,
+            schemaResolver: runtimeMetadata.schemaResolver
+        )
 
         return registry
     }
@@ -48,6 +50,15 @@ final class RuntimeHelper {
         return try createTypeRegistryCatalog(from: baseName,
                                              networkName: networkName,
                                              runtimeMetadata: runtimeMetadata)
+    }
+
+    static func createTypeRegistryCatalog(
+        from baseName: String,
+        runtimeMetadataName: String
+    ) throws -> TypeRegistryCatalog {
+        let runtimeMetadata = try Self.createRuntimeMetadata(runtimeMetadataName)
+
+        return try createTypeRegistryCatalog(from: baseName, runtimeMetadata: runtimeMetadata)
     }
 
     static func createTypeRegistryCatalog(from baseName: String,
@@ -66,37 +77,62 @@ final class RuntimeHelper {
         let baseData = try Data(contentsOf: baseUrl)
         let networdData = try Data(contentsOf: networkUrl)
 
-        let registry = try TypeRegistryCatalog
-            .createFromBaseTypeDefinition(baseData,
-                                          networkDefinitionData: networdData,
-                                          runtimeMetadata: runtimeMetadata)
+        let registry = try TypeRegistryCatalog.createFromTypeDefinition(
+            baseData,
+            versioningData: networdData,
+            runtimeMetadata: runtimeMetadata
+        )
+
+        return registry
+    }
+
+    static func createTypeRegistryCatalog(
+        from baseName: String,
+        runtimeMetadata: RuntimeMetadata
+    ) throws -> TypeRegistryCatalog {
+        guard let baseUrl = Bundle(for: self).url(forResource: baseName, withExtension: "json") else {
+            throw RuntimeHelperError.invalidCatalogBaseName
+        }
+
+        let typesData = try Data(contentsOf: baseUrl)
+
+        let registry = try TypeRegistryCatalog.createFromTypeDefinition(
+            typesData,
+            runtimeMetadata: runtimeMetadata
+        )
 
         return registry
     }
 
     static let dummyRuntimeMetadata: RuntimeMetadata = {
-        RuntimeMetadata(metaReserved: 1,
-                        runtimeMetadataVersion: 1,
-                        modules: [
-                            ModuleMetadata(name: "A",
-                                           storage: StorageMetadata(prefix: "_A", entries: []),
-                                           calls: [
-                                            FunctionMetadata(name: "B",
-                                                             arguments: [
-                                                                FunctionArgumentMetadata(name: "arg1", type: "bool"),
-                                                                FunctionArgumentMetadata(name: "arg2", type: "u8")
-                                                             ], documentation: [])
-                                           ],
-                                           events: [
-                                            EventMetadata(name: "A",
-                                                          arguments: ["bool", "u8"],
-                                                          documentation: [])
-                                           ],
-                                           constants: [],
-                                           errors: [],
-                                           index: 1)
-                        ],
-                        extrinsic: ExtrinsicMetadata(version: 1,
-                                                     signedExtensions: []))
+        RuntimeMetadata.v1(
+            modules: [
+                RuntimeMetadataV1.ModuleMetadata(
+                    name: "A",
+                    storage: RuntimeMetadataV1.StorageMetadata(prefix: "_A", entries: []),
+                    calls: [
+                        RuntimeMetadataV1.FunctionMetadata(
+                            name: "B",
+                            arguments: [
+                                RuntimeMetadataV1.FunctionArgumentMetadata(name: "arg1", type: "bool"),
+                                RuntimeMetadataV1.FunctionArgumentMetadata(name: "arg2", type: "u8")
+                            ],
+                            documentation: []
+                        )
+                    ],
+                    events: [
+                        RuntimeMetadataV1.EventMetadata(
+                            name: "A",
+                            arguments: ["bool", "u8"],
+                            documentation: []
+                        )
+                    ],
+                    constants: [],
+                    errors: [],
+                    index: 1
+                )
+            ],
+            extrinsic: RuntimeMetadataV1.ExtrinsicMetadata(version: 1, signedExtensions: [])
+        )
     }()
 }

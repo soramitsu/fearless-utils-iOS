@@ -1,28 +1,45 @@
 import Foundation
 
 extension ChainData: Codable {
+    private enum Case: String {
+        case none = "None"
+        case raw
+        case blakeTwo256 = "BlakeTwo256"
+        case sha256 = "Sha256"
+        case keccak256 = "Keccak256"
+        case shaThree256 = "ShaThree256"
+        
+        static func from(rawValue: String) -> Case? {
+            if rawValue.lowercased().contains("raw") {
+                return .raw
+            }
+            
+            return Case(rawValue: rawValue)
+        }
+    }
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
-        let type = try container.decode(UInt8.self)
-
-        if type == 0 {
+        let typeString = try container.decode(String.self)
+        guard let type = Case.from(rawValue: typeString) else {
+            throw DecodingError.dataCorruptedError(in: container,
+                                                   debugDescription: "unexpected type found: \(typeString)")
+        }
+        
+        if type == .none {
             self = .none
         } else {
-            guard let data = try container.decode([Data].self).first else {
-                throw DecodingError.dataCorruptedError(in: container,
-                                                       debugDescription: "expected array of single data item")
-            }
+            let data = try container.decode(Data.self)
 
             switch type {
-            case 1:
+            case .raw:
                 self = .raw(data: data)
-            case 2:
+            case .blakeTwo256:
                 self = .blakeTwo256(data: H256(value: data))
-            case 3:
+            case .sha256:
                 self = .sha256(data: H256(value: data))
-            case 4:
+            case .keccak256:
                 self = .keccak256(data: H256(value: data))
-            case 5:
+            case .shaThree256:
                 self = .shaThree256(data: H256(value: data))
             default:
                 throw DecodingError.dataCorruptedError(in: container,
@@ -36,22 +53,22 @@ extension ChainData: Codable {
 
         switch self {
         case .none:
-            try container.encode(UInt8(0))
+            try container.encode(Case.none.rawValue)
         case .raw(let data):
-            try container.encode(UInt8(1))
-            try container.encode([data])
+            try container.encode(Case.raw.rawValue)
+            try container.encode(data)
         case .blakeTwo256(let hash):
-            try container.encode(UInt8(2))
-            try container.encode([hash.value])
+            try container.encode(Case.blakeTwo256.rawValue)
+            try container.encode(hash.value)
         case .sha256(let hash):
-            try container.encode(UInt8(3))
-            try container.encode([hash.value])
+            try container.encode(Case.sha256.rawValue)
+            try container.encode(hash.value)
         case .keccak256(let hash):
-            try container.encode(UInt8(4))
-            try container.encode([hash.value])
+            try container.encode(Case.keccak256.rawValue)
+            try container.encode(hash.value)
         case .shaThree256(let hash):
-            try container.encode(UInt8(5))
-            try container.encode([hash.value])
+            try container.encode(Case.shaThree256.rawValue)
+            try container.encode(hash.value)
         }
     }
 }

@@ -27,6 +27,26 @@ public struct KeystoreEncoding: Codable {
         self.type = type
         self.version = version
     }
+    
+    public init(from decoder: Decoder) throws {
+        let data = try decoder.container(keyedBy: CodingKeys.self)
+        self.content = try data.decode([String].self, forKey: .content)
+        self.type = try data.decode([String].self, forKey: .type)
+        if let stringVersion = try? data.decode(String.self, forKey: .version) {
+            self.version = stringVersion
+        } else if let numberVersion = try? data.decode(Int.self, forKey: .version) {
+            self.version = String(numberVersion)
+        } else {
+            throw DecodingError.typeMismatch(
+                Self.self,
+                .init(
+                    codingPath: data.codingPath,
+                    debugDescription: "Unexpected keystore encoding type",
+                    underlyingError: nil
+                )
+            )
+        }
+    }
 }
 
 public struct KeystoreMeta: Codable {
@@ -34,9 +54,13 @@ public struct KeystoreMeta: Codable {
         case name
         case createdAt = "whenCreated"
         case genesisHash
+        case isHardware
+        case tags
     }
 
     public let name: String?
     public let createdAt: Int64?
     public let genesisHash: String?
+    public let isHardware: Bool?
+    public let tags: [String]?
 }

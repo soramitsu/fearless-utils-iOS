@@ -37,7 +37,7 @@ public class GenericMultiAddressNode: Node {
         }
 
         guard caseValue < Self.typeMapping.count else {
-            throw DynamicScaleDecoderError.invalidEnumCase(value: caseValue, count: Self.typeMapping.count)
+            throw DynamicScaleDecoderError.invalidCustomEnumCase(value: caseValue, count: Self.typeMapping.count)
         }
 
         let json = try decoder.read(type: Self.typeMapping[caseValue][1])

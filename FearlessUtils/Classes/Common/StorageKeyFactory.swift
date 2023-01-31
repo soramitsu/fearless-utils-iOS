@@ -3,17 +3,28 @@ import Foundation
 public protocol StorageKeyFactoryProtocol: AnyObject {
     func createStorageKey(moduleName: String, storageName: String) throws -> Data
 
-    func createStorageKey(moduleName: String,
-                          storageName: String,
-                          key: Data,
-                          hasher: StorageHasher) throws -> Data
+    func createStorageKey(
+        moduleName: String,
+        storageName: String,
+        key: Data,
+        hasher: StorageHasher
+    ) throws -> Data
 
-    func createStorageKey(moduleName: String,
-                          storageName: String,
-                          key1: Data,
-                          hasher1: StorageHasher,
-                          key2: Data,
-                          hasher2: StorageHasher) throws -> Data
+    func createStorageKey(
+        moduleName: String,
+        storageName: String,
+        key1: Data,
+        hasher1: StorageHasher,
+        key2: Data,
+        hasher2: StorageHasher
+    ) throws -> Data
+    
+    func createStorageKey(
+        moduleName: String,
+        storageName: String,
+        keys: [Data],
+        hashers: [StorageHasher]
+    ) throws -> Data
 }
 
 public enum StorageKeyFactoryError: Error {
@@ -35,30 +46,43 @@ public final class StorageKeyFactory: StorageKeyFactoryProtocol {
         return moduleKey.twox128() + serviceKey.twox128()
     }
 
-    public func createStorageKey(moduleName: String,
-                                 storageName: String,
-                                 key: Data,
-                                 hasher: StorageHasher) throws -> Data {
-        let subkey = try createStorageKey(moduleName: moduleName, storageName: storageName)
-
-        let keyHash: Data = try hasher.hash(data: key)
-
-        return subkey + keyHash
+    public func createStorageKey(
+        moduleName: String,
+        storageName: String,
+        key: Data,
+        hasher: StorageHasher
+    ) throws -> Data {
+        try createStorageKey(moduleName: moduleName, storageName: storageName, keys: [key], hashers: [hasher])
     }
 
-    public func createStorageKey(moduleName: String,
-                                 storageName: String,
-                                 key1: Data,
-                                 hasher1: StorageHasher,
-                                 key2: Data,
-                                 hasher2: StorageHasher) throws -> Data {
-        let subkey = try createStorageKey(moduleName: moduleName,
-                                          storageName: storageName,
-                                          key: key1,
-                                          hasher: hasher1)
-
-        let key2Hash: Data = try hasher2.hash(data: key2)
-
-        return subkey + key2Hash
+    public func createStorageKey(
+        moduleName: String,
+        storageName: String,
+        key1: Data,
+        hasher1: StorageHasher,
+        key2: Data,
+        hasher2: StorageHasher
+    ) throws -> Data {
+        try createStorageKey(moduleName: moduleName, storageName: storageName, keys: [key1, key2], hashers: [hasher1, hasher2])
+    }
+    
+    public func createStorageKey(
+        moduleName: String,
+        storageName: String,
+        keys: [Data],
+        hashers: [StorageHasher]
+    ) throws -> Data {
+        guard keys.count > 0, hashers.count > 0, keys.count == hashers.count else {
+            throw StorageKeyFactoryError.badSerialization
+        }
+        
+        var data = try createStorageKey(moduleName: moduleName, storageName: storageName)
+        for (index, key) in keys.enumerated() {
+            let hasher = hashers[index]
+            let hash = try hasher.hash(data: key)
+            data += hash
+        }
+        
+        return data
     }
 }

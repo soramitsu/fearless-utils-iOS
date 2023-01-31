@@ -18,12 +18,12 @@ public class GenericCallNode: Node {
     }
 
     public func accept(encoder: DynamicScaleEncoding, value: JSON) throws {
-        let call = try value.map(to: RuntimeCall<JSON>.self)
+        let call = try value.plainMap(to: RuntimeCall<JSON>.self)
 
-        guard let function = runtimeMetadata.getFunction(from: call.moduleName,
+        guard let function = try runtimeMetadata.getFunction(from: call.moduleName,
                                                          with: call.callName),
               let moduleIndex = runtimeMetadata.getModuleIndex(call.moduleName),
-              let callIndex = runtimeMetadata.getCallIndex(in: call.moduleName,
+              let callIndex = try runtimeMetadata.getCallIndex(in: call.moduleName,
                                                            callName: call.callName) else {
             throw GenericCallNodeError.unexpectedParams
         }
@@ -36,11 +36,25 @@ public class GenericCallNode: Node {
         try encoder.appendU8(json: .stringValue(String(callIndex)))
 
         for index in 0..<function.arguments.count {
-            guard let param = args[function.arguments[index].name] else {
+            let arg = function.arguments[index]
+            guard var param = args[arg.name] else {
                 throw GenericCallNodeError.unexpectedParams
             }
+            
+            // Basically, all Substrate networks use "sp_runtime::multiaddress::MultiAddress" enum for destination
+            // But some like Basilisk, use "sp_core::crypto::AccountId32" ([u8;32]) directly instead
+            // Moonbeam/Moonriver use AccountId20 ([u8;20])
+            let addressIdTypes = KnownType.addressIdTypes.map { $0.name }
+            if addressIdTypes.contains(arg.type), arg.name == "dest" {
+                guard let id = param.arrayValue, id.count == 2, let idParam = id[1].arrayValue else {
+                    assertionFailure()
+                    throw GenericCallNodeError.unexpectedParams
+                }
+                
+                param = .arrayValue(idParam)
+            }
 
-            try encoder.append(json: param, type: function.arguments[index].type)
+            try encoder.append(json: param, type: arg.type)
         }
     }
 
@@ -59,7 +73,7 @@ public class GenericCallNode: Node {
             throw GenericCallNodeError.unexpectedCallModule(value: UInt64(moduleIndex))
         }
 
-        guard let calls = module.calls, callIndex < calls.count  else {
+        guard let calls = try module.calls(using: runtimeMetadata.schemaResolver), callIndex < calls.count else {
             throw GenericCallNodeError.unexpectedCallFunction(value: UInt64(callIndex))
         }
 

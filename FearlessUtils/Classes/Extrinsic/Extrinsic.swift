@@ -44,16 +44,19 @@ public struct ExtrinsicSignature: Codable {
         case address
         case signature
         case extra
+        case type
     }
 
     public let address: JSON
     public let signature: JSON
     public let extra: ExtrinsicSignedExtra
+    public let type: String
 
-    public init(address: JSON, signature: JSON, extra: ExtrinsicSignedExtra) {
+    public init(address: JSON, signature: JSON, extra: ExtrinsicSignedExtra, type: String) {
         self.address = address
         self.signature = signature
         self.extra = extra
+        self.type = type
     }
 }
 

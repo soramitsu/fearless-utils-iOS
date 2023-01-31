@@ -27,7 +27,7 @@
 		842D1E2324C98CEA00C30A7A /* StorageKeyFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E2224C98CEA00C30A7A /* StorageKeyFactoryTests.swift */; };
 		842D1E2524C9AC5D00C30A7A /* ScaleBoolOptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E2424C9AC5D00C30A7A /* ScaleBoolOptionTests.swift */; };
 		842D1E2724C9B63300C30A7A /* ScaleOptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E2624C9B63300C30A7A /* ScaleOptionTests.swift */; };
-		842D1E6A24CF800400C30A7A /* JunctionFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E6924CF800400C30A7A /* JunctionFactoryTests.swift */; };
+		842D1E6A24CF800400C30A7A /* SubstrateJunctionFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E6924CF800400C30A7A /* SubstrateJunctionFactoryTests.swift */; };
 		842D1E7124CFF31800C30A7A /* KeypairDeriviation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E6F24CFF2FB00C30A7A /* KeypairDeriviation.swift */; };
 		842D1E7324CFF4EC00C30A7A /* KeypairDeriviationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E7224CFF4EC00C30A7A /* KeypairDeriviationTests.swift */; };
 		842D1E7624D0069000C30A7A /* sr25519HDKD.json in Resources */ = {isa = PBXBuildFile; fileRef = 842D1E7524D0069000C30A7A /* sr25519HDKD.json */; };
@@ -99,7 +99,14 @@
 		84FACC0825F79C5200F32ED4 /* BaseCodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACC0725F79C5200F32ED4 /* BaseCodingTests.swift */; };
 		84FACC0C25F79D8600F32ED4 /* GenericHashTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACC0B25F79D8600F32ED4 /* GenericHashTests.swift */; };
 		A0FDCFB5B61F738FEE34A5E6 /* Pods_FearlessUtils_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16D2E77D7010BEBF43DFE08E /* Pods_FearlessUtils_Tests.framework */; };
+		AE425FB626D363F500547303 /* BIP32JunctionFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE425FB526D363F500547303 /* BIP32JunctionFactoryTests.swift */; };
+		AE425FBA26D3726900547303 /* BIP32KeypairDerivationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE425FB926D3726900547303 /* BIP32KeypairDerivationTests.swift */; };
+		AE4B521426CBA71B00A66D2C /* BIP32HDKDEtalon.json in Resources */ = {isa = PBXBuildFile; fileRef = AE4B521326CBA71B00A66D2C /* BIP32HDKDEtalon.json */; };
+		AE4B521826CE127200A66D2C /* BIP32HDKD.json in Resources */ = {isa = PBXBuildFile; fileRef = AE4B521726CE127200A66D2C /* BIP32HDKD.json */; };
 		B2BF1BE136637C8404B79450 /* Pods_FearlessUtils_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9A63E44DBCDCE738F798358 /* Pods_FearlessUtils_Example.framework */; };
+		C74FAB9B272019AB00B5C452 /* polkadot-v14-metadata in Resources */ = {isa = PBXBuildFile; fileRef = C74FAB9A272019AB00B5C452 /* polkadot-v14-metadata */; };
+		C74FAB9E272019C600B5C452 /* westend-v14-metadata in Resources */ = {isa = PBXBuildFile; fileRef = C74FAB9C272019C600B5C452 /* westend-v14-metadata */; };
+		C74FAB9F272019C600B5C452 /* kusama-v14-metadata in Resources */ = {isa = PBXBuildFile; fileRef = C74FAB9D272019C600B5C452 /* kusama-v14-metadata */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -139,7 +146,7 @@
 		842D1E2224C98CEA00C30A7A /* StorageKeyFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageKeyFactoryTests.swift; sourceTree = "<group>"; };
 		842D1E2424C9AC5D00C30A7A /* ScaleBoolOptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScaleBoolOptionTests.swift; sourceTree = "<group>"; };
 		842D1E2624C9B63300C30A7A /* ScaleOptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScaleOptionTests.swift; sourceTree = "<group>"; };
-		842D1E6924CF800400C30A7A /* JunctionFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JunctionFactoryTests.swift; sourceTree = "<group>"; };
+		842D1E6924CF800400C30A7A /* SubstrateJunctionFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateJunctionFactoryTests.swift; sourceTree = "<group>"; };
 		842D1E6F24CFF2FB00C30A7A /* KeypairDeriviation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeypairDeriviation.swift; sourceTree = "<group>"; };
 		842D1E7224CFF4EC00C30A7A /* KeypairDeriviationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeypairDeriviationTests.swift; sourceTree = "<group>"; };
 		842D1E7524D0069000C30A7A /* sr25519HDKD.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = sr25519HDKD.json; sourceTree = "<group>"; };
@@ -212,10 +219,17 @@
 		84FACC0725F79C5200F32ED4 /* BaseCodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCodingTests.swift; sourceTree = "<group>"; };
 		84FACC0B25F79D8600F32ED4 /* GenericHashTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericHashTests.swift; sourceTree = "<group>"; };
 		93F24F5EEC204E4B0F918C39 /* Pods-FearlessUtils_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FearlessUtils_Example.debug.xcconfig"; path = "Target Support Files/Pods-FearlessUtils_Example/Pods-FearlessUtils_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		AE425FB526D363F500547303 /* BIP32JunctionFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BIP32JunctionFactoryTests.swift; sourceTree = "<group>"; };
+		AE425FB926D3726900547303 /* BIP32KeypairDerivationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BIP32KeypairDerivationTests.swift; sourceTree = "<group>"; };
+		AE4B521326CBA71B00A66D2C /* BIP32HDKDEtalon.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = BIP32HDKDEtalon.json; sourceTree = "<group>"; };
+		AE4B521726CE127200A66D2C /* BIP32HDKD.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = BIP32HDKD.json; sourceTree = "<group>"; };
 		B82F3EE26AAEE44C6E7F9962 /* Pods-FearlessUtils_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FearlessUtils_Tests.release.xcconfig"; path = "Target Support Files/Pods-FearlessUtils_Tests/Pods-FearlessUtils_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		B9A63E44DBCDCE738F798358 /* Pods_FearlessUtils_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FearlessUtils_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0EC4D272FE196149F4492DE /* Pods-FearlessUtils_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FearlessUtils_Example.release.xcconfig"; path = "Target Support Files/Pods-FearlessUtils_Example/Pods-FearlessUtils_Example.release.xcconfig"; sourceTree = "<group>"; };
 		C16B9A0A217A972DC441B811 /* FearlessUtils.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = FearlessUtils.podspec; path = ../FearlessUtils.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		C74FAB9A272019AB00B5C452 /* polkadot-v14-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "polkadot-v14-metadata"; sourceTree = "<group>"; };
+		C74FAB9C272019C600B5C452 /* westend-v14-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "westend-v14-metadata"; sourceTree = "<group>"; };
+		C74FAB9D272019C600B5C452 /* kusama-v14-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "kusama-v14-metadata"; sourceTree = "<group>"; };
 		DBD8662893B1E1373B778CC2 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -338,8 +352,11 @@
 				8429C80D25C434DA0086D7F6 /* polkadot.json */,
 				8429C80C25C434DA0086D7F6 /* westend.json */,
 				84452B6025D2ADC300F47EC5 /* westend-metadata */,
+				C74FAB9C272019C600B5C452 /* westend-v14-metadata */,
 				84452C0A25D2D54300F47EC5 /* kusama-metadata */,
+				C74FAB9D272019C600B5C452 /* kusama-v14-metadata */,
 				84452C0E25D2D5C300F47EC5 /* polkadot-metadata */,
+				C74FAB9A272019AB00B5C452 /* polkadot-v14-metadata */,
 				8467F4C626B285EC00C5B6F4 /* statemine-metadata */,
 				84F4394125DBAAA200AEDA56 /* test-metadata */,
 			);
@@ -349,8 +366,9 @@
 		842D1E6824CF7FC500C30A7A /* Crypto */ = {
 			isa = PBXGroup;
 			children = (
+				AE425FB726D3724100547303 /* BIP32 */,
 				845D80EC24C8D91A00EC2540 /* SeedFactoryTests.swift */,
-				842D1E6924CF800400C30A7A /* JunctionFactoryTests.swift */,
+				842D1E6924CF800400C30A7A /* SubstrateJunctionFactoryTests.swift */,
 				842D1E7224CFF4EC00C30A7A /* KeypairDeriviationTests.swift */,
 			);
 			path = Crypto;
@@ -375,6 +393,8 @@
 				8467FD1024E675D0005D486C /* ecdsaHDKD.json */,
 				84CB471F24DBE7BD00837E11 /* Keystore */,
 				842D1E7524D0069000C30A7A /* sr25519HDKD.json */,
+				AE4B521326CBA71B00A66D2C /* BIP32HDKDEtalon.json */,
+				AE4B521726CE127200A66D2C /* BIP32HDKD.json */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -550,6 +570,15 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		AE425FB726D3724100547303 /* BIP32 */ = {
+			isa = PBXGroup;
+			children = (
+				AE425FB526D363F500547303 /* BIP32JunctionFactoryTests.swift */,
+				AE425FB926D3726900547303 /* BIP32KeypairDerivationTests.swift */,
+			);
+			path = BIP32;
+			sourceTree = "<group>";
+		};
 		B71F45E77B6AE967E2E06378 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -660,19 +689,24 @@
 			files = (
 				8467FD1424E677C2005D486C /* ed25519HDKD.json in Resources */,
 				842D1E7624D0069000C30A7A /* sr25519HDKD.json in Resources */,
+				AE4B521426CBA71B00A66D2C /* BIP32HDKDEtalon.json in Resources */,
 				84452B6125D2ADC300F47EC5 /* westend-metadata in Resources */,
 				84452C0B25D2D54300F47EC5 /* kusama-metadata in Resources */,
+				C74FAB9E272019C600B5C452 /* westend-v14-metadata in Resources */,
+				C74FAB9B272019AB00B5C452 /* polkadot-v14-metadata in Resources */,
 				8429C81825C434E40086D7F6 /* default.json in Resources */,
 				8467FD1524E677C6005D486C /* ecdsaHDKD.json in Resources */,
 				84452C0F25D2D5C300F47EC5 /* polkadot-metadata in Resources */,
 				8429C82725C434ED0086D7F6 /* westend.json in Resources */,
 				84A0DE3124DBF49400F436A8 /* keystore-ed25519.json in Resources */,
+				AE4B521826CE127200A66D2C /* BIP32HDKD.json in Resources */,
 				84F4394225DBAAA200AEDA56 /* test-metadata in Resources */,
 				8429C81D25C434E70086D7F6 /* kusama.json in Resources */,
 				8467F4C726B285EC00C5B6F4 /* statemine-metadata in Resources */,
 				84A0DE3224DBF49700F436A8 /* keystore-ecdsa.json in Resources */,
 				84CB472524DBE98500837E11 /* keystore-sr25519.json in Resources */,
 				8429C82225C434EA0086D7F6 /* polkadot.json in Resources */,
+				C74FAB9F272019C600B5C452 /* kusama-v14-metadata in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -707,6 +741,9 @@
 				"${BUILT_PRODUCTS_DIR}/BigInt/BigInt.framework",
 				"${BUILT_PRODUCTS_DIR}/FearlessUtils/FearlessUtils.framework",
 				"${BUILT_PRODUCTS_DIR}/IrohaCrypto/IrohaCrypto.framework",
+				"${BUILT_PRODUCTS_DIR}/ReachabilitySwift/Reachability.framework",
+				"${BUILT_PRODUCTS_DIR}/RobinHood/RobinHood.framework",
+				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
 				"${BUILT_PRODUCTS_DIR}/TweetNacl/TweetNacl.framework",
 				"${BUILT_PRODUCTS_DIR}/scrypt.c/scrypt.framework",
 				"${BUILT_PRODUCTS_DIR}/secp256k1.c/secp256k1.framework",
@@ -717,6 +754,9 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BigInt.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FearlessUtils.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IrohaCrypto.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RobinHood.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TweetNacl.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/scrypt.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/secp256k1.framework",
@@ -814,7 +854,7 @@
 				84FACC0425F799A900F32ED4 /* ChainDataCodingTests.swift in Sources */,
 				84F43A3425DC44A000AEDA56 /* BindingTests.swift in Sources */,
 				84F43A2425DC124600AEDA56 /* TypeRegistryCatalogTests.swift in Sources */,
-				842D1E6A24CF800400C30A7A /* JunctionFactoryTests.swift in Sources */,
+				842D1E6A24CF800400C30A7A /* SubstrateJunctionFactoryTests.swift in Sources */,
 				8429C7FD25C432FF0086D7F6 /* TypeRegistryTests.swift in Sources */,
 				841D52EA25C6DDF800DFA15B /* JSONHelpers.swift in Sources */,
 				849E0AAC25C96C7800B33506 /* TupleNodeFactoryTests.swift in Sources */,
@@ -827,6 +867,7 @@
 				849E0A7E25C95C7F00B33506 /* EnumValuesFactoryTests.swift in Sources */,
 				842D1E2324C98CEA00C30A7A /* StorageKeyFactoryTests.swift in Sources */,
 				8459EA122657963C006BBF9E /* MultiSigner.swift in Sources */,
+				AE425FBA26D3726900547303 /* BIP32KeypairDerivationTests.swift in Sources */,
 				8467FD2824E72CCD005D486C /* HSLColorTests.swift in Sources */,
 				84FACC0C25F79D8600F32ED4 /* GenericHashTests.swift in Sources */,
 				842D1E2724C9B63300C30A7A /* ScaleOptionTests.swift in Sources */,
@@ -850,6 +891,7 @@
 				842D1E7124CFF31800C30A7A /* KeypairDeriviation.swift in Sources */,
 				841D539525C7517300DFA15B /* JSONTests.swift in Sources */,
 				841D528A25C4A11900DFA15B /* RegexParserTests.swift in Sources */,
+				AE425FB626D363F500547303 /* BIP32JunctionFactoryTests.swift in Sources */,
 				842D1E2524C9AC5D00C30A7A /* ScaleBoolOptionTests.swift in Sources */,
 				84452D9325D48FC100F47EC5 /* ExtrinsicNodeTests.swift in Sources */,
 				841D532425C727FC00DFA15B /* TermParserTests.swift in Sources */,

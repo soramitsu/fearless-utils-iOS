@@ -1,51 +1,89 @@
 import Foundation
 
 public extension TypeRegistry {
-    static func createFromRuntimeMetadata(_ runtimeMetadata: RuntimeMetadata,
-                                          additionalTypes: Set<String> = []) throws -> TypeRegistry {
-        var allTypes: Set<String> = additionalTypes
+    static func createFromRuntimeMetadata(
+        _ runtimeMetadata: RuntimeMetadata,
+        additionalTypes: Set<String> = [],
+        usedRuntimePaths: [String: [String]]
+    ) throws -> TypeRegistry {
+        let schemaResolver = runtimeMetadata.schemaResolver
+        var jsonDic: [String: JSON] = [:]
+        var runtimeModules = runtimeMetadata.modules
+        
+        try usedRuntimePaths.forEach { (moduleName, callNames) in
+            guard
+                let runtimeModuleIndex = runtimeModules.firstIndex(where: {
+                    $0.name == moduleName
+                })
+            else {
+                return
+            }
 
-        for module in runtimeMetadata.modules {
-            if let storage = module.storage {
-                for storageEntry in storage.entries {
-                    switch storageEntry.type {
-                    case .plain(let value):
-                        allTypes.insert(value)
+            if let storage = runtimeModules[runtimeModuleIndex].storage {
+                var storageEntrys = storage.entries
+                
+                try callNames.forEach { callName in
+                    guard
+                        let storageEntryIndex = storageEntrys.firstIndex(where: {
+                            $0.name == callName
+                        })
+                    else {
+                        return
+                    }
+                    
+                    switch storageEntrys[storageEntryIndex].type {
+                    case .plain(let plain):
+                        let plainType = try plain.value(using: schemaResolver)
+                        jsonDic[plainType] = .stringValue(plainType)
                     case .map(let map):
-                        allTypes.insert(map.key)
-                        allTypes.insert(map.value)
+                        jsonDic[map.key] = .stringValue(map.key)
+                        jsonDic[map.value] = .stringValue(map.value)
                     case .doubleMap(let map):
-                        allTypes.insert(map.key1)
-                        allTypes.insert(map.key2)
-                        allTypes.insert(map.value)
+                        jsonDic[map.key1] = .stringValue(map.key1)
+                        jsonDic[map.key2] = .stringValue(map.key2)
+                        jsonDic[map.value] = .stringValue(map.value)
                     case .nMap(let nMap):
-                        nMap.keyVec.forEach { allTypes.insert($0) }
-                        allTypes.insert(nMap.value)
+                        try nMap.keys(using: schemaResolver).forEach {
+                            jsonDic[$0] = .stringValue($0)
+                        }
+                        let nMapValue = try nMap.value(using: schemaResolver)
+                        jsonDic[nMapValue] = .stringValue(nMapValue)
+                    }
+                    
+                    storageEntrys.remove(at: storageEntryIndex)
+                }
+            }
+            
+            if let calls = try runtimeModules[runtimeModuleIndex].calls(using: schemaResolver) {
+                calls.forEach { call in
+                    call.arguments.forEach { argument in
+                        jsonDic[argument.type] = .stringValue(argument.type)
                     }
                 }
             }
 
-            if let calls = module.calls {
-                let callTypes = calls.flatMap { $0.arguments.map { $0.type }}
-                allTypes.formUnion(callTypes)
+            if let events = try runtimeModules[runtimeModuleIndex].events(using: schemaResolver) {
+                events.forEach { event in
+                    event.arguments.forEach { argument in
+                        jsonDic[argument] = .stringValue(argument)
+                    }
+                }
             }
 
-            if let events = module.events {
-                let eventTypes = events.flatMap { $0.arguments }
-                allTypes.formUnion(eventTypes)
-            }
-
-            let constantTypes = module.constants.map { $0.type }
-            allTypes.formUnion(constantTypes)
-        }
-
-        let jsonDic: [String: JSON] = allTypes.reduce(into: [String: JSON]()) { (result, item) in
-            result[item] = .stringValue(item)
+            try runtimeModules[runtimeModuleIndex].constants.forEach({ constant in
+                let type = try constant.type(using: schemaResolver)
+                jsonDic[type] = .stringValue(type)
+            })
+            
+            runtimeModules.remove(at: runtimeModuleIndex)
         }
 
         let json = JSON.dictionaryValue(["types": .dictionaryValue(jsonDic)])
 
-        return try TypeRegistry.createFromTypesDefinition(json: json,
-                                                          additionalNodes: [])
+        return try TypeRegistry.createFromTypesDefinition(
+            json: json,
+            additionalNodes: [],
+            schemaResolver: schemaResolver
+        )
     }
 }

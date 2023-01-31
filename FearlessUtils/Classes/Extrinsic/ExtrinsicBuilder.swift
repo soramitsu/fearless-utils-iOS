@@ -10,10 +10,12 @@ public protocol ExtrinsicBuilderProtocol: AnyObject {
     func with(shouldUseAtomicBatch: Bool) -> Self
     func adding<T: RuntimeCallable>(call: T) throws -> Self
 
-    func signing(by signer: (Data) throws -> Data,
-                 of type: CryptoType,
-                 using encoder: DynamicScaleEncoding,
-                 metadata: RuntimeMetadata) throws -> Self
+    func signing(
+        by signer: (Data) throws -> Data,
+        of type: CryptoType,
+        using encoder: DynamicScaleEncoding,
+        metadata: RuntimeMetadata
+    ) throws -> Self
 
     func build(encodingBy encoder: DynamicScaleEncoding, metadata: RuntimeMetadata) throws -> Data
 }
@@ -48,9 +50,11 @@ public final class ExtrinsicBuilder {
     private var signature: ExtrinsicSignature?
     private var shouldUseAtomicBatch: Bool = true
 
-    public init(specVersion: UInt32,
-                transactionVersion: UInt32,
-                genesisHash: String) {
+    public init(
+        specVersion: UInt32,
+        transactionVersion: UInt32,
+        genesisHash: String
+    ) {
         self.specVersion = specVersion
         self.transactionVersion = transactionVersion
         self.genesisHash = genesisHash
@@ -71,11 +75,13 @@ public final class ExtrinsicBuilder {
 
         let callName = shouldUseAtomicBatch ? KnowRuntimeModule.Utitlity.batchAll : KnowRuntimeModule.Utitlity.batch
 
-        let call = RuntimeCall(moduleName: KnowRuntimeModule.Utitlity.name,
-                               callName: callName,
-                               args: BatchArgs(calls: calls))
+        let call = RuntimeCall(
+            moduleName: KnowRuntimeModule.Utitlity.name,
+            callName: callName,
+            args: BatchArgs(calls: calls)
+        )
 
-        guard metadata.getFunction(from: call.moduleName, with: call.callName) != nil else {
+        guard try metadata.getFunction(from: call.moduleName, with: call.callName) != nil else {
             throw ExtrinsicBuilderError.unsupportedBatch
         }
 
@@ -87,9 +93,11 @@ public final class ExtrinsicBuilder {
         try encoder.append(extra, ofType: GenericType.extrinsicExtra.name)
     }
 
-    private func appendAdditionalSigned(encodingBy encoder: DynamicScaleEncoding,
-                                        metadata: RuntimeMetadata) throws {
-        for checkString in metadata.extrinsic.signedExtensions {
+    private func appendAdditionalSigned(
+        encodingBy encoder: DynamicScaleEncoding,
+        metadata: RuntimeMetadata
+    ) throws {
+        for checkString in try metadata.extrinsic.signedExtensions(using: metadata.schemaResolver) {
             guard let check = ExtrinsicCheck(rawValue: checkString) else {
                 continue
             }
@@ -109,8 +117,10 @@ public final class ExtrinsicBuilder {
         }
     }
 
-    private func prepareSignaturePayload(encodingBy encoder: DynamicScaleEncoding,
-                                         using metadata: RuntimeMetadata) throws -> Data {
+    private func prepareSignaturePayload(
+        encodingBy encoder: DynamicScaleEncoding,
+        using metadata: RuntimeMetadata
+    ) throws -> Data {
         let call = try prepareExtrinsicCall(for: metadata)
         try encoder.append(json: call, type: GenericType.call.name)
 
@@ -165,10 +175,12 @@ extension ExtrinsicBuilder: ExtrinsicBuilderProtocol {
         return self
     }
 
-    public func signing(by signer: (Data) throws -> Data,
-                        of type: CryptoType,
-                        using encoder: DynamicScaleEncoding,
-                        metadata: RuntimeMetadata) throws -> Self {
+    public func signing(
+        by signer: (Data) throws -> Data,
+        of type: CryptoType,
+        using encoder: DynamicScaleEncoding,
+        metadata: RuntimeMetadata
+    ) throws -> Self {
         guard let address = address else {
             throw ExtrinsicBuilderError.missingAddress
         }
@@ -177,35 +189,83 @@ extension ExtrinsicBuilder: ExtrinsicBuilderProtocol {
 
         let rawSignature = try signer(data)
 
-        let signature: MultiSignature
+        var signatureJson = JSON.null
+        var signatureTypeString = KnownType.signature.rawValue
+        
+        // Some networks like Moonbeam/Moonriver have signature as direct byte-array rather than MultiSignature enum
+        // Though they have MultiSignature enum in their metadata, check what signature type is used within extrinsic
+        // Otherwise provide default enum based MultiSignature behavior
+        if let extrinsicType = try? metadata.schemaResolver.typeMetadata(for: metadata.extrinsic.type) {
+            let signatureParam = extrinsicType.params.first { $0.name == "Signature" }
+            if let signatureType = try? metadata.schemaResolver.typeMetadata(for: signatureParam?.type) {
+                switch signatureType.def {
+                case .variant:
+                    break
+                default:
+                    signatureJson = try rawSignature.toScaleCompatibleJSON()
+                    signatureTypeString = try metadata.schemaResolver.typeName(for: signatureType)
+                }
+            }
+        }
+        
+        if signatureJson == .null {
+            let signature: MultiSignature
+            switch type {
+            case .sr25519:
+                signature = .sr25519(data: rawSignature)
+            case .ed25519:
+                signature = .ed25519(data: rawSignature)
+            case .ecdsa:
+                signature = .ecdsa(data: rawSignature)
+            }
 
-        switch type {
-        case .sr25519:
-            signature = .sr25519(data: rawSignature)
-        case .ed25519:
-            signature = .ed25519(data: rawSignature)
-        case .ecdsa:
-            signature = .ecdsa(data: rawSignature)
+            signatureJson = try signature.toScaleCompatibleJSON()
         }
 
-        let sigJson = try signature.toScaleCompatibleJSON()
-
         let extra = ExtrinsicSignedExtra(era: era, nonce: nonce ?? 0, tip: tip)
-        self.signature = ExtrinsicSignature(address: address,
-                                            signature: sigJson,
-                                            extra: extra)
+        self.signature = ExtrinsicSignature(
+            address: address,
+            signature: signatureJson,
+            extra: extra,
+            type: signatureTypeString
+        )
 
         return self
     }
 
-    public func build(encodingBy encoder: DynamicScaleEncoding,
-                      metadata: RuntimeMetadata) throws -> Data {
+    public func build(
+        encodingBy encoder: DynamicScaleEncoding,
+        metadata: RuntimeMetadata
+    ) throws -> Data {
         let call = try prepareExtrinsicCall(for: metadata)
-
+        
+        Log.enable(kind: "DynamicScale")
         let extrinsic = Extrinsic(signature: signature, call: call)
 
         try encoder.append(extrinsic, ofType: GenericType.extrinsic.name)
+        
+        let encoded = try encoder.encode()
+        Log.write("DynamicScale", message: "Extrinsic encoded: \(encoded.toHex(includePrefix: true))")
+        Log.disable(kind: "DynamicScale")
+        
+        return encoded
+    }
+}
 
-        return try encoder.encode()
+struct Log {
+    private static var enabled: [String] = []
+    
+    static func enable(kind: String) {
+        enabled.append(kind)
+    }
+    
+    static func disable(kind: String) {
+        enabled.removeAll { $0 == kind }
+    }
+    
+    static func write(_ kind: String, message: String) {
+        if enabled.contains(kind) {
+            print("[\(kind)] \(message)")
+        }
     }
 }

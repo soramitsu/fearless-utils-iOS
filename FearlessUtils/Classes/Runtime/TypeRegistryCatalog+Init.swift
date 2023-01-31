@@ -1,37 +1,77 @@
 import Foundation
 
 public extension TypeRegistryCatalog {
-    static func createFromBaseTypeDefinition(_ baseDefinitionData: Data,
-                                             networkDefinitionData: Data,
-                                             runtimeMetadata: RuntimeMetadata,
-                                             customNodes: [Node] = [])
-    throws -> TypeRegistryCatalog {
-        let versionedJsons = try prepareVersionedJsons(from: networkDefinitionData)
+    static func createFromTypeDefinition(
+        _ definitionData: Data,
+        versioningData: Data,
+        runtimeMetadata: RuntimeMetadata,
+        customNodes: [Node] = [],
+        usedRuntimePaths: [String: [String]]
+    ) throws -> TypeRegistryCatalog {
+        let versionedJsons = try prepareVersionedJsons(from: versioningData)
 
+        return try createFromTypeDefinition(
+            definitionData,
+            versionedJsons: versionedJsons,
+            runtimeMetadata: runtimeMetadata,
+            customNodes: customNodes,
+            usedRuntimePaths: usedRuntimePaths
+        )
+    }
+
+    static func createFromTypeDefinition(
+        _ definitionData: Data,
+        runtimeMetadata: RuntimeMetadata,
+        customNodes: [Node] = [],
+        usedRuntimePaths: [String: [String]]
+    ) throws -> TypeRegistryCatalog {
+        try createFromTypeDefinition(
+            definitionData,
+            versionedJsons: [:],
+            runtimeMetadata: runtimeMetadata,
+            customNodes: customNodes,
+            usedRuntimePaths: usedRuntimePaths
+        )
+    }
+
+    static func createFromTypeDefinition(
+        _ definitionData: Data,
+        versionedJsons: [UInt64: JSON],
+        runtimeMetadata: RuntimeMetadata,
+        customNodes: [Node] = [],
+        usedRuntimePaths: [String: [String]]
+    ) throws -> TypeRegistryCatalog {
         let additonalNodes = BasisNodes.allNodes(for: runtimeMetadata) + customNodes
-        let baseRegistry = try TypeRegistry
-            .createFromTypesDefinition(data: baseDefinitionData,
-                                       additionalNodes: additonalNodes)
+        let baseRegistry = try TypeRegistry.createFromTypesDefinition(
+            data: definitionData,
+            additionalNodes: additonalNodes,
+            schemaResolver: runtimeMetadata.schemaResolver
+        )
 
         let versionedRegistries = try versionedJsons.mapValues {
-            try TypeRegistry.createFromTypesDefinition(json: $0, additionalNodes: [])
+            try TypeRegistry.createFromTypesDefinition(json: $0, additionalNodes: [], schemaResolver: runtimeMetadata.schemaResolver)
         }
 
         let typeResolver = OneOfTypeResolver(children: [
+            RuntimeSchemaResolver(schemaResolver: runtimeMetadata.schemaResolver),
             CaseInsensitiveResolver(),
             TableResolver.noise(),
             RegexReplaceResolver.noise(),
             RegexReplaceResolver.genericsFilter()
         ])
 
-        let runtimeMetadataRegistry = try TypeRegistry
-            .createFromRuntimeMetadata(runtimeMetadata,
-                                       additionalTypes: RuntimeTypes.known)
+        let runtimeMetadataRegistry = try TypeRegistry.createFromRuntimeMetadata(
+            runtimeMetadata,
+            additionalTypes: RuntimeTypes.known,
+            usedRuntimePaths: usedRuntimePaths
+        )
 
-        return TypeRegistryCatalog(baseRegistry: baseRegistry,
-                                   versionedRegistries: versionedRegistries,
-                                   runtimeMetadataRegistry: runtimeMetadataRegistry,
-                                   typeResolver: typeResolver)
+        return TypeRegistryCatalog(
+            baseRegistry: baseRegistry,
+            versionedRegistries: versionedRegistries,
+            runtimeMetadataRegistry: runtimeMetadataRegistry,
+            typeResolver: typeResolver
+        )
     }
 
     private static func prepareVersionedJsons(from data: Data) throws -> [UInt64: JSON] {
@@ -50,8 +90,14 @@ public extension TypeRegistryCatalog {
         }
 
         let typeKey = "types"
+        let overridesKey = "overrides"
+        
+        var currentVersionDict = [typeKey: types]
+        if let overrides = versionedDefinitionJson.overrides {
+            currentVersionDict[overridesKey] = overrides
+        }
 
-        let initDict = [currentVersion: JSON.dictionaryValue([typeKey: types])]
+        let initDict = [currentVersion: JSON.dictionaryValue(currentVersionDict)]
 
         return versioning.reduce(into: initDict) { (result, versionedJson) in
             guard
