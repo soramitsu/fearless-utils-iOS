@@ -110,14 +110,14 @@ public struct BytesCodable: Codable, Equatable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        let byteArray = try container.decode([StringScaleMapper<UInt8>].self)
+        let byteArray = try container.decode([StringCodable<UInt8>].self)
 
-        wrappedValue = Data(byteArray.map(\.value))
+        wrappedValue = Data(byteArray.map(\.wrappedValue))
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
-        let bytes = wrappedValue.map { StringScaleMapper(value: $0) }
+        let bytes = wrappedValue.map { StringCodable(wrappedValue: $0) }
 
         try container.encode(bytes)
     }
