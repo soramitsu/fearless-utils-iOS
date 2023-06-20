@@ -5,7 +5,7 @@ enum ScryptParametersError: Error {
     case invalidSalt
 }
 
-struct ScryptParameters {
+public struct ScryptParameters {
     static let saltLength = 32
     static let encodedLength = 44
     static let saltRange = 0..<Self.saltLength
@@ -13,12 +13,12 @@ struct ScryptParameters {
     static let scryptPRange = (Self.saltLength+4)..<(Self.saltLength+8)
     static let scryptRRange = (Self.saltLength+8)..<(Self.saltLength+12)
 
-    let salt: Data
-    let scryptN: UInt32
-    let scryptP: UInt32
-    let scryptR: UInt32
+    public let salt: Data
+    public let scryptN: UInt32
+    public let scryptP: UInt32
+    public let scryptR: UInt32
 
-    init(salt: Data, scryptN: UInt32, scryptP: UInt32, scryptR: UInt32) throws {
+    public init(salt: Data, scryptN: UInt32, scryptP: UInt32, scryptR: UInt32) throws {
         guard salt.count == Self.saltLength else {
             throw ScryptParametersError.invalidSalt
         }
@@ -29,12 +29,12 @@ struct ScryptParameters {
         self.scryptR = scryptR
     }
 
-    init(scryptN: UInt32 = 32768, scryptP: UInt32 = 1, scryptR: UInt32 = 8) throws {
+    public init(scryptN: UInt32 = 32768, scryptP: UInt32 = 1, scryptR: UInt32 = 8) throws {
         let data = try Data.generateRandomBytes(of: Self.saltLength)
         try self.init(salt: data, scryptN: scryptN, scryptP: scryptP, scryptR: scryptR)
     }
 
-    init(data: Data) throws {
+    public init(data: Data) throws {
         guard data.count >= Self.encodedLength  else {
             throw ScryptParametersError.invalidDataLength
         }
@@ -51,7 +51,7 @@ struct ScryptParameters {
         self.scryptR = valueR.littleEndian
     }
 
-    func encode() -> Data {
+    public func encode() -> Data {
         var data = Data(repeating: 0, count: Self.encodedLength)
         data.replaceSubrange(Self.saltRange, with: salt)
 
