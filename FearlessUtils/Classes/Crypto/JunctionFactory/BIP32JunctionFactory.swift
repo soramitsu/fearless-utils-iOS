@@ -1,6 +1,5 @@
 import Foundation
 import BigInt
-import IrohaCrypto
 
 public enum BIP32JunctionFactoryError: Error {
     case invalidBIP32Junction

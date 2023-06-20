@@ -1,6 +1,5 @@
 import Foundation
 import BigInt
-import IrohaCrypto
 
 public struct JunctionResult {
     public let chaincodes: [Chaincode]
