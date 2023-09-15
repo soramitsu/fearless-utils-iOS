@@ -17,7 +17,8 @@ public protocol ExtrinsicBuilderProtocol: AnyObject {
         metadata: RuntimeMetadata
     ) throws -> Self
 
-    func build(encodingBy encoder: DynamicScaleEncoding, metadata: RuntimeMetadata) throws -> Data
+    func buildExtrinsic(metadata: RuntimeMetadata) throws -> Extrinsic
+    func build(encodingBy encoder: DynamicScaleEncoding, extrinsic: Extrinsic) throws -> Data
 }
 
 public enum ExtrinsicBuilderError: Error {
@@ -232,16 +233,16 @@ extension ExtrinsicBuilder: ExtrinsicBuilderProtocol {
 
         return self
     }
-
-    public func build(
-        encodingBy encoder: DynamicScaleEncoding,
-        metadata: RuntimeMetadata
-    ) throws -> Data {
+    
+    public func buildExtrinsic(metadata: RuntimeMetadata) throws -> Extrinsic {
         let call = try prepareExtrinsicCall(for: metadata)
         
         Log.enable(kind: "DynamicScale")
-        let extrinsic = Extrinsic(signature: signature, call: call)
+        return Extrinsic(signature: signature, call: call)
+    }
 
+    public func build(encodingBy encoder: DynamicScaleEncoding, extrinsic: Extrinsic) throws -> Data {
+        Log.enable(kind: "DynamicScale")
         try encoder.append(extrinsic, ofType: GenericType.extrinsic.name)
         
         let encoded = try encoder.encode()
